@@ -87,6 +87,7 @@
         <ComponentName Value="f_setup"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <UnitName Value="pu_setup"/>
       </Unit3>
     </Units>
   </ProjectOptions>

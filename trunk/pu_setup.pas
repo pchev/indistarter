@@ -36,6 +36,8 @@ type
   Tf_setup = class(TForm)
     autostart: TCheckBox;
     Button1: TButton;
+    Button2: TButton;
+    stayontop: TCheckBox;
     devlist: TFileNameEdit;
     Label1: TLabel;
   private

@@ -78,7 +78,7 @@ type
     { private declarations }
     config: TXMLConfig;
     ConfigDir,configfile,devlist: string;
-    autostart: boolean;
+    autostart,stayontop: boolean;
     ServerFifo: string;
     ServerProcess: TProcess;
     CurrentCol, CurrentRow: integer;
@@ -109,6 +109,7 @@ implementation
 { Tf_main }
 
 procedure Tf_main.FormCreate(Sender: TObject);
+var i:integer;
 begin
   DefaultFormatSettings.DecimalSeparator:='.';
   DefaultFormatSettings.TimeSeparator:=':';
@@ -132,15 +133,15 @@ begin
   devlist:=slash(ConfigDir)+ChangeFileExt(configfile,'.devices');
   devlist:=config.GetValue('/Devices/List',devlist);
   autostart:=config.GetValue('/Server/Autostart',false);
+  stayontop:=config.GetValue('/Window/StayOnTop',true);
   if FileExistsUTF8(devlist) then StringGrid1.LoadFromCSVFile(devlist);
   if autostart then StartServer;
+  if stayontop then FormStyle:=fsStayOnTop else FormStyle:=fsNormal;
 end;
 
 procedure Tf_main.OtherInstance(Sender : TObject; ParamCount: Integer; Parameters: array of String);
 begin
-  WindowState:=wsNormal;
   BringToFront;
-  SetFocus;
 end;
 
 procedure Tf_main.InstanceRunning(Sender : TObject);
@@ -186,6 +187,7 @@ begin
   StringGrid1.SaveToCSVFile(devlist);
   config.SetValue('/Devices/List',devlist);
   config.SetValue('/Server/Autostart',autostart);
+  config.SetValue('/Window/StayOnTop',stayontop);
   config.Flush;
 end;
 
@@ -204,14 +206,17 @@ end;
 
 procedure Tf_main.MenuSetupClick(Sender: TObject);
 var savedevlist: string;
+  savestayontop:boolean;
 begin
  if ServerProcess=nil then begin
   SaveConfig;
   savedevlist:=devlist;
+  savestayontop:=stayontop;
   f_setup.devlist.DefaultExt:='.devices';
   f_setup.devlist.InitialDir:=ConfigDir;
   f_setup.devlist.FileName:=devlist;
   f_setup.autostart.Checked:=autostart;
+  f_setup.stayontop.Checked:=stayontop;
   FormPos(f_setup,Mouse.CursorPos.X,Mouse.CursorPos.Y);
   f_setup.ShowModal;
   if f_setup.ModalResult=mrOK then begin
@@ -223,6 +228,10 @@ begin
          ClearGrid;
     end;
     autostart := f_setup.autostart.Checked;
+    stayontop := f_setup.stayontop.Checked;
+    if (stayontop<>savestayontop) then begin
+      if stayontop then FormStyle:=fsStayOnTop else FormStyle:=fsNormal;
+    end;
     SaveConfig;
   end;
  end
@@ -501,14 +510,14 @@ begin
     if ServerProcess.Running then begin
        ImageList1.GetBitmap(1,image1.Picture.Bitmap);
        Label1.Caption:='Server running';
-       MenuRestartServer.Caption:='Restart server';
-       MenuQuit.Caption:='Minimize';
+       MenuRestartServer.Caption:='&Restart server';
+       MenuQuit.Caption:='&Minimize';
     end else begin
        ServerProcess:=nil;
        ImageList1.GetBitmap(0,image1.Picture.Bitmap);
        Label1.Caption:='Server stopped';
-       MenuRestartServer.Caption:='Start server';
-       MenuQuit.Caption:='Quit';
+       MenuRestartServer.Caption:='St&art server';
+       MenuQuit.Caption:='&Quit';
     end;
     str:=TStringList.Create;
     for i:=1 to StringGrid1.RowCount-1 do begin
@@ -521,8 +530,8 @@ begin
   else begin
     ImageList1.GetBitmap(0,image1.Picture.Bitmap);
     Label1.Caption:='Server stopped';
-    MenuRestartServer.Caption:='Start server';
-    MenuQuit.Caption:='Quit';
+    MenuRestartServer.Caption:='St&art server';
+    MenuQuit.Caption:='&Quit';
     for i:=1 to StringGrid1.RowCount-1 do begin
        StringGrid1.Cells[0,i]:='';
     end;

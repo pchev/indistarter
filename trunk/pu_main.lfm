@@ -62,31 +62,31 @@ object f_main: Tf_main
     left = 49
     top = 150
     object MenuFile: TMenuItem
-      Caption = 'File'
+      Caption = '&File'
       object MenuRestartServer: TMenuItem
-        Caption = 'Restart server'
+        Caption = '&Restart server'
         OnClick = MenuRestartServerClick
       end
       object MenuStopServer: TMenuItem
-        Caption = 'Stop server'
+        Caption = 'St&op server'
         OnClick = MenuStopServerClick
       end
       object MenuItem1: TMenuItem
         Caption = '-'
       end
       object MenuQuit: TMenuItem
-        Caption = 'Quit'
+        Caption = '&Quit'
         OnClick = MenuQuitClick
       end
     end
     object MenuSetup: TMenuItem
-      Caption = 'Setup'
+      Caption = '&Setup'
       OnClick = MenuSetupClick
     end
     object MenuHelp: TMenuItem
-      Caption = 'Help'
+      Caption = '&Help'
       object MenuAbout: TMenuItem
-        Caption = 'About'
+        Caption = '&About'
         OnClick = MenuAboutClick
       end
     end
