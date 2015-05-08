@@ -4,16 +4,16 @@ object f_main: Tf_main
   Top = 145
   Width = 294
   Caption = 'INDI server'
-  ClientHeight = 312
+  ClientHeight = 309
   ClientWidth = 294
   Menu = MainMenu1
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  LCLVersion = '1.4.1.0'
+  LCLVersion = '1.4.0.4'
   object StringGrid1: TStringGrid
     Left = 0
-    Height = 264
+    Height = 261
     Top = 0
     Width = 294
     Align = alClient
@@ -28,7 +28,7 @@ object f_main: Tf_main
   object Panel1: TPanel
     Left = 0
     Height = 48
-    Top = 264
+    Top = 261
     Width = 294
     Align = alBottom
     ClientHeight = 48
@@ -51,7 +51,7 @@ object f_main: Tf_main
     end
     object Label1: TLabel
       Left = 145
-      Height = 16
+      Height = 15
       Top = 13
       Width = 41
       Caption = 'Label1'

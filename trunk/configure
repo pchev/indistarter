@@ -11,7 +11,10 @@ if [ $# -gt 0 ]; then
    export "$@"
 fi
 
-dirs=". "
+dirs="component/uniqueinstance \
+     component \
+     . "
+
 
 if [ -n "$target" ]; then
    fpcmake_opt="-q -T$target" 

@@ -28,7 +28,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, pu_main, pu_devlist, sysutils, pu_setup;
+  Forms, pu_main, pu_devlist, sysutils, pu_setup, uniqueinstance_package;
 
 {$R *.res}
 
