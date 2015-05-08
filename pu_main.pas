@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 interface
 
-uses pu_devlist, pu_setup, u_utils, XMLConf, process,
+uses pu_devlist, pu_setup, u_utils, UniqueInstance, XMLConf, process,
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ColorBox,
   ComCtrls, StdCtrls, Grids, ExtCtrls, ActnList, Menus;
 
@@ -82,6 +82,9 @@ type
     ServerFifo: string;
     ServerProcess: TProcess;
     CurrentCol, CurrentRow: integer;
+    UniqueInstance1: TCdCUniqueInstance;
+    procedure OtherInstance(Sender : TObject; ParamCount: Integer; Parameters: array of String);
+    procedure InstanceRunning(Sender : TObject);
     procedure ClearGrid;
     procedure SaveConfig;
     function  WriteCmd(cmd:string): boolean;
@@ -109,6 +112,13 @@ procedure Tf_main.FormCreate(Sender: TObject);
 begin
   DefaultFormatSettings.DecimalSeparator:='.';
   DefaultFormatSettings.TimeSeparator:=':';
+  UniqueInstance1:=TCdCUniqueInstance.Create(self);
+  UniqueInstance1.Identifier:='IndiStarter';
+  UniqueInstance1.OnOtherInstance:=@OtherInstance;
+  UniqueInstance1.OnInstanceRunning:=@InstanceRunning;
+  UniqueInstance1.Enabled:=true;
+  UniqueInstance1.Loaded;
+
   ServerFifo:='/tmp/IndiStarter.fifo';
   ClearGrid;
   ConfigExtension:= '.conf';
@@ -124,6 +134,19 @@ begin
   autostart:=config.GetValue('/Server/Autostart',false);
   if FileExistsUTF8(devlist) then StringGrid1.LoadFromCSVFile(devlist);
   if autostart then StartServer;
+end;
+
+procedure Tf_main.OtherInstance(Sender : TObject; ParamCount: Integer; Parameters: array of String);
+begin
+  WindowState:=wsNormal;
+  BringToFront;
+  SetFocus;
+end;
+
+procedure Tf_main.InstanceRunning(Sender : TObject);
+begin
+  writeln('Other instance of indistarter is running?');
+  UniqueInstance1.RetryOrHalt;
 end;
 
 procedure Tf_main.FormDestroy(Sender: TObject);

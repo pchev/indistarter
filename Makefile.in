@@ -7,6 +7,7 @@ name=indistarter
 version=0
 
 [target]
+dirs=component
 programs=indistarter
 
 [require]
@@ -17,7 +18,7 @@ packages=rtl
 unittargetdir=units/$(CPU_TARGET)-$(OS_TARGET)-$(LCL_PLATFORM)
 includedir=./
 options= $(opt_target) $(fpcopts) -CF64 -dUseCThreads -dLCL -dLCL$(LCL_PLATFORM) -MObjFPC -Sgi -vewni -l
-unitdir= $(LAZDIR)/components/cairocanvas/lib/$(CPU_TARGET)-$(OS_TARGET)/$(LCL_PLATFORM)/ $(LAZDIR)/lcl/units/$(CPU_TARGET)-$(OS_TARGET)/ $(LAZDIR)/lcl/units/$(CPU_TARGET)-$(OS_TARGET)/$(LCL_PLATFORM)/ $(LAZDIR)/packager/units/$(CPU_TARGET)-$(OS_TARGET)/ $(LAZDIR)/components/lazutils/lib/$(CPU_TARGET)-$(OS_TARGET) $(LAZDIR)/ideintf/units/$(CPU_TARGET)-$(OS_TARGET)/$(LCL_PLATFORM) ./
+unitdir=./component/uniqueinstance/lib/$(CPU_TARGET)-$(OS_TARGET)/ $(LAZDIR)/components/cairocanvas/lib/$(CPU_TARGET)-$(OS_TARGET)/$(LCL_PLATFORM)/ $(LAZDIR)/lcl/units/$(CPU_TARGET)-$(OS_TARGET)/ $(LAZDIR)/lcl/units/$(CPU_TARGET)-$(OS_TARGET)/$(LCL_PLATFORM)/ $(LAZDIR)/packager/units/$(CPU_TARGET)-$(OS_TARGET)/ $(LAZDIR)/components/lazutils/lib/$(CPU_TARGET)-$(OS_TARGET) $(LAZDIR)/ideintf/units/$(CPU_TARGET)-$(OS_TARGET)/$(LCL_PLATFORM) ./
 
 [clean]
 files=$(wildcard $(COMPILER_UNITTARGETDIR)/*$(OEXT)) \
@@ -47,7 +48,7 @@ export LCL_PLATFORM
 outdir:
 	mkdir -p units/$(CPU_TARGET)-$(OS_TARGET)-$(LCL_PLATFORM)
 
-all: outdir indistarter$(EXEEXT)
+all: outdir component_all indistarter$(EXEEXT)
 
 revision:
 	$(LAZDIR)/tools/svn2revisioninc . revision.inc
