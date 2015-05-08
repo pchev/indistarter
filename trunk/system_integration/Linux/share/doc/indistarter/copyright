@@ -1,0 +1,15 @@
+
+Copyright: 2015 Patrick Chevalley <pch@ap-i.net>
+
+Information :
+Name        : indistarter
+Version     : 0.1.0
+Release     : 1
+Group       : Sciences/Astronomy
+License     : GPL-3
+Packager    : Patrick Chevalley
+URL         : http://indistarter.sourceforge.net
+Summary     : A simple program to run a INDI server
+Description :
+Indistarter is a user interface to run a INDI server.
+You can configure different profile for your astronomical equipment.

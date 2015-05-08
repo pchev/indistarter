@@ -1,0 +1,56 @@
+#
+#   Makefile.fpc for INDIstarter
+#
+
+[package]
+name=indistarter
+version=0
+
+[target]
+programs=indistarter
+
+[require]
+libc=y
+packages=rtl
+
+[compiler]
+unittargetdir=units/$(CPU_TARGET)-$(OS_TARGET)-$(LCL_PLATFORM)
+includedir=./
+options= $(opt_target) $(fpcopts) -CF64 -dUseCThreads -dLCL -dLCL$(LCL_PLATFORM) -MObjFPC -Sgi -vewni -l
+unitdir= $(LAZDIR)/components/cairocanvas/lib/$(CPU_TARGET)-$(OS_TARGET)/$(LCL_PLATFORM)/ $(LAZDIR)/lcl/units/$(CPU_TARGET)-$(OS_TARGET)/ $(LAZDIR)/lcl/units/$(CPU_TARGET)-$(OS_TARGET)/$(LCL_PLATFORM)/ $(LAZDIR)/packager/units/$(CPU_TARGET)-$(OS_TARGET)/ $(LAZDIR)/components/lazutils/lib/$(CPU_TARGET)-$(OS_TARGET) $(LAZDIR)/ideintf/units/$(CPU_TARGET)-$(OS_TARGET)/$(LCL_PLATFORM) ./
+
+[clean]
+files=$(wildcard $(COMPILER_UNITTARGETDIR)/*$(OEXT)) \
+      $(wildcard $(COMPILER_UNITTARGETDIR)/*$(PPUEXT)) \
+      $(wildcard $(COMPILER_UNITTARGETDIR)/*$(RSTEXT)) \
+      $(wildcard $(COMPILER_UNITTARGETDIR)/*.compiled) \
+      $(wildcard *$(OEXT)) $(wildcard *$(PPUEXT)) $(wildcard *$(RSTEXT))
+
+[prerules]
+PREFIX=%PREFIX%
+LAZDIR=%LAZDIR%
+# Compiler options
+ifndef fpcopts 
+#fpcopts=-O1 -g -gl -Ci -Cr -Co -Ct  // debug
+fpcopts=-O3 -OoREGVAR -Ch2000000 -CX -XX -Xs 
+endif
+# LCL Platform
+ifndef LCL_PLATFORM
+LCL_PLATFORM=gtk2
+opt_target=
+endif
+export LCL_PLATFORM
+
+[rules]
+.PHONY: all
+
+outdir:
+	mkdir -p units/$(CPU_TARGET)-$(OS_TARGET)-$(LCL_PLATFORM)
+
+all: outdir indistarter$(EXEEXT)
+
+revision:
+	$(LAZDIR)/tools/svn2revisioninc . revision.inc
+
+install: 
+	./install.sh $(PREFIX) $(CPU_TARGET)
