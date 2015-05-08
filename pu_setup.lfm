@@ -1,0 +1,51 @@
+object f_setup: Tf_setup
+  Left = 406
+  Height = 175
+  Top = 147
+  Width = 319
+  Caption = 'Setup'
+  ClientHeight = 175
+  ClientWidth = 319
+  LCLVersion = '1.4.1.0'
+  object Label1: TLabel
+    Left = 16
+    Height = 16
+    Top = 16
+    Width = 98
+    Caption = 'Devices profile :'
+    ParentColor = False
+  end
+  object autostart: TCheckBox
+    Left = 8
+    Height = 26
+    Top = 86
+    Width = 286
+    Caption = 'Autostart the server with last used profile'
+    TabOrder = 0
+  end
+  object Button1: TButton
+    Left = 227
+    Height = 25
+    Top = 136
+    Width = 75
+    Caption = 'OK'
+    Default = True
+    ModalResult = 1
+    TabOrder = 1
+  end
+  object devlist: TFileNameEdit
+    Left = 11
+    Height = 22
+    Top = 40
+    Width = 283
+    DialogTitle = 'Select file name'
+    DialogOptions = [ofCreatePrompt, ofEnableSizing, ofViewDetail]
+    Filter = 'devices|*.devices'
+    FilterIndex = 0
+    HideDirectories = False
+    ButtonWidth = 23
+    NumGlyphs = 1
+    MaxLength = 0
+    TabOrder = 2
+  end
+end

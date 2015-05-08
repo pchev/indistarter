@@ -1,0 +1,51 @@
+object f_devlist: Tf_devlist
+  Left = 387
+  Height = 295
+  Top = 160
+  Width = 320
+  Caption = 'Available drivers'
+  ClientHeight = 295
+  ClientWidth = 320
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  LCLVersion = '1.4.1.0'
+  object TreeView1: TTreeView
+    Left = 0
+    Height = 248
+    Top = 0
+    Width = 320
+    Align = alClient
+    DefaultItemHeight = 18
+    TabOrder = 0
+  end
+  object Panel1: TPanel
+    Left = 0
+    Height = 47
+    Top = 248
+    Width = 320
+    Align = alBottom
+    ClientHeight = 47
+    ClientWidth = 320
+    TabOrder = 1
+    object Button1: TButton
+      Left = 16
+      Height = 25
+      Top = 8
+      Width = 75
+      Cancel = True
+      Caption = 'Cancel'
+      ModalResult = 2
+      TabOrder = 0
+    end
+    object Button2: TButton
+      Left = 128
+      Height = 25
+      Top = 8
+      Width = 75
+      Caption = 'OK'
+      Default = True
+      ModalResult = 1
+      TabOrder = 1
+    end
+  end
+end
