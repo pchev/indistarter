@@ -35,27 +35,36 @@ object f_main: Tf_main
     ClientWidth = 294
     TabOrder = 1
     object BtnAdd: TButton
-      Left = 8
+      Left = 4
       Height = 25
       Top = 8
-      Width = 91
+      Width = 85
       Caption = 'Add driver'
       OnClick = BtnAddClick
       TabOrder = 0
     end
     object Image1: TImage
-      Left = 120
+      Left = 162
       Height = 16
       Top = 13
       Width = 16
     end
-    object Label1: TLabel
-      Left = 145
+    object LabelStatus: TLabel
+      Left = 187
       Height = 15
       Top = 13
-      Width = 41
-      Caption = 'Label1'
+      Width = 96
+      Caption = '                        '
       ParentColor = False
+    end
+    object BtnStartStop: TButton
+      Left = 96
+      Height = 25
+      Top = 8
+      Width = 60
+      Caption = 'Start'
+      OnClick = BtnStartStopClick
+      TabOrder = 1
     end
   end
   object MainMenu1: TMainMenu
