@@ -45,6 +45,7 @@ type
     MenuHelp: TMenuItem;
     MenuAbout: TMenuItem;
     MenuEditName: TMenuItem;
+    MenuSetup2: TMenuItem;
     MenuSetup: TMenuItem;
     MenuRestartDevice: TMenuItem;
     MenuStopDevice: TMenuItem;

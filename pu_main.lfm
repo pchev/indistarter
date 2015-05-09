@@ -90,7 +90,10 @@ object f_main: Tf_main
     end
     object MenuSetup: TMenuItem
       Caption = '&Setup'
-      OnClick = MenuSetupClick
+      object MenuSetup2: TMenuItem
+        Caption = 'Setup panel'
+        OnClick = MenuSetupClick
+      end
     end
     object MenuHelp: TMenuItem
       Caption = '&Help'
