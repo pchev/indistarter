@@ -1,10 +1,10 @@
 object f_setup: Tf_setup
   Left = 406
-  Height = 175
+  Height = 237
   Top = 147
   Width = 319
   Caption = 'Setup'
-  ClientHeight = 175
+  ClientHeight = 237
   ClientWidth = 319
   LCLVersion = '1.4.0.4'
   object Label1: TLabel
@@ -16,17 +16,17 @@ object f_setup: Tf_setup
     ParentColor = False
   end
   object autostart: TCheckBox
-    Left = 8
+    Left = 11
     Height = 24
-    Top = 78
+    Top = 130
     Width = 287
     Caption = 'Autostart the server with last used profile'
     TabOrder = 1
   end
   object Button1: TButton
-    Left = 227
+    Left = 224
     Height = 25
-    Top = 144
+    Top = 200
     Width = 75
     Caption = 'OK'
     Default = True
@@ -49,9 +49,9 @@ object f_setup: Tf_setup
     TabOrder = 0
   end
   object stayontop: TCheckBox
-    Left = 8
+    Left = 11
     Height = 24
-    Top = 109
+    Top = 161
     Width = 260
     Caption = 'Keep the server window always visible'
     TabOrder = 2
@@ -59,11 +59,30 @@ object f_setup: Tf_setup
   object Button2: TButton
     Left = 128
     Height = 25
-    Top = 144
+    Top = 200
     Width = 75
     Cancel = True
     Caption = 'Cancel'
     ModalResult = 2
     TabOrder = 4
+  end
+  object serveroptions: TEdit
+    Left = 11
+    Height = 21
+    Hint = 'Do not add driver here, and do not use the -f option!'#10'Valid options:'#10' -l d     : log driver messages to <d>/YYYY-MM-DD.islog'#10' -m m  : kill client if gets more than this many MB behind, default 64'#10' -p p    : alternate IP port, default 7624'#10' -v       : show key events, no traffic'#10' -vv      : -v + key message content'#10' -vvv    : -vv + complete xml'
+    Top = 94
+    Width = 255
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 5
+  end
+  object Label2: TLabel
+    Left = 16
+    Height = 15
+    Top = 74
+    Width = 160
+    Caption = 'Additional server options:'
+    ParentColor = False
+    ParentShowHint = False
   end
 end

@@ -37,6 +37,8 @@ type
     autostart: TCheckBox;
     Button1: TButton;
     Button2: TButton;
+    serveroptions: TEdit;
+    Label2: TLabel;
     stayontop: TCheckBox;
     devlist: TFileNameEdit;
     Label1: TLabel;

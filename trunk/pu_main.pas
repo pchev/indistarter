@@ -35,9 +35,10 @@ type
 
   Tf_main = class(TForm)
     BtnAdd: TButton;
+    BtnStartStop: TButton;
     Image1: TImage;
     ImageList1: TImageList;
-    Label1: TLabel;
+    LabelStatus: TLabel;
     MainMenu1: TMainMenu;
     MenuFile: TMenuItem;
     MenuItem1: TMenuItem;
@@ -56,6 +57,7 @@ type
     StringGrid1: TStringGrid;
     StatusTimer: TTimer;
     procedure BtnAddClick(Sender: TObject);
+    procedure BtnStartStopClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -77,7 +79,7 @@ type
   private
     { private declarations }
     config: TXMLConfig;
-    ConfigDir,configfile,devlist: string;
+    ConfigDir,configfile,devlist,serveroptions: string;
     autostart,stayontop: boolean;
     ServerFifo: string;
     ServerProcess: TProcess;
@@ -120,7 +122,7 @@ begin
   UniqueInstance1.Enabled:=true;
   UniqueInstance1.Loaded;
 
-  ServerFifo:='/tmp/IndiStarter.fifo';
+  ServerFifo:=slash(GetTempDir(true))+'IndiStarter.fifo';
   ClearGrid;
   ConfigExtension:= '.conf';
   config:=TXMLConfig.Create(self);
@@ -133,6 +135,7 @@ begin
   devlist:=slash(ConfigDir)+ChangeFileExt(configfile,'.devices');
   devlist:=config.GetValue('/Devices/List',devlist);
   autostart:=config.GetValue('/Server/Autostart',false);
+  serveroptions:=config.GetValue('/Server/Options','');
   stayontop:=config.GetValue('/Window/StayOnTop',true);
   if FileExistsUTF8(devlist) then StringGrid1.LoadFromCSVFile(devlist);
   if autostart then StartServer;
@@ -187,6 +190,7 @@ begin
   StringGrid1.SaveToCSVFile(devlist);
   config.SetValue('/Devices/List',devlist);
   config.SetValue('/Server/Autostart',autostart);
+  config.SetValue('/Server/Options',serveroptions);
   config.SetValue('/Window/StayOnTop',stayontop);
   config.Flush;
 end;
@@ -215,6 +219,7 @@ begin
   f_setup.devlist.DefaultExt:='.devices';
   f_setup.devlist.InitialDir:=ConfigDir;
   f_setup.devlist.FileName:=devlist;
+  f_setup.serveroptions.Text:=serveroptions;
   f_setup.autostart.Checked:=autostart;
   f_setup.stayontop.Checked:=stayontop;
   FormPos(f_setup,Mouse.CursorPos.X,Mouse.CursorPos.Y);
@@ -228,6 +233,7 @@ begin
          ClearGrid;
     end;
     autostart := f_setup.autostart.Checked;
+    serveroptions := f_setup.serveroptions.Text;
     stayontop := f_setup.stayontop.Checked;
     if (stayontop<>savestayontop) then begin
       if stayontop then FormStyle:=fsStayOnTop else FormStyle:=fsNormal;
@@ -245,6 +251,16 @@ begin
   Close;
 end;
 
+procedure Tf_main.BtnStartStopClick(Sender: TObject);
+begin
+ if BtnStartStop.Caption='Start' then begin
+    StartServer;
+ end else begin
+    if MessageDlg('Stop INDI server','Do you want to stop the INDI server now?',mtConfirmation,mbYesNo,0)=mrYes then
+       StopServer;
+ end;
+
+end;
 
 procedure Tf_main.MenuRestartServerClick(Sender: TObject);
 begin
@@ -469,7 +485,7 @@ begin
      str:=TStringList.Create;
      DeleteFile(ServerFifo);
      if (ExecProcess('mkfifo '+ServerFifo,str)=0) then begin
-        ServerProcess:=ExecProcessNoWait('indiserver -f '+ServerFifo);
+        ServerProcess:=ExecProcessNoWait('indiserver '+serveroptions+' -f '+ServerFifo);
         Wait(1);
         if StringGrid1.RowCount>1 then begin
            for i:=1 to StringGrid1.RowCount-1 do begin
@@ -509,13 +525,15 @@ begin
   if ServerProcess<>nil then begin
     if ServerProcess.Running then begin
        ImageList1.GetBitmap(1,image1.Picture.Bitmap);
-       Label1.Caption:='Server running';
+       BtnStartStop.Caption:='Stop';
+       LabelStatus.Caption:='Server running';
        MenuRestartServer.Caption:='&Restart server';
        MenuQuit.Caption:='&Minimize';
     end else begin
        ServerProcess:=nil;
        ImageList1.GetBitmap(0,image1.Picture.Bitmap);
-       Label1.Caption:='Server stopped';
+       BtnStartStop.Caption:='Start';
+       LabelStatus.Caption:='Server stopped';
        MenuRestartServer.Caption:='St&art server';
        MenuQuit.Caption:='&Quit';
     end;
@@ -529,7 +547,8 @@ begin
   end
   else begin
     ImageList1.GetBitmap(0,image1.Picture.Bitmap);
-    Label1.Caption:='Server stopped';
+    BtnStartStop.Caption:='Start';
+    LabelStatus.Caption:='Server stopped';
     MenuRestartServer.Caption:='St&art server';
     MenuQuit.Caption:='&Quit';
     for i:=1 to StringGrid1.RowCount-1 do begin
