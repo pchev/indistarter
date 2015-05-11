@@ -54,6 +54,7 @@ procedure SplitRec(buf,sep:string; var arg: TStringList);
 Procedure SplitCmd(S : String; List : TStringList);
 function Slash(nom : string) : string;
 Function sgn(x:Double):Double ;
+function ExecBG(cmd: string):integer;
 function ExecProcessNoWait(cmd: string):TProcess;
 Function ExecProcess(cmd: string; output: TStringList; ShowConsole:boolean=false): integer;
 procedure Wait(wait:integer=5);
@@ -206,6 +207,11 @@ if x<0 then
 else
    sgn:=  1 ;
 end ;
+
+function ExecBG(cmd: string):integer;
+begin
+  result:=fpSystem(cmd+' &');
+end;
 
 function ExecProcessNoWait(cmd: string):TProcess;
 var param: TStringList;

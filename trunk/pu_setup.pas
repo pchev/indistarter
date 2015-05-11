@@ -27,7 +27,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, EditBtn,
-  StdCtrls;
+  StdCtrls, ExtCtrls;
 
 type
 
@@ -37,11 +37,25 @@ type
     autostart: TCheckBox;
     Button1: TButton;
     Button2: TButton;
+    localport: TEdit;
+    Panel1: TPanel;
+    remoteport: TEdit;
+    Label3: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    Label6: TLabel;
+    Label7: TLabel;
+    remotehost: TEdit;
+    remoteuser: TEdit;
+    PanelRemote: TPanel;
+    remote: TCheckBox;
+    PanelBot: TPanel;
     serveroptions: TEdit;
     Label2: TLabel;
     stayontop: TCheckBox;
     devlist: TFileNameEdit;
     Label1: TLabel;
+    procedure remoteClick(Sender: TObject);
   private
     { private declarations }
   public
@@ -56,6 +70,13 @@ implementation
 {$R *.lfm}
 
 { Tf_setup }
+
+procedure Tf_setup.remoteClick(Sender: TObject);
+begin
+  PanelRemote.Visible:=remote.Checked;
+  AutoSize:=false;
+  AutoSize:=true;
+end;
 
 end.
 

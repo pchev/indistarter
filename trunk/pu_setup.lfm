@@ -1,88 +1,199 @@
 object f_setup: Tf_setup
   Left = 406
-  Height = 237
+  Height = 431
   Top = 147
-  Width = 319
+  Width = 349
+  AutoSize = True
   Caption = 'Setup'
-  ClientHeight = 237
-  ClientWidth = 319
+  ClientHeight = 431
+  ClientWidth = 349
   LCLVersion = '1.4.0.4'
-  object Label1: TLabel
-    Left = 16
-    Height = 15
-    Top = 16
-    Width = 99
-    Caption = 'Devices profile :'
-    ParentColor = False
-  end
-  object autostart: TCheckBox
-    Left = 11
-    Height = 24
-    Top = 130
-    Width = 287
-    Caption = 'Autostart the server with last used profile'
-    TabOrder = 1
-  end
-  object Button1: TButton
-    Left = 224
-    Height = 25
-    Top = 200
-    Width = 75
-    Caption = 'OK'
-    Default = True
-    ModalResult = 1
-    TabOrder = 3
-  end
-  object devlist: TFileNameEdit
-    Left = 11
-    Height = 21
-    Top = 40
-    Width = 283
-    DialogTitle = 'Select file name'
-    DialogOptions = [ofCreatePrompt, ofEnableSizing, ofViewDetail]
-    Filter = 'devices|*.devices'
-    FilterIndex = 0
-    HideDirectories = False
-    ButtonWidth = 23
-    NumGlyphs = 1
-    MaxLength = 0
+  object PanelBot: TPanel
+    Left = 0
+    Height = 41
+    Top = 378
+    Width = 349
+    Align = alTop
+    ClientHeight = 41
+    ClientWidth = 349
     TabOrder = 0
+    object Button1: TButton
+      Left = 195
+      Height = 25
+      Top = 8
+      Width = 75
+      Caption = 'OK'
+      Default = True
+      ModalResult = 1
+      TabOrder = 0
+    end
+    object Button2: TButton
+      Left = 99
+      Height = 25
+      Top = 8
+      Width = 75
+      Cancel = True
+      Caption = 'Cancel'
+      ModalResult = 2
+      TabOrder = 1
+    end
   end
-  object stayontop: TCheckBox
-    Left = 11
-    Height = 24
-    Top = 161
-    Width = 260
-    Caption = 'Keep the server window always visible'
+  object PanelRemote: TPanel
+    Left = 0
+    Height = 136
+    Top = 242
+    Width = 349
+    Align = alTop
+    ClientHeight = 136
+    ClientWidth = 349
+    TabOrder = 1
+    Visible = False
+    object remotehost: TEdit
+      Left = 8
+      Height = 21
+      Top = 24
+      Width = 201
+      TabOrder = 0
+    end
+    object remoteuser: TEdit
+      Left = 228
+      Height = 21
+      Top = 24
+      Width = 80
+      TabOrder = 1
+    end
+    object Label3: TLabel
+      Left = 8
+      Height = 15
+      Top = 4
+      Width = 118
+      Caption = 'Remote host name'
+      ParentColor = False
+    end
+    object Label4: TLabel
+      Left = 228
+      Height = 15
+      Top = 4
+      Width = 68
+      Caption = 'User name'
+      ParentColor = False
+    end
+    object Label5: TLabel
+      Left = 8
+      Height = 29
+      Top = 96
+      Width = 300
+      AutoSize = False
+      Caption = 'You must configure ssh key-based authentication for username on hostname.'
+      ParentColor = False
+      WordWrap = True
+    end
+    object localport: TEdit
+      Left = 88
+      Height = 21
+      Top = 64
+      Width = 54
+      TabOrder = 2
+    end
+    object remoteport: TEdit
+      Left = 254
+      Height = 21
+      Top = 64
+      Width = 54
+      TabOrder = 3
+    end
+    object Label6: TLabel
+      Left = 8
+      Height = 15
+      Top = 68
+      Width = 62
+      Caption = 'Local port'
+      ParentColor = False
+    end
+    object Label7: TLabel
+      Left = 160
+      Height = 15
+      Top = 68
+      Width = 77
+      Caption = 'Remote port'
+      ParentColor = False
+    end
+  end
+  object Panel1: TPanel
+    Left = 0
+    Height = 242
+    Top = 0
+    Width = 349
+    Align = alTop
+    ClientHeight = 242
+    ClientWidth = 349
     TabOrder = 2
-  end
-  object Button2: TButton
-    Left = 128
-    Height = 25
-    Top = 200
-    Width = 75
-    Cancel = True
-    Caption = 'Cancel'
-    ModalResult = 2
-    TabOrder = 4
-  end
-  object serveroptions: TEdit
-    Left = 11
-    Height = 21
-    Hint = 'Do not add driver here, and do not use the -f option!'#10'Valid options:'#10' -l d     : log driver messages to <d>/YYYY-MM-DD.islog'#10' -m m  : kill client if gets more than this many MB behind, default 64'#10' -p p    : alternate IP port, default 7624'#10' -v       : show key events, no traffic'#10' -vv      : -v + key message content'#10' -vvv    : -vv + complete xml'
-    Top = 94
-    Width = 255
-    ParentShowHint = False
-    ShowHint = True
-    TabOrder = 5
-  end
-  object Label2: TLabel
-    Left = 16
-    Height = 15
-    Top = 74
-    Width = 160
-    Caption = 'Additional server options:'
-    ParentColor = False
-    ParentShowHint = False
+    object remote: TCheckBox
+      Left = 11
+      Height = 24
+      Top = 200
+      Width = 267
+      Caption = 'Start indiserver on a remote computer'
+      OnClick = remoteClick
+      TabOrder = 0
+    end
+    object Label2: TLabel
+      Left = 16
+      Height = 15
+      Top = 74
+      Width = 160
+      Caption = 'Additional server options:'
+      ParentColor = False
+      ParentShowHint = False
+    end
+    object serveroptions: TEdit
+      Left = 11
+      Height = 21
+      Hint = 'Do not add driver here, and do not use the -f option!'#10'Valid options:'#10' -l d     : log driver messages to <d>/YYYY-MM-DD.islog'#10' -m m  : kill client if gets more than this many MB behind, default 64'#10' -p p    : alternate IP port, default 7624'#10' -v       : show key events, no traffic'#10' -vv      : -v + key message content'#10' -vvv    : -vv + complete xml'
+      Top = 94
+      Width = 297
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 1
+    end
+    object stayontop: TCheckBox
+      Left = 11
+      Height = 24
+      Top = 161
+      Width = 260
+      Caption = 'Keep the server window always visible'
+      TabOrder = 2
+    end
+    object devlist: TFileNameEdit
+      Left = 11
+      Height = 21
+      Top = 40
+      Width = 297
+      DialogTitle = 'Select file name'
+      DialogOptions = [ofCreatePrompt, ofEnableSizing, ofViewDetail]
+      Filter = 'devices|*.devices'
+      FilterIndex = 0
+      HideDirectories = False
+      ButtonWidth = 23
+      NumGlyphs = 1
+      MaxLength = 0
+      TabOrder = 3
+    end
+    object autostart: TCheckBox
+      Left = 11
+      Height = 24
+      Top = 130
+      Width = 287
+      Caption = 'Autostart the server with last used profile'
+      TabOrder = 4
+    end
+    object Label1: TLabel
+      Left = 16
+      Height = 15
+      Top = 16
+      Width = 99
+      Caption = 'Devices profile :'
+      ParentColor = False
+    end
   end
 end

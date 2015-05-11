@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 interface
 
 uses pu_devlist, pu_setup, u_utils, UniqueInstance, XMLConf, process,
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ColorBox,
+  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs,
   ComCtrls, StdCtrls, Grids, ExtCtrls, ActnList, Menus;
 
 type
@@ -79,11 +79,12 @@ type
     procedure StatusTimerTimer(Sender: TObject);
   private
     { private declarations }
+    TunnelProcess: TProcess;
     config: TXMLConfig;
     ConfigDir,configfile,devlist,serveroptions: string;
-    autostart,stayontop: boolean;
+    RemoteHost,RemoteUser,LocalPort,RemotePort,sshopt: string;
+    autostart,stayontop,remote: boolean;
     ServerFifo: string;
-    ServerProcess: TProcess;
     CurrentCol, CurrentRow: integer;
     UniqueInstance1: TCdCUniqueInstance;
     procedure OtherInstance(Sender : TObject; ParamCount: Integer; Parameters: array of String);
@@ -91,12 +92,17 @@ type
     procedure ClearGrid;
     procedure SaveConfig;
     function  WriteCmd(cmd:string): boolean;
+    procedure ShowErr(msg:string; str:TStringList);
     procedure CheckDuplicateDevice(dev: Tdevicenode);
     procedure EditDeviceName(r: integer);
     procedure StartDevice(r:integer);
     procedure StopDevice(r:integer);
     procedure StartServer;
     procedure StopServer;
+    procedure StartTunnel;
+    procedure StopTunnel;
+    function  ServerPid: string;
+    function  DriverPid(drv:string): string;
     procedure Status;
   public
     { public declarations }
@@ -123,6 +129,7 @@ begin
   UniqueInstance1.Enabled:=true;
   UniqueInstance1.Loaded;
 
+  sshopt:=' -oBatchMode=yes -oConnectTimeout=10 ';
   ServerFifo:=slash(GetTempDir(true))+'IndiStarter.fifo';
   ClearGrid;
   ConfigExtension:= '.conf';
@@ -137,6 +144,11 @@ begin
   devlist:=config.GetValue('/Devices/List',devlist);
   autostart:=config.GetValue('/Server/Autostart',false);
   serveroptions:=config.GetValue('/Server/Options','');
+  remote:=config.GetValue('/Server/Remote',false);
+  RemoteHost:=config.GetValue('/RemoteServer/Host','');
+  RemoteUser:=config.GetValue('/RemoteServer/User','');
+  LocalPort:=config.GetValue('/RemoteServer/LocalPort','7624');
+  RemotePort:=config.GetValue('/RemoteServer/RemotePort','7624');
   stayontop:=config.GetValue('/Window/StayOnTop',true);
   if FileExistsUTF8(devlist) then StringGrid1.LoadFromCSVFile(devlist);
   if autostart then StartServer;
@@ -156,8 +168,7 @@ end;
 
 procedure Tf_main.FormDestroy(Sender: TObject);
 begin
-  if (ServerProcess<>nil) and ServerProcess.Running then
-        ServerProcess.Terminate(0);
+  if ServerPid<>'' then StopServer;
 end;
 
 procedure Tf_main.MenuAboutClick(Sender: TObject);
@@ -178,7 +189,7 @@ end;
 
 procedure Tf_main.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  if ServerProcess=nil then begin
+  if ServerPid='' then begin
      SaveConfig;
      CloseAction:=caFree;
   end else begin
@@ -192,6 +203,11 @@ begin
   config.SetValue('/Devices/List',devlist);
   config.SetValue('/Server/Autostart',autostart);
   config.SetValue('/Server/Options',serveroptions);
+  config.SetValue('/Server/Remote',remote);
+  config.SetValue('/RemoteServer/Host',RemoteHost);
+  config.SetValue('/RemoteServer/User',RemoteUser);
+  config.SetValue('/RemoteServer/LocalPort',LocalPort);
+  config.SetValue('/RemoteServer/RemotePort',RemotePort);
   config.SetValue('/Window/StayOnTop',stayontop);
   config.Flush;
 end;
@@ -213,7 +229,7 @@ procedure Tf_main.MenuSetupClick(Sender: TObject);
 var savedevlist: string;
   savestayontop:boolean;
 begin
- if ServerProcess=nil then begin
+ if ServerPid='' then begin
   SaveConfig;
   savedevlist:=devlist;
   savestayontop:=stayontop;
@@ -223,6 +239,12 @@ begin
   f_setup.serveroptions.Text:=serveroptions;
   f_setup.autostart.Checked:=autostart;
   f_setup.stayontop.Checked:=stayontop;
+  f_setup.remote.Checked:=remote;
+  f_setup.remotehost.Text:=RemoteHost;
+  f_setup.remoteuser.Text:=RemoteUser;
+  f_setup.localport.Text:=LocalPort;
+  f_setup.remoteport.Text:=RemotePort;
+  f_setup.PanelRemote.Visible:=remote;
   FormPos(f_setup,Mouse.CursorPos.X,Mouse.CursorPos.Y);
   f_setup.ShowModal;
   if f_setup.ModalResult=mrOK then begin
@@ -235,6 +257,11 @@ begin
     end;
     autostart := f_setup.autostart.Checked;
     serveroptions := f_setup.serveroptions.Text;
+    remote     := f_setup.remote.Checked;
+    RemoteHost := f_setup.remotehost.Text;
+    RemoteUser := f_setup.remoteuser.Text;
+    LocalPort  := f_setup.localport.Text;
+    RemotePort := f_setup.remoteport.Text;
     stayontop := f_setup.stayontop.Checked;
     if (stayontop<>savestayontop) then begin
       if stayontop then FormStyle:=fsStayOnTop else FormStyle:=fsNormal;
@@ -313,7 +340,7 @@ end;
 
 procedure Tf_main.PopupMenu1Popup(Sender: TObject);
 begin
- if ServerProcess=nil then begin
+ if ServerPid='' then begin
     MenuRestartDevice.Caption:='Start server';
  end
  else begin
@@ -333,7 +360,7 @@ procedure Tf_main.MenuRestartDeviceClick(Sender: TObject);
 begin
   try
   Screen.Cursor:=crHourGlass;
-  if ServerProcess=nil then
+  if ServerPid='' then
      StartServer
   else
      StopDevice(CurrentRow);
@@ -373,7 +400,7 @@ begin
             StringGrid1.Cells[1,r]:=dev.GroupName;
             StringGrid1.Cells[2,r]:=dev.DevLbl;
             StringGrid1.Cells[3,r]:=dev.Drv;
-            if ServerProcess<>nil then StartDevice(r);
+            if ServerPid<>'' then StartDevice(r);
          end;
       end;
       StringGrid1.SaveToCSVFile(devlist);
@@ -444,6 +471,15 @@ begin
  end;
 end;
 
+procedure Tf_main.ShowErr(msg:string; str:TStringList);
+var buf: string;
+    i:integer;
+begin
+  buf:=msg+crlf;
+  for i:=0 to str.Count-1 do buf:=buf+str[i]+crlf;
+  ShowMessage(buf);
+end;
+
 procedure Tf_main.StartDevice(r:integer);
 var drv,devname,buf: string;
 begin
@@ -470,33 +506,58 @@ end;
 
 function Tf_main.WriteCmd(cmd:string): boolean;
 var f: textfile;
+    str:TStringList;
 begin
-  AssignFile(f,ServerFifo);
-  Rewrite(f);
-  Writeln(f,cmd);
-  CloseFile(f);
+ if ServerPid<>'' then begin
+  if remote then begin
+    str:=TStringList.Create;
+    ExecProcess('ssh '+sshopt+RemoteUser+'@'+RemoteHost+' echo '+cmd+'>'+ServerFifo,str);
+    str.Free;
+  end
+  else begin
+    AssignFile(f,ServerFifo);
+    Rewrite(f);
+    Writeln(f,cmd);
+    CloseFile(f);
+  end;
+  result:=true
+ end
+ else
+   result:=false;
 end;
 
 procedure Tf_main.StartServer;
 var str:TStringList;
     buf:string;
-    i:integer;
+    i,r:integer;
 begin
-  if ServerProcess=nil then begin
+  if ServerPid='' then begin
      str:=TStringList.Create;
-     DeleteFile(ServerFifo);
-     if (ExecProcess('mkfifo '+ServerFifo,str)=0) then begin
-        ServerProcess:=ExecProcessNoWait('indiserver '+serveroptions+' -f '+ServerFifo);
+     if remote then begin
+        ExecProcess('ssh '+sshopt+RemoteUser+'@'+RemoteHost+' rm '+ServerFifo,str);
+        if ExecProcess('ssh '+sshopt+RemoteUser+'@'+RemoteHost+' mkfifo '+ServerFifo,str)<>0 then begin ShowErr(RemoteUser+'@'+RemoteHost+' mkfifo '+ServerFifo,str);exit;end;
+        if ExecProcess('ssh '+sshopt+RemoteUser+'@'+RemoteHost+' "sh -c ''nohup indiserver '+serveroptions+' -f '+ServerFifo+' >/dev/null 2>&1 &''"',str)<>0 then begin ShowErr(RemoteUser+'@'+RemoteHost+' indiserver',str);exit;end;
         Wait(1);
         if StringGrid1.RowCount>1 then begin
            for i:=1 to StringGrid1.RowCount-1 do begin
               StartDevice(i);
            end;
         end;
-     end else begin
-        buf:='Cannot create FIFO!'+crlf;
-        for i:=0 to str.Count-1 do buf:=buf+str[i]+crlf;
-        ShowMessage(buf);
+        StartTunnel;
+     end
+     else begin
+       DeleteFile(ServerFifo);
+       if (ExecProcess('mkfifo '+ServerFifo,str)=0) then begin
+          r:=ExecBG('indiserver '+serveroptions+' -f '+ServerFifo);
+          Wait(1);
+          if StringGrid1.RowCount>1 then begin
+             for i:=1 to StringGrid1.RowCount-1 do begin
+                StartDevice(i);
+             end;
+          end;
+       end else begin
+          ShowErr('Cannot create FIFO!',str);
+       end;
      end;
      str.free;
   end;
@@ -505,56 +566,118 @@ end;
 
 procedure Tf_main.StopServer;
 var i:integer;
+    str:TStringList;
 begin
-  if ServerProcess<>nil then begin
-     if ServerProcess.Running then
-        ServerProcess.Terminate(0);
-     FreeAndNil(ServerProcess);
-     for i:=1 to StringGrid1.RowCount-1 do begin
-        StringGrid1.Cells[0,i]:='';
+  if ServerPid<>'' then begin
+     str:=TStringList.Create;
+     if remote then begin
+        StopTunnel;
+        ExecProcess('ssh '+sshopt+RemoteUser+'@'+RemoteHost+' killall indiserver ',str);
+        ExecProcess('ssh '+sshopt+RemoteUser+'@'+RemoteHost+' rm '+ServerFifo,str);
+     end
+     else begin
+        ExecProcess('killall indiserver',str);
+        DeleteFile(ServerFifo);
+        for i:=1 to StringGrid1.RowCount-1 do begin
+           StringGrid1.Cells[0,i]:='';
+        end;
+     end;
+     str.free;
+  end;
+end;
+
+procedure Tf_main.StartTunnel;
+begin
+  if remote then begin
+     TunnelProcess:=ExecProcessNoWait('ssh '+sshopt+' -N -L'+LocalPort+':'+RemoteHost+':'+RemotePort+' '+RemoteUser+'@'+RemoteHost);
+  end;
+end;
+
+procedure Tf_main.StopTunnel;
+begin
+  if remote then begin
+     if (TunnelProcess<>nil) and TunnelProcess.Running then begin
+       TunnelProcess.Terminate(0);
+       FreeAndNil(TunnelProcess);
      end;
   end;
-  DeleteFile(ServerFifo);
-  Status;
+end;
+
+function  Tf_main.ServerPid: string;
+var str: TStringList;
+    i: integer;
+begin
+  str:=TStringList.Create;
+  if remote then begin
+    i:=ExecProcess('ssh '+sshopt+RemoteUser+'@'+RemoteHost+' pgrep indiserver',str);
+  end
+  else begin
+     i:=ExecProcess('pgrep indiserver',str);
+  end;
+  if (i=0)and(str.Count>0) then
+     result:=str[0]
+  else
+     result:='';
+  str.Free;
+end;
+
+function  Tf_main.DriverPid(drv:string): string;
+var str: TStringList;
+    i,j: integer;
+begin
+  str:=TStringList.Create;
+  if remote then begin
+    // must use -f because driver are more than 15 char, but need to remove the ssh result
+    i:=ExecProcess('ssh '+sshopt+RemoteUser+'@'+RemoteHost+' pgrep -lf '+drv,str);
+    if i=0 then begin
+      for j:=str.Count-1 downto 0 do begin
+        if pos('ssh',str[i])>0 then begin
+          str.Delete(i);
+        end;
+      end;
+      if str.Count=0 then i:=1;
+    end;
+  end
+  else begin
+     i:=ExecProcess('pgrep -f '+drv,str);
+  end;
+  if (i=0)and(str.Count>0) then
+     result:=str[0]
+  else
+     result:='';
+  str.Free;
 end;
 
 procedure Tf_main.Status;
-var buf: string;
-    str: TStringList;
+var str: TStringList;
     i: integer;
 begin
-  if ServerProcess<>nil then begin
-    if ServerProcess.Running then begin
-       ImageList1.GetBitmap(1,image1.Picture.Bitmap);
-       BtnStartStop.Caption:='Stop';
-       LabelStatus.Caption:='Server running';
-       MenuRestartServer.Caption:='&Restart server';
-       MenuQuit.Caption:='&Minimize';
-    end else begin
-       ServerProcess:=nil;
-       ImageList1.GetBitmap(0,image1.Picture.Bitmap);
-       BtnStartStop.Caption:='Start';
-       LabelStatus.Caption:='Server stopped';
-       MenuRestartServer.Caption:='St&art server';
-       MenuQuit.Caption:='&Quit';
-    end;
+  if ServerPid<>'' then begin
+    ImageList1.GetBitmap(1,image1.Picture.Bitmap);
+    BtnStartStop.Caption:='Stop';
+    if remote then
+      LabelStatus.Caption:='Server running on '+RemoteHost
+    else
+      LabelStatus.Caption:='Server running';
+    MenuRestartServer.Caption:='&Restart server';
+    MenuQuit.Caption:='&Minimize';
     str:=TStringList.Create;
     for i:=1 to StringGrid1.RowCount-1 do begin
-       if (i<StringGrid1.RowCount)and (ExecProcess('pgrep -f '+StringGrid1.Cells[3,i],str)=0)
+       if (i<StringGrid1.RowCount)and (DriverPid(StringGrid1.Cells[3,i])<>'')
           then StringGrid1.Cells[0,i]:='1'
           else StringGrid1.Cells[0,i]:='';
     end;
     str.Free;
   end
   else begin
-    ImageList1.GetBitmap(0,image1.Picture.Bitmap);
-    BtnStartStop.Caption:='Start';
-    LabelStatus.Caption:='Server stopped';
-    MenuRestartServer.Caption:='St&art server';
-    MenuQuit.Caption:='&Quit';
-    for i:=1 to StringGrid1.RowCount-1 do begin
-       StringGrid1.Cells[0,i]:='';
-    end;
+     ImageList1.GetBitmap(0,image1.Picture.Bitmap);
+     BtnStartStop.Caption:='Start';
+     LabelStatus.Caption:='Server stopped';
+     MenuRestartServer.Caption:='St&art server';
+     MenuQuit.Caption:='&Quit';
+     for i:=1 to StringGrid1.RowCount-1 do begin
+        StringGrid1.Cells[0,i]:='';
+     end;
   end;
 end;
 
