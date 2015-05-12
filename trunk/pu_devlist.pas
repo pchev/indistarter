@@ -132,6 +132,7 @@ begin
   end;
   s.Free;
   Doc.Free;
+  TreeView1.SortType:=stText;
 end;
 
 procedure Tf_devlist.processGroup(Node: TDOMNode);

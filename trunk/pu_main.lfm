@@ -93,7 +93,7 @@ object f_main: Tf_main
     object MenuSetup: TMenuItem
       Caption = '&Setup'
       object MenuSetup2: TMenuItem
-        Caption = 'Setup panel'
+        Caption = 'Configuration'
         OnClick = MenuSetupClick
       end
     end
