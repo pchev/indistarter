@@ -83,7 +83,7 @@ type
     config: TXMLConfig;
     ConfigDir,configfile,devlist,serveroptions: string;
     RemoteHost,RemoteUser,LocalPort,RemotePort,sshopt: string;
-    autostart,stayontop,remote: boolean;
+    autostart,stayontop,remote,ServerStarted: boolean;
     ServerFifo: string;
     CurrentCol, CurrentRow: integer;
     UniqueInstance1: TCdCUniqueInstance;
@@ -122,6 +122,7 @@ var i:integer;
 begin
   DefaultFormatSettings.DecimalSeparator:='.';
   DefaultFormatSettings.TimeSeparator:=':';
+  ServerStarted:=false;
   UniqueInstance1:=TCdCUniqueInstance.Create(self);
   UniqueInstance1.Identifier:='IndiStarter';
   UniqueInstance1.OnOtherInstance:=@OtherInstance;
@@ -512,6 +513,7 @@ begin
   if remote then begin
     str:=TStringList.Create;
     ExecProcess('ssh '+sshopt+RemoteUser+'@'+RemoteHost+' echo '+cmd+'>'+ServerFifo,str);
+    result:=true;
     str.Free;
   end
   else begin
@@ -519,8 +521,8 @@ begin
     Rewrite(f);
     Writeln(f,cmd);
     CloseFile(f);
+    result:=true;
   end;
-  result:=true
  end
  else
    result:=false;
@@ -531,6 +533,8 @@ var str:TStringList;
     buf:string;
     i,r:integer;
 begin
+try
+StatusTimer.Enabled:=false;
   if ServerPid='' then begin
      str:=TStringList.Create;
      if remote then begin
@@ -538,6 +542,7 @@ begin
         if ExecProcess('ssh '+sshopt+RemoteUser+'@'+RemoteHost+' mkfifo '+ServerFifo,str)<>0 then begin ShowErr(RemoteUser+'@'+RemoteHost+' mkfifo '+ServerFifo,str);exit;end;
         if ExecProcess('ssh '+sshopt+RemoteUser+'@'+RemoteHost+' "sh -c ''nohup indiserver '+serveroptions+' -f '+ServerFifo+' >/dev/null 2>&1 &''"',str)<>0 then begin ShowErr(RemoteUser+'@'+RemoteHost+' indiserver',str);exit;end;
         Wait(1);
+        ServerStarted:=true;
         if StringGrid1.RowCount>1 then begin
            for i:=1 to StringGrid1.RowCount-1 do begin
               StartDevice(i);
@@ -550,6 +555,7 @@ begin
        if (ExecProcess('mkfifo '+ServerFifo,str)=0) then begin
           r:=ExecBG('indiserver '+serveroptions+' -f '+ServerFifo);
           Wait(1);
+          ServerStarted:=true;
           if StringGrid1.RowCount>1 then begin
              for i:=1 to StringGrid1.RowCount-1 do begin
                 StartDevice(i);
@@ -557,11 +563,15 @@ begin
           end;
        end else begin
           ShowErr('Cannot create FIFO!',str);
+          exit;
        end;
      end;
      str.free;
   end;
   Status;
+finally
+  StatusTimer.Enabled:=true;
+end;
 end;
 
 procedure Tf_main.StopServer;
@@ -582,6 +592,7 @@ begin
            StringGrid1.Cells[0,i]:='';
         end;
      end;
+     ServerStarted:=false;
      str.free;
   end;
 end;
@@ -607,18 +618,21 @@ function  Tf_main.ServerPid: string;
 var str: TStringList;
     i: integer;
 begin
-  str:=TStringList.Create;
-  if remote then begin
-    i:=ExecProcess('ssh '+sshopt+RemoteUser+'@'+RemoteHost+' pgrep indiserver',str);
-  end
-  else begin
-     i:=ExecProcess('pgrep indiserver',str);
-  end;
-  if (i=0)and(str.Count>0) then
-     result:=str[0]
-  else
+  if ServerStarted then begin
+    str:=TStringList.Create;
+    if remote then begin
+      i:=ExecProcess('ssh '+sshopt+RemoteUser+'@'+RemoteHost+' pgrep indiserver',str);
+    end
+    else begin
+       i:=ExecProcess('pgrep indiserver',str);
+    end;
+    if (i=0)and(str.Count>0) then
+       result:=str[0]
+    else
+       result:='';
+    str.Free;
+  end else
      result:='';
-  str.Free;
 end;
 
 function  Tf_main.DriverPid(drv:string): string;
@@ -670,6 +684,13 @@ begin
     str.Free;
   end
   else begin
+     if remote then begin
+        StopTunnel;
+        ExecProcess('ssh '+sshopt+RemoteUser+'@'+RemoteHost+' rm '+ServerFifo,str);
+     end
+     else begin
+        DeleteFile(ServerFifo);
+     end;
      ImageList1.GetBitmap(0,image1.Picture.Bitmap);
      BtnStartStop.Caption:='Start';
      LabelStatus.Caption:='Server stopped';
