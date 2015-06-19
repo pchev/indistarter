@@ -122,7 +122,7 @@ var i:integer;
 begin
   DefaultFormatSettings.DecimalSeparator:='.';
   DefaultFormatSettings.TimeSeparator:=':';
-  ServerStarted:=false;
+  ServerStarted:=true; // to check if the server is already started
   UniqueInstance1:=TCdCUniqueInstance.Create(self);
   UniqueInstance1.Identifier:='IndiStarter';
   UniqueInstance1.OnOtherInstance:=@OtherInstance;
@@ -354,7 +354,10 @@ end;
 
 procedure Tf_main.StatusTimerTimer(Sender: TObject);
 begin
+  StatusTimer.Enabled:=false;
   Status;
+  if remote then StatusTimer.Interval:=20000 else StatusTimer.Interval:=2000;
+  StatusTimer.Enabled:=true;
 end;
 
 procedure Tf_main.MenuRestartDeviceClick(Sender: TObject);
@@ -684,9 +687,12 @@ begin
     str.Free;
   end
   else begin
+     ServerStarted:=false;
      if remote then begin
+        str:=TStringList.Create;
         StopTunnel;
         ExecProcess('ssh '+sshopt+RemoteUser+'@'+RemoteHost+' rm '+ServerFifo,str);
+        str.Free;
      end
      else begin
         DeleteFile(ServerFifo);
