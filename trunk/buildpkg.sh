@@ -12,11 +12,14 @@ arch=$(arch)
 unset extratarget
 
 unset make_linux32
-make_linux32=1
 unset make_linux64
+
+if [[ $arch == i686 ]]; then 
+   make_linux32=1
+fi
 if [[ $arch == x86_64 ]]; then 
    make_linux64=1
-   extratarget=",x86_64-linux"   
+   extratarget=",x86_64-linux"
 fi
 
 if [[ -n $1 ]]; then
