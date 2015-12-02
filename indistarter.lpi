@@ -61,7 +61,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="4">
+    <Units Count="5">
       <Unit0>
         <Filename Value="indistarter.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -80,6 +80,7 @@
         <ComponentName Value="f_devlist"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <UnitName Value="pu_devlist"/>
       </Unit2>
       <Unit3>
         <Filename Value="pu_setup.pas"/>
@@ -89,6 +90,11 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="pu_setup"/>
       </Unit3>
+      <Unit4>
+        <Filename Value="u_utils.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="u_utils"/>
+      </Unit4>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
