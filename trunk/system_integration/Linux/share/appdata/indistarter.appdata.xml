@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <application>
  <id type="desktop">indistarter.desktop</id>
- <licence>CC0</licence>
+ <metadata_license>CC0-1.0</metadata_license>
+ <project_license>GPL-3.0</project_license>
+ <name>Indistarter</name>
+ <summary>A simple program to control an INDI server</summary>
  <description>
   <p>
    Indistarter is a simple program to run a INDI server.
-   You can configure different profile for your astronomical equipment.  
- </p>
+  </p>
+  <p>
+   It can be used to start and stop the server and to 
+   configure different profile for your astronomical equipment.  
+  </p>
  </description>
  <screenshots>
-  <screenshot type="default" width="800" height="600">https://a.fsdn.com/con/app/proj/indistarter/screenshots/indistarter1.jpg</screenshot>
+     <screenshot type="default">
+         <image>https://a.fsdn.com/con/app/proj/indistarter/screenshots/indistarter1.jpg</image>
+         <caption>The main window of Indistarter</caption>
+     </screenshot>
  </screenshots>
  <url type="homepage">https://sourceforge.net/projects/indistarter/</url>
  <updatecontact>pch@ap-i.net</updatecontact>
