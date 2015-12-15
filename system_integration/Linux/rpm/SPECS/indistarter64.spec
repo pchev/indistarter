@@ -3,7 +3,7 @@ Name: indistarter
 Version: 3
 Release: 1
 Group: Sciences/Astronomy
-License: GPLv3
+License: GPLv3+
 URL: http://indistarter.sourceforge.net
 Packager: Patrick Chevalley
 BuildRoot: %_topdir/%{name}
