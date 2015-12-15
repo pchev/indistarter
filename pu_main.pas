@@ -490,7 +490,10 @@ begin
   if (r>0)and(r<StringGrid1.RowCount) then begin
      drv:=StringGrid1.Cells[3,r];
      devname:=StringGrid1.Cells[2,r];
-     buf:='start '+drv+' -n "'+devname+'"';
+     if remote then
+       buf:='start '+drv+' -n \"'+devname+'\"'
+     else
+       buf:='start '+drv+' -n "'+devname+'"';
      WriteCmd(buf);
      StringGrid1.Cells[0,r]:='1';
   end;
@@ -502,7 +505,10 @@ begin
   if (r>0)and(r<StringGrid1.RowCount) then begin
      drv:=StringGrid1.Cells[3,r];
      devname:=StringGrid1.Cells[2,r];
-     buf:='stop '+drv+' -n "'+devname+'"';
+     if remote then
+       buf:='stop '+drv+' -n \"'+devname+'\"'
+     else
+       buf:='stop '+drv+' -n "'+devname+'"';
      WriteCmd(buf);
      StringGrid1.Cells[0,r]:='';
   end;
