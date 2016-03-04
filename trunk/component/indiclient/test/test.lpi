@@ -5,10 +5,9 @@
     <General>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
-      <Title Value="indistarter"/>
+      <Title Value="test"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
-      <Icon Value="0"/>
     </General>
     <i18n>
       <EnableI18N LFM="False"/>
@@ -18,11 +17,11 @@
     </VersionInfo>
     <BuildModes Count="2">
       <Item1 Name="Default" Default="True"/>
-      <Item2 Name="memleak">
+      <Item2 Name="heaptrc">
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="indistarter"/>
+            <Filename Value="test"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -39,8 +38,7 @@
             </Options>
           </Linking>
           <Other>
-            <CustomOptions Value="-dUseCThreads 
--dUseHeapTrc"/>
+            <CustomOptions Value="-dUseCThreads -dUSEHEAPTRC"/>
           </Other>
         </CompilerOptions>
       </Item2>
@@ -58,48 +56,31 @@
         <PackageName Value="indiclient"/>
       </Item1>
       <Item2>
-        <PackageName Value="uniqueinstance_package"/>
+        <PackageName Value="LCL"/>
       </Item2>
       <Item3>
-        <PackageName Value="LCL"/>
+        <PackageName Value="FCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="5">
+    <Units Count="2">
       <Unit0>
-        <Filename Value="indistarter.lpr"/>
+        <Filename Value="test.lpr"/>
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
-        <Filename Value="pu_main.pas"/>
+        <Filename Value="test1.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="f_main"/>
+        <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <UnitName Value="test1"/>
       </Unit1>
-      <Unit2>
-        <Filename Value="pu_devlist.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="f_devlist"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit2>
-      <Unit3>
-        <Filename Value="pu_setup.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="f_setup"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit3>
-      <Unit4>
-        <Filename Value="u_utils.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit4>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
     <Target>
-      <Filename Value="indistarter"/>
+      <Filename Value="test"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>

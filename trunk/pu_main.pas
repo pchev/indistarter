@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 interface
 
-uses pu_devlist, pu_setup, u_utils, UniqueInstance, XMLConf, process,
+uses pu_devlist, pu_setup, u_utils, pu_indigui, UniqueInstance, XMLConf, process,
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs,
   ComCtrls, StdCtrls, Grids, ExtCtrls, ActnList, Menus;
 
@@ -36,7 +36,8 @@ type
   Tf_main = class(TForm)
     BtnAdd: TButton;
     BtnStartStop: TButton;
-    Image1: TImage;
+    ClientBtn: TButton;
+    led: TImage;
     ImageList1: TImageList;
     LabelStatus: TLabel;
     MainMenu1: TMainMenu;
@@ -59,6 +60,7 @@ type
     StatusTimer: TTimer;
     procedure BtnAddClick(Sender: TObject);
     procedure BtnStartStopClick(Sender: TObject);
+    procedure ClientBtnClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -79,11 +81,13 @@ type
     procedure StatusTimerTimer(Sender: TObject);
   private
     { private declarations }
+    f_indigui: Tf_indigui;
     TunnelProcess: TProcess;
     config: TXMLConfig;
     ConfigDir,configfile,devlist,serveroptions: string;
     RemoteHost,RemoteUser,LocalPort,RemotePort,sshopt: string;
     autostart,stayontop,remote,ServerStarted: boolean;
+    GUIready: boolean;
     ServerFifo: string;
     CurrentCol, CurrentRow: integer;
     UniqueInstance1: TCdCUniqueInstance;
@@ -104,6 +108,8 @@ type
     function  ServerPid: string;
     function  DriverPid(drv:string): string;
     procedure Status;
+    function GetServerPort: string;
+    procedure GUIdestroy(Sender: TObject);
   public
     { public declarations }
   end;
@@ -132,6 +138,7 @@ begin
 
   sshopt:=' -oBatchMode=yes -oConnectTimeout=10 ';
   ServerFifo:=slash(GetTempDir(true))+'IndiStarter.fifo';
+  ClientBtn.Enabled:=false;
   ClearGrid;
   ConfigExtension:= '.conf';
   config:=TXMLConfig.Create(self);
@@ -676,8 +683,9 @@ var str: TStringList;
     i: integer;
 begin
   if ServerPid<>'' then begin
-    ImageList1.GetBitmap(1,image1.Picture.Bitmap);
+    ImageList1.GetBitmap(1,led.Picture.Bitmap);
     BtnStartStop.Caption:='Stop';
+    ClientBtn.Enabled:=true;
     if remote then
       LabelStatus.Caption:='Server running on '+RemoteHost
     else
@@ -694,6 +702,7 @@ begin
   end
   else begin
      ServerStarted:=false;
+     ClientBtn.Enabled:=false;
      if remote then begin
         str:=TStringList.Create;
         StopTunnel;
@@ -703,7 +712,7 @@ begin
      else begin
         DeleteFile(ServerFifo);
      end;
-     ImageList1.GetBitmap(0,image1.Picture.Bitmap);
+     ImageList1.GetBitmap(0,led.Picture.Bitmap);
      BtnStartStop.Caption:='Start';
      LabelStatus.Caption:='Server stopped';
      MenuRestartServer.Caption:='St&art server';
@@ -712,6 +721,48 @@ begin
         StringGrid1.Cells[0,i]:='';
      end;
   end;
+end;
+
+function Tf_main.GetServerPort: string;
+var i: integer;
+    buf: string;
+begin
+ if remote then begin
+   result:=LocalPort;
+ end
+ else begin
+   i:=pos('-p',serveroptions);
+   if i<=0 then result:='7624'
+   else begin
+     buf:=serveroptions;
+     delete(buf,1,i+1);
+     i:=pos('-',buf);
+     if i>0 then begin
+       buf:=Copy(buf,1,i-1);
+     end;
+     result:=trim(buf);
+     if result='' then result:='7624';
+   end;
+ end;
+end;
+
+procedure Tf_main.ClientBtnClick(Sender: TObject);
+begin
+ if not GUIready then begin
+    f_indigui:=Tf_indigui.Create(self);
+    f_indigui.onDestroy:=@GUIdestroy;
+    f_indigui.IndiServer:='localhost';
+    f_indigui.IndiPort:=GetServerPort;
+    f_indigui.IndiDevice:='';
+    GUIready:=true;
+ end;
+ FormPos(f_indigui,mouse.cursorpos.x,mouse.cursorpos.y);
+ f_indigui.Show;
+end;
+
+procedure Tf_main.GUIdestroy(Sender: TObject);
+begin
+  GUIready:=false;
 end;
 
 end.
