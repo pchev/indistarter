@@ -1,8 +1,9 @@
 object f_main: Tf_main
   Left = 389
-  Height = 332
+  Height = 309
   Top = 145
   Width = 294
+  ActiveControl = StringGrid1
   Caption = 'INDI server'
   ClientHeight = 309
   ClientWidth = 294
@@ -10,10 +11,11 @@ object f_main: Tf_main
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  LCLVersion = '1.4.1.0'
+  LCLVersion = '1.6.0.4'
+  Visible = False
   object StringGrid1: TStringGrid
     Left = 0
-    Height = 256
+    Height = 216
     Top = 0
     Width = 294
     Align = alClient
@@ -27,11 +29,11 @@ object f_main: Tf_main
   end
   object Panel1: TPanel
     Left = 0
-    Height = 53
-    Top = 256
+    Height = 65
+    Top = 216
     Width = 294
     Align = alBottom
-    ClientHeight = 53
+    ClientHeight = 65
     ClientWidth = 294
     TabOrder = 1
     object BtnAdd: TButton
@@ -43,7 +45,7 @@ object f_main: Tf_main
       OnClick = BtnAddClick
       TabOrder = 0
     end
-    object Image1: TImage
+    object led: TImage
       Left = 162
       Height = 16
       Top = 13
@@ -68,10 +70,19 @@ object f_main: Tf_main
       OnClick = BtnStartStopClick
       TabOrder = 1
     end
+    object ClientBtn: TButton
+      Left = 4
+      Height = 25
+      Top = 36
+      Width = 152
+      Caption = 'INDI Client'
+      OnClick = ClientBtnClick
+      TabOrder = 2
+    end
   end
   object MainMenu1: TMainMenu
     left = 49
-    top = 150
+    top = 112
     object MenuFile: TMenuItem
       Caption = '&File'
       object MenuRestartServer: TMenuItem
@@ -108,7 +119,7 @@ object f_main: Tf_main
   object PopupMenu1: TPopupMenu
     OnPopup = PopupMenu1Popup
     left = 145
-    top = 150
+    top = 112
     object MenuRestartDevice: TMenuItem
       Caption = 'Restart device'
       OnClick = MenuRestartDeviceClick
@@ -127,8 +138,8 @@ object f_main: Tf_main
     end
   end
   object ImageList1: TImageList
-    left = 49
-    top = 209
+    left = 48
+    top = 168
     Bitmap = {
       4C69020000001000000010000000000000000000000000000000000000000000
       CB0000000000000000000000000000000000000000004848EC00000000000000
@@ -201,6 +212,6 @@ object f_main: Tf_main
     Interval = 2000
     OnTimer = StatusTimerTimer
     left = 145
-    top = 209
+    top = 168
   end
 end
