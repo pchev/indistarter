@@ -8,7 +8,8 @@ object f_devlist: Tf_devlist
   ClientWidth = 223
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  LCLVersion = '1.4.0.4'
+  LCLVersion = '1.6.0.3'
+  Visible = False
   object TreeView1: TTreeView
     Left = 0
     Height = 248

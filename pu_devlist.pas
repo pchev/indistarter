@@ -106,32 +106,34 @@ begin
     end;
   end;
   fdir:=ExtractFilePath(fn);
-  drvdata:='';
   i:=findfirst(slash(fdir)+'*.xml',0,fs);
   while i=0 do begin
     fn:=slash(fdir)+fs.name;
     if FileExists(fn) then begin
       AssignFile(f,fn);
       reset(f);
+      drvdata:='';
       repeat
         readln(f,buf);
         drvdata:=drvdata+buf;
       until eof(f);
       CloseFile(f);
+      if copy(drvdata,1,5)<>'<?xml' then begin     // old format (changed in INDI rev 2715)
+        drvdata:='<INDIDEV>'+drvdata+'</INDIDEV>';
+      end;
+      s:=TStringStream.Create(drvdata);
+      ReadXMLFile(Doc,s);
+      Node:=Doc.DocumentElement.FirstChild;
+      while Node<>nil do begin
+        if Node.NodeName='devGroup' then processGroup(Node);
+        Node:=Node.NextSibling;
+      end;
+      s.Free;
+      Doc.Free;
     end;
     i:=findnext(fs);
   end;
   FindClose(fs);
-  drvdata:='<INDIDEV>'+drvdata+'</INDIDEV>';
-  s:=TStringStream.Create(drvdata);
-  ReadXMLFile(Doc,s);
-  Node:=Doc.DocumentElement.FirstChild;
-  while Node<>nil do begin
-    if Node.NodeName='devGroup' then processGroup(Node);
-    Node:=Node.NextSibling;
-  end;
-  s.Free;
-  Doc.Free;
   TreeView1.SortType:=stText;
 end;
 
