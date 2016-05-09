@@ -41,8 +41,16 @@ type
   Tf_devlist = class(TForm)
     Button1: TButton;
     Button2: TButton;
+    CustomCheckBox: TCheckBox;
+    CustomDriver: TEdit;
+    CustomHost: TEdit;
+    Label1: TLabel;
+    Label2: TLabel;
     Panel1: TPanel;
+    Panel2: TPanel;
+    CustomPanel: TPanel;
     TreeView1: TTreeView;
+    procedure CustomCheckBoxChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
@@ -65,6 +73,12 @@ implementation
 procedure Tf_devlist.FormCreate(Sender: TObject);
 begin
   ProcessDevices;
+end;
+
+procedure Tf_devlist.CustomCheckBoxChange(Sender: TObject);
+begin
+ CustomPanel.Visible:=CustomCheckBox.Checked;
+ TreeView1.Visible:= not CustomPanel.Visible;
 end;
 
 procedure Tf_devlist.FormDestroy(Sender: TObject);

@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 interface
 
 uses pu_devlist, pu_setup, u_utils, pu_indigui, UniqueInstance, XMLConf, process,
+  indibaseclient, indibasedevice,
   Classes, SysUtils, LazFileUtils, Forms, Controls, Graphics, Dialogs,
   ComCtrls, StdCtrls, Grids, ExtCtrls, ActnList, Menus;
 
@@ -37,6 +38,8 @@ type
     BtnAdd: TButton;
     BtnStartStop: TButton;
     ClientBtn: TButton;
+    ConfigLabel: TLabel;
+    Label1: TLabel;
     led: TImage;
     ImageList1: TImageList;
     LabelStatus: TLabel;
@@ -57,12 +60,14 @@ type
     PopupMenu1: TPopupMenu;
     StringGrid1: TStringGrid;
     StatusTimer: TTimer;
+    IndiTimer: TTimer;
     procedure BtnAddClick(Sender: TObject);
     procedure BtnStartStopClick(Sender: TObject);
     procedure ClientBtnClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure IndiTimerTimer(Sender: TObject);
     procedure MenuAboutClick(Sender: TObject);
     procedure MenuDeleteDeviceClick(Sender: TObject);
     procedure MenuEditNameClick(Sender: TObject);
@@ -81,6 +86,8 @@ type
   private
     { private declarations }
     f_indigui: Tf_indigui;
+    indiclient: TIndiBaseClient;
+    ActiveDevLst: TStringList;
     TunnelProcess: TProcess;
     rc,config: TXMLConfig;
     ConfigDir,configfile,devlist,serveroptions: string;
@@ -106,11 +113,12 @@ type
     procedure StartTunnel;
     procedure StopTunnel;
     function  ServerPid: string;
-    function  DriverPid(drv:string): string;
     procedure Status;
     function GetServerPort: string;
     procedure GUIdestroy(Sender: TObject);
     procedure SetupConfigChange(Sender: TObject);
+    procedure GetIndiDevices;
+    procedure IndiNewDevice(dp: Basedevice);
   public
     { public declarations }
   end;
@@ -137,6 +145,7 @@ begin
   UniqueInstance1.Enabled:=true;
   UniqueInstance1.Loaded;
 
+  ActiveDevLst:=TStringList.Create;
   sshopt:=' -oBatchMode=yes -oConnectTimeout=10 ';
   ServerFifo:=slash(GetTempDir(true))+'IndiStarter.fifo';
   ClientBtn.Enabled:=false;
@@ -166,6 +175,7 @@ end;
 
 procedure Tf_main.LoadConfig(cname:string);
 begin
+  ConfigLabel.Caption:=ExtractFileNameOnly(cname);
   configfile:=cname;
   config.Filename:=slash(ConfigDir)+configfile;
   devlist:=config.GetValue('/Devices/List',devlist);
@@ -196,7 +206,9 @@ end;
 procedure Tf_main.FormDestroy(Sender: TObject);
 begin
   if ServerPid<>'' then StopServer;
+  ActiveDevLst.Free;
 end;
+
 
 procedure Tf_main.MenuAboutClick(Sender: TObject);
 var aboutmsg: string;
@@ -247,7 +259,7 @@ begin
   StringGrid1.ColWidths[0]:=23;
   StringGrid1.ColWidths[1]:=110;
   StringGrid1.ColWidths[2]:=156;
-  StringGrid1.ColWidths[3]:=150;
+  StringGrid1.ColWidths[3]:=250;
   StringGrid1.Cells[0,0]:='';
   StringGrid1.Cells[1,0]:='Group';
   StringGrid1.Cells[2,0]:='Driver name';
@@ -434,10 +446,29 @@ procedure Tf_main.BtnAddClick(Sender: TObject);
 var node: TTreeNode;
     dev: Tdevicenode;
     r:integer;
+    cdrv,chost,buf: string;
 begin
+  f_devlist.CustomCheckBox.Checked:=false;
   FormPos(f_devlist,Mouse.CursorPos.X,Mouse.CursorPos.Y);
   f_devlist.ShowModal;
   if (f_devlist.ModalResult=mrOK) then begin
+    if f_devlist.CustomCheckBox.Checked then begin
+      cdrv:=trim(f_devlist.CustomDriver.Text);
+      if cdrv<>'' then begin
+        chost:=trim(f_devlist.CustomHost.Text);
+        if chost='' then
+           buf:=cdrv
+        else
+           buf:='"'+cdrv+'"@'+chost;
+        StringGrid1.RowCount:=StringGrid1.RowCount+1;
+        r:=StringGrid1.RowCount-1;
+        StringGrid1.Cells[0,r]:='';
+        StringGrid1.Cells[1,r]:='Custom';
+        StringGrid1.Cells[2,r]:=cdrv;
+        StringGrid1.Cells[3,r]:=buf;
+        if ServerPid<>'' then StartDevice(r);
+      end;
+    end else begin
       node:=f_devlist.TreeView1.Selected;
       if node<>nil then begin
          dev:=Tdevicenode(node.Data);
@@ -452,7 +483,8 @@ begin
             if ServerPid<>'' then StartDevice(r);
          end;
       end;
-      StringGrid1.SaveToCSVFile(devlist);
+    end;
+    StringGrid1.SaveToCSVFile(devlist);
   end;
 end;
 
@@ -530,30 +562,46 @@ begin
 end;
 
 procedure Tf_main.StartDevice(r:integer);
-var drv,devname,buf: string;
+var group,drv,devname,buf: string;
 begin
   if (r>0)and(r<StringGrid1.RowCount) then begin
+     group:=StringGrid1.Cells[1,r];
      drv:=StringGrid1.Cells[3,r];
      devname:=StringGrid1.Cells[2,r];
-     if remote then
-       buf:='start '+drv+' -n \"'+devname+'\"'
-     else
-       buf:='start '+drv+' -n "'+devname+'"';
+     if group='Custom' then begin
+       if remote then
+         buf:='start '+drv
+       else
+         buf:='start '+drv;
+     end else begin
+       if remote then
+         buf:='start '+drv+' -n \"'+devname+'\"'
+       else
+         buf:='start '+drv+' -n "'+devname+'"';
+     end;
      WriteCmd(buf);
      StringGrid1.Cells[0,r]:='1';
   end;
 end;
 
 procedure Tf_main.StopDevice(r:integer);
-var drv,devname,buf: string;
+var group,drv,devname,buf: string;
 begin
   if (r>0)and(r<StringGrid1.RowCount) then begin
+     group:=StringGrid1.Cells[1,r];
      drv:=StringGrid1.Cells[3,r];
      devname:=StringGrid1.Cells[2,r];
-     if remote then
-       buf:='stop '+drv+' -n \"'+devname+'\"'
-     else
-       buf:='stop '+drv+' -n "'+devname+'"';
+    if group='Custom' then begin
+       if remote then
+         buf:='stop '+drv
+       else
+         buf:='stop '+drv;
+    end else begin
+       if remote then
+         buf:='stop '+drv+' -n \"'+devname+'\"'
+       else
+         buf:='stop '+drv+' -n "'+devname+'"';
+     end;
      WriteCmd(buf);
      StringGrid1.Cells[0,r]:='';
   end;
@@ -689,33 +737,6 @@ begin
      result:='';
 end;
 
-function  Tf_main.DriverPid(drv:string): string;
-var str: TStringList;
-    i,j: integer;
-begin
-  str:=TStringList.Create;
-  if remote then begin
-    // must use -f because driver are more than 15 char, but need to remove the ssh result
-    i:=ExecProcess('ssh '+sshopt+RemoteUser+'@'+RemoteHost+' pgrep -lf '+drv,str);
-    if i=0 then begin
-      for j:=str.Count-1 downto 0 do begin
-        if pos('ssh',str[i])>0 then begin
-          str.Delete(i);
-        end;
-      end;
-      if str.Count=0 then i:=1;
-    end;
-  end
-  else begin
-     i:=ExecProcess('pgrep -f '+drv,str);
-  end;
-  if (i=0)and(str.Count>0) then
-     result:=str[0]
-  else
-     result:='';
-  str.Free;
-end;
-
 procedure Tf_main.Status;
 var str: TStringList;
     i: integer;
@@ -730,13 +751,9 @@ begin
       LabelStatus.Caption:='Server running';
     MenuRestartServer.Caption:='&Restart server';
     MenuQuit.Caption:='&Minimize';
-    str:=TStringList.Create;
-    for i:=1 to StringGrid1.RowCount-1 do begin
-       if (i<StringGrid1.RowCount)and (DriverPid(StringGrid1.Cells[3,i])<>'')
-          then StringGrid1.Cells[0,i]:='1'
-          else StringGrid1.Cells[0,i]:='';
+    if StringGrid1.RowCount>1 then begin
+      GetIndiDevices;
     end;
-    str.Free;
   end
   else begin
      ServerStarted:=false;
@@ -801,6 +818,34 @@ end;
 procedure Tf_main.GUIdestroy(Sender: TObject);
 begin
   GUIready:=false;
+end;
+
+procedure Tf_main.GetIndiDevices;
+begin
+  ActiveDevLst.Clear;
+  indiclient:=TIndiBaseClient.Create;
+  indiclient.onNewDevice:=@IndiNewDevice;
+  indiclient.SetServer('localhost',GetServerPort);
+  indiclient.ConnectServer;
+  IndiTimer.Enabled:=true;
+end;
+
+procedure Tf_main.IndiTimerTimer(Sender: TObject);
+var i: integer;
+begin
+  IndiTimer.Enabled:=false;
+  indiclient.DisconnectServer;
+  if StringGrid1.RowCount>1 then
+    for i:=1 to StringGrid1.RowCount-1 do begin
+     if ( ActiveDevLst.IndexOf(StringGrid1.Cells[2,i])>=0)
+        then StringGrid1.Cells[0,i]:='1'
+        else StringGrid1.Cells[0,i]:='';
+    end;
+end;
+
+procedure Tf_main.IndiNewDevice(dp: Basedevice);
+begin
+  ActiveDevLst.Add(dp.getDeviceName);
 end;
 
 end.
