@@ -118,7 +118,7 @@ begin
         drvdata:=drvdata+buf;
       until eof(f);
       CloseFile(f);
-      if copy(drvdata,1,5)<>'<?xml' then begin     // old format (changed in INDI rev 2715)
+      if pos('?xml',drvdata)=0 then begin     // old format (changed in INDI rev 2715)
         drvdata:='<INDIDEV>'+drvdata+'</INDIDEV>';
       end;
       s:=TStringStream.Create(drvdata);
