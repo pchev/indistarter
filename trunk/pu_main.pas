@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 interface
 
 uses pu_devlist, pu_setup, u_utils, pu_indigui, UniqueInstance, XMLConf, process,
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs,
+  Classes, SysUtils, LazFileUtils, Forms, Controls, Graphics, Dialogs,
   ComCtrls, StdCtrls, Grids, ExtCtrls, ActnList, Menus;
 
 type
@@ -46,7 +46,6 @@ type
     MenuHelp: TMenuItem;
     MenuAbout: TMenuItem;
     MenuEditName: TMenuItem;
-    MenuSetup2: TMenuItem;
     MenuSetup: TMenuItem;
     MenuRestartDevice: TMenuItem;
     MenuStopDevice: TMenuItem;
@@ -83,7 +82,7 @@ type
     { private declarations }
     f_indigui: Tf_indigui;
     TunnelProcess: TProcess;
-    config: TXMLConfig;
+    rc,config: TXMLConfig;
     ConfigDir,configfile,devlist,serveroptions: string;
     RemoteHost,RemoteUser,LocalPort,RemotePort,sshopt: string;
     autostart,stayontop,remote,ServerStarted: boolean;
@@ -91,6 +90,7 @@ type
     ServerFifo: string;
     CurrentCol, CurrentRow: integer;
     UniqueInstance1: TCdCUniqueInstance;
+    procedure LoadConfig(cname:string);
     procedure OtherInstance(Sender : TObject; ParamCount: Integer; Parameters: array of String);
     procedure InstanceRunning(Sender : TObject);
     procedure ClearGrid;
@@ -110,6 +110,7 @@ type
     procedure Status;
     function GetServerPort: string;
     procedure GUIdestroy(Sender: TObject);
+    procedure SetupConfigChange(Sender: TObject);
   public
     { public declarations }
   end;
@@ -139,28 +140,46 @@ begin
   sshopt:=' -oBatchMode=yes -oConnectTimeout=10 ';
   ServerFifo:=slash(GetTempDir(true))+'IndiStarter.fifo';
   ClientBtn.Enabled:=false;
+  autostart:=false;
+  serveroptions:='';
+  remote:=false;
+  RemoteHost:='';
+  RemoteUser:='';
+  LocalPort:='7624';
+  RemotePort:='7624';
+  stayontop:=false;
   ClearGrid;
   ConfigExtension:= '.conf';
+  rc:=TXMLConfig.Create(self);
   config:=TXMLConfig.Create(self);
   ConfigDir:=GetAppConfigDirUTF8(false,true);
+  configfile:='default.conf';
+  devlist:=slash(ConfigDir)+'default.devices';
+  rc.Filename:=slash(ConfigDir)+'indistarter.rc';
+  configfile:=rc.GetValue('/Current/Config',configfile);
   if Application.HasOption('c', 'config') then begin
     configfile:=Application.GetOptionValue('c', 'config')+'.conf';
-  end
-  else configfile:='default.conf';
-  config.Filename:=slash(ConfigDir)+configfile;
-  devlist:=slash(ConfigDir)+ChangeFileExt(configfile,'.devices');
-  devlist:=config.GetValue('/Devices/List',devlist);
-  autostart:=config.GetValue('/Server/Autostart',false);
-  serveroptions:=config.GetValue('/Server/Options','');
-  remote:=config.GetValue('/Server/Remote',false);
-  RemoteHost:=config.GetValue('/RemoteServer/Host','');
-  RemoteUser:=config.GetValue('/RemoteServer/User','');
-  LocalPort:=config.GetValue('/RemoteServer/LocalPort','7624');
-  RemotePort:=config.GetValue('/RemoteServer/RemotePort','7624');
-  stayontop:=config.GetValue('/Window/StayOnTop',true);
-  if FileExistsUTF8(devlist) then StringGrid1.LoadFromCSVFile(devlist);
+  end;
+  LoadConfig(configfile);
   if autostart then StartServer;
+end;
+
+procedure Tf_main.LoadConfig(cname:string);
+begin
+  configfile:=cname;
+  config.Filename:=slash(ConfigDir)+configfile;
+  devlist:=config.GetValue('/Devices/List',devlist);
+  autostart:=config.GetValue('/Server/Autostart',autostart);
+  serveroptions:=config.GetValue('/Server/Options',serveroptions);
+  remote:=config.GetValue('/Server/Remote',remote);
+  RemoteHost:=config.GetValue('/RemoteServer/Host',RemoteHost);
+  RemoteUser:=config.GetValue('/RemoteServer/User',RemoteUser);
+  LocalPort:=config.GetValue('/RemoteServer/LocalPort',LocalPort);
+  RemotePort:=config.GetValue('/RemoteServer/RemotePort',RemotePort);
+  stayontop:=config.GetValue('/Window/StayOnTop',stayontop);
+  if FileExistsUTF8(devlist) then StringGrid1.LoadFromCSVFile(devlist);
   if stayontop then FormStyle:=fsStayOnTop else FormStyle:=fsNormal;
+  if remote then StatusTimer.Interval:=15000 else StatusTimer.Interval:=2000;
 end;
 
 procedure Tf_main.OtherInstance(Sender : TObject; ParamCount: Integer; Parameters: array of String);
@@ -218,6 +237,8 @@ begin
   config.SetValue('/RemoteServer/RemotePort',RemotePort);
   config.SetValue('/Window/StayOnTop',stayontop);
   config.Flush;
+  rc.SetValue('/Current/Config',configfile);
+  rc.Flush;
 end;
 
 procedure Tf_main.ClearGrid;
@@ -241,9 +262,10 @@ begin
   SaveConfig;
   savedevlist:=devlist;
   savestayontop:=stayontop;
-  f_setup.devlist.DefaultExt:='.devices';
-  f_setup.devlist.InitialDir:=ConfigDir;
-  f_setup.devlist.FileName:=devlist;
+  f_setup.onConfigChange:=@SetupConfigChange;
+  f_setup.ConfigDir:=ConfigDir;
+  f_setup.config:=ExtractFileNameOnly(configfile);
+  f_setup.devlist:=ExtractFileNameOnly(devlist);
   f_setup.serveroptions.Text:=serveroptions;
   f_setup.autostart.Checked:=autostart;
   f_setup.stayontop.Checked:=stayontop;
@@ -256,7 +278,7 @@ begin
   FormPos(f_setup,Mouse.CursorPos.X,Mouse.CursorPos.Y);
   f_setup.ShowModal;
   if f_setup.ModalResult=mrOK then begin
-    devlist   := f_setup.devlist.FileName;
+    devlist:=slash(ConfigDir)+f_setup.devlist+'.devices';
     if (devlist<>savedevlist) then begin
       if FileExistsUTF8(devlist) then
          StringGrid1.LoadFromCSVFile(devlist)
@@ -281,6 +303,22 @@ begin
    ShowMessage('Stop the server before to change the setup.');
 end;
 
+procedure Tf_main.SetupConfigChange(Sender: TObject);
+begin
+
+ LoadConfig(f_setup.config+'.conf');
+ f_setup.devlist:=ExtractFileNameOnly(devlist);
+ f_setup.serveroptions.Text:=serveroptions;
+ f_setup.autostart.Checked:=autostart;
+ f_setup.stayontop.Checked:=stayontop;
+ f_setup.remote.Checked:=remote;
+ f_setup.remotehost.Text:=RemoteHost;
+ f_setup.remoteuser.Text:=RemoteUser;
+ f_setup.localport.Text:=LocalPort;
+ f_setup.remoteport.Text:=RemotePort;
+ f_setup.PanelRemote.Visible:=remote;
+ f_setup.UpdDevices;
+end;
 
 procedure Tf_main.MenuQuitClick(Sender: TObject);
 begin
@@ -363,7 +401,7 @@ procedure Tf_main.StatusTimerTimer(Sender: TObject);
 begin
   StatusTimer.Enabled:=false;
   Status;
-  if remote then StatusTimer.Interval:=20000 else StatusTimer.Interval:=2000;
+  if remote then StatusTimer.Interval:=15000 else StatusTimer.Interval:=2000;
   StatusTimer.Enabled:=true;
 end;
 
