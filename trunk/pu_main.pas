@@ -189,7 +189,7 @@ begin
   stayontop:=config.GetValue('/Window/StayOnTop',stayontop);
   if FileExistsUTF8(devlist) then StringGrid1.LoadFromCSVFile(devlist);
   if stayontop then FormStyle:=fsStayOnTop else FormStyle:=fsNormal;
-  if remote then StatusTimer.Interval:=15000 else StatusTimer.Interval:=2000;
+  if remote then StatusTimer.Interval:=15000 else StatusTimer.Interval:=5000;
 end;
 
 procedure Tf_main.OtherInstance(Sender : TObject; ParamCount: Integer; Parameters: array of String);
