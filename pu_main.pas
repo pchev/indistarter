@@ -413,7 +413,7 @@ procedure Tf_main.StatusTimerTimer(Sender: TObject);
 begin
   StatusTimer.Enabled:=false;
   Status;
-  if remote then StatusTimer.Interval:=15000 else StatusTimer.Interval:=2000;
+  if remote then StatusTimer.Interval:=30000 else StatusTimer.Interval:=10000;
   StatusTimer.Enabled:=true;
 end;
 
@@ -718,16 +718,21 @@ end;
 
 function  Tf_main.ServerPid: string;
 var str: TStringList;
-    i: integer;
+    i,c: integer;
 begin
   if ServerStarted then begin
     str:=TStringList.Create;
-    if remote then begin
-      i:=ExecProcess('ssh '+sshopt+RemoteUser+'@'+RemoteHost+' pgrep indiserver',str);
-    end
-    else begin
-       i:=ExecProcess('pgrep indiserver',str);
-    end;
+    c:=0;
+    repeat
+      if remote then begin
+        i:=ExecProcess('ssh '+sshopt+RemoteUser+'@'+RemoteHost+' pgrep indiserver',str);
+      end
+      else begin
+         i:=ExecProcess('pgrep indiserver',str);
+      end;
+      inc(c);
+      if i<>0 then sleep(100);
+    until (i=0)or(c>3);
     if (i=0)and(str.Count>0) then
        result:=str[0]
     else
@@ -822,6 +827,7 @@ end;
 
 procedure Tf_main.GetIndiDevices;
 begin
+  if IndiTimer.Enabled then exit;
   ActiveDevLst.Clear;
   indiclient:=TIndiBaseClient.Create;
   indiclient.onNewDevice:=@IndiNewDevice;

@@ -11,11 +11,11 @@ object f_main: Tf_main
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  LCLVersion = '1.6.0.3'
+  LCLVersion = '1.6.0.4'
   Visible = False
   object StringGrid1: TStringGrid
     Left = 0
-    Height = 198
+    Height = 190
     Top = 0
     Width = 294
     Align = alClient
@@ -30,7 +30,7 @@ object f_main: Tf_main
   object Panel1: TPanel
     Left = 0
     Height = 81
-    Top = 198
+    Top = 190
     Width = 294
     Align = alBottom
     ClientHeight = 81
@@ -97,8 +97,8 @@ object f_main: Tf_main
     end
   end
   object MainMenu1: TMainMenu
-    left = 41
-    top = 96
+    left = 32
+    top = 80
     object MenuFile: TMenuItem
       Caption = '&File'
       object MenuRestartServer: TMenuItem
@@ -132,7 +132,7 @@ object f_main: Tf_main
   object PopupMenu1: TPopupMenu
     OnPopup = PopupMenu1Popup
     left = 137
-    top = 96
+    top = 80
     object MenuRestartDevice: TMenuItem
       Caption = 'Restart device'
       OnClick = MenuRestartDeviceClick
@@ -151,8 +151,8 @@ object f_main: Tf_main
     end
   end
   object ImageList1: TImageList
-    left = 40
-    top = 152
+    left = 32
+    top = 136
     Bitmap = {
       4C69020000001000000010000000000000000000000000000000000000000000
       CB0000000000000000000000000000000000000000004848EC00000000000000
@@ -222,16 +222,16 @@ object f_main: Tf_main
     }
   end
   object StatusTimer: TTimer
-    Interval = 5000
+    Interval = 2000
     OnTimer = StatusTimerTimer
-    left = 137
-    top = 152
+    left = 136
+    top = 136
   end
   object IndiTimer: TTimer
     Enabled = False
-    Interval = 2000
+    Interval = 5000
     OnTimer = IndiTimerTimer
-    left = 222
-    top = 152
+    left = 224
+    top = 136
   end
 end
