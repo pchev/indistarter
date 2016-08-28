@@ -680,7 +680,6 @@ procedure Tf_main.StopServer;
 var i:integer;
     str:TStringList;
 begin
-  if ServerPid<>'' then begin
      str:=TStringList.Create;
      if remote then begin
         StopTunnel;
@@ -694,9 +693,17 @@ begin
            StringGrid1.Cells[0,i]:='';
         end;
      end;
-     ServerStarted:=false;
      str.free;
-  end;
+     ServerStarted:=false;
+     ClientBtn.Enabled:=false;
+     ImageList1.GetBitmap(0,led.Picture.Bitmap);
+     BtnStartStop.Caption:='Start';
+     LabelStatus.Caption:='Server stopped';
+     MenuRestartServer.Caption:='St&art server';
+     MenuQuit.Caption:='&Quit';
+     for i:=1 to StringGrid1.RowCount-1 do begin
+        StringGrid1.Cells[0,i]:='';
+     end;
 end;
 
 procedure Tf_main.StartTunnel;
@@ -761,25 +768,14 @@ begin
     end;
   end
   else begin
-     ServerStarted:=false;
-     ClientBtn.Enabled:=false;
-     if remote then begin
-        str:=TStringList.Create;
-        StopTunnel;
-        ExecProcess('ssh '+sshopt+RemoteUser+'@'+RemoteHost+' rm '+ServerFifo,str);
-        str.Free;
-     end
-     else begin
-        DeleteFile(ServerFifo);
-     end;
-     ImageList1.GetBitmap(0,led.Picture.Bitmap);
-     BtnStartStop.Caption:='Start';
-     LabelStatus.Caption:='Server stopped';
-     MenuRestartServer.Caption:='St&art server';
-     MenuQuit.Caption:='&Quit';
-     for i:=1 to StringGrid1.RowCount-1 do begin
-        StringGrid1.Cells[0,i]:='';
-     end;
+    if BtnStartStop.Caption='Start' then
+      LabelStatus.Caption:='Server stopped'
+    else
+      LabelStatus.Caption:='Server not running?';
+    ImageList1.GetBitmap(0,led.Picture.Bitmap);
+    for i:=1 to StringGrid1.RowCount-1 do begin
+       StringGrid1.Cells[0,i]:='';
+    end;
   end;
 end;
 
@@ -826,7 +822,9 @@ begin
 end;
 
 procedure Tf_main.GetIndiDevices;
+var i: integer;
 begin
+try
   if IndiTimer.Enabled then exit;
   ActiveDevLst.Clear;
   indiclient:=TIndiBaseClient.Create;
@@ -834,11 +832,17 @@ begin
   indiclient.SetServer('localhost',GetServerPort);
   indiclient.ConnectServer;
   IndiTimer.Enabled:=true;
+except
+  for i:=1 to StringGrid1.RowCount-1 do begin
+     StringGrid1.Cells[0,i]:='';
+  end;
+end;
 end;
 
 procedure Tf_main.IndiTimerTimer(Sender: TObject);
 var i: integer;
 begin
+try
   IndiTimer.Enabled:=false;
   indiclient.DisconnectServer;
   if StringGrid1.RowCount>1 then
@@ -847,6 +851,11 @@ begin
         then StringGrid1.Cells[0,i]:='1'
         else StringGrid1.Cells[0,i]:='';
     end;
+except
+  for i:=1 to StringGrid1.RowCount-1 do begin
+     StringGrid1.Cells[0,i]:='';
+  end;
+end;
 end;
 
 procedure Tf_main.IndiNewDevice(dp: Basedevice);
