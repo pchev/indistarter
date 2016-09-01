@@ -728,14 +728,16 @@ var str: TStringList;
     i,c: integer;
 begin
   if ServerStarted then begin
+    try
     str:=TStringList.Create;
+    try
     c:=0;
     repeat
       if remote then begin
-        i:=ExecProcess('ssh '+sshopt+RemoteUser+'@'+RemoteHost+' pgrep indiserver',str);
+        i:=ExecProcess('ssh '+sshopt+RemoteUser+'@'+RemoteHost+' pidof indiserver',str);
       end
       else begin
-         i:=ExecProcess('pgrep indiserver',str);
+         i:=ExecProcess('pidof indiserver',str);
       end;
       inc(c);
       if i<>0 then sleep(100);
@@ -744,7 +746,12 @@ begin
        result:=str[0]
     else
        result:='';
-    str.Free;
+    finally
+      str.Free;
+    end;
+    except
+      result:='';
+    end;
   end else
      result:='';
 end;
