@@ -11,7 +11,7 @@ object f_main: Tf_main
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  LCLVersion = '1.6.0.4'
+  LCLVersion = '1.6.1.0'
   Visible = False
   object StringGrid1: TStringGrid
     Left = 0

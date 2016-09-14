@@ -174,6 +174,7 @@ begin
 end;
 
 procedure Tf_main.LoadConfig(cname:string);
+var i: integer;
 begin
   ConfigLabel.Caption:=ExtractFileNameOnly(cname);
   configfile:=cname;
@@ -188,6 +189,10 @@ begin
   RemotePort:=config.GetValue('/RemoteServer/RemotePort',RemotePort);
   stayontop:=config.GetValue('/Window/StayOnTop',stayontop);
   if FileExistsUTF8(devlist) then StringGrid1.LoadFromCSVFile(devlist);
+  ActiveDevLst.Clear;
+  for i:=1 to StringGrid1.RowCount-1 do begin
+     StringGrid1.Cells[0,i]:='';
+  end;
   if stayontop then FormStyle:=fsStayOnTop else FormStyle:=fsNormal;
   if remote then StatusTimer.Interval:=15000 else StatusTimer.Interval:=5000;
 end;
@@ -701,6 +706,7 @@ begin
      LabelStatus.Caption:='Server stopped';
      MenuRestartServer.Caption:='St&art server';
      MenuQuit.Caption:='&Quit';
+     ActiveDevLst.Clear;
      for i:=1 to StringGrid1.RowCount-1 do begin
         StringGrid1.Cells[0,i]:='';
      end;
@@ -780,6 +786,7 @@ begin
     else
       LabelStatus.Caption:='Server not running?';
     ImageList1.GetBitmap(0,led.Picture.Bitmap);
+    ActiveDevLst.Clear;
     for i:=1 to StringGrid1.RowCount-1 do begin
        StringGrid1.Cells[0,i]:='';
     end;
