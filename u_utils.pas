@@ -36,8 +36,8 @@ uses
      Math, SysUtils, Forms, Controls, StdCtrls, Graphics;
 
 const
-  starter_version='Version beta 0.7.2';
-  starterver = '0.7.2';
+  starter_version='Version beta 0.8.0';
+  starterver = '0.8.0';
   blank=' ';
   CR = #$0d;
   LF = #$0a;
