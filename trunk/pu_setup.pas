@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 interface
 
-uses u_utils, math,
+uses u_utils, math, UScaleDPI,
   Classes, SysUtils, LazFileUtils, Forms, Controls, Graphics, Dialogs, EditBtn,
   StdCtrls, ExtCtrls;
 
@@ -62,6 +62,7 @@ type
     procedure BtnNewDevlistClick(Sender: TObject);
     procedure BtnNewConfigClick(Sender: TObject);
     procedure ConfigListChange(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure remoteClick(Sender: TObject);
     procedure SelectDevlistChange(Sender: TObject);
@@ -178,6 +179,11 @@ procedure Tf_setup.ConfigListChange(Sender: TObject);
 begin
   config:=ConfigList.Items[ConfigList.ItemIndex];
   if assigned(FConfigChange) then FConfigChange(self);
+end;
+
+procedure Tf_setup.FormCreate(Sender: TObject);
+begin
+   ScaleDPI(Self);
 end;
 
 procedure Tf_setup.BtnNewConfigClick(Sender: TObject);

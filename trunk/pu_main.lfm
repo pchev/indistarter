@@ -11,11 +11,11 @@ object f_main: Tf_main
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  LCLVersion = '1.6.1.0'
+  LCLVersion = '1.6.4.0'
   Visible = False
   object StringGrid1: TStringGrid
     Left = 0
-    Height = 190
+    Height = 194
     Top = 0
     Width = 294
     Align = alClient
@@ -30,7 +30,7 @@ object f_main: Tf_main
   object Panel1: TPanel
     Left = 0
     Height = 81
-    Top = 190
+    Top = 194
     Width = 294
     Align = alBottom
     ClientHeight = 81

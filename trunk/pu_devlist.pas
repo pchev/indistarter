@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 interface
 
-uses u_utils, XMLRead, DOM, Classes, SysUtils, FileUtil,
+uses u_utils, XMLRead, DOM, Classes, SysUtils, FileUtil, UScaleDPI,
   Forms, Controls, Graphics, Dialogs, ComCtrls, ExtCtrls, StdCtrls;
 
 type
@@ -72,6 +72,7 @@ implementation
 
 procedure Tf_devlist.FormCreate(Sender: TObject);
 begin
+  ScaleDPI(Self);
   ProcessDevices;
 end;
 

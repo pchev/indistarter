@@ -8,8 +8,9 @@ object f_setup: Tf_setup
   Caption = 'Setup'
   ClientHeight = 480
   ClientWidth = 337
+  OnCreate = FormCreate
   OnShow = FormShow
-  LCLVersion = '1.6.0.4'
+  LCLVersion = '1.6.4.0'
   Visible = False
   object PanelBot: TPanel
     Left = 0
@@ -53,31 +54,31 @@ object f_setup: Tf_setup
     Visible = False
     object remotehost: TEdit
       Left = 8
-      Height = 27
+      Height = 26
       Top = 24
       Width = 201
       TabOrder = 0
     end
     object remoteuser: TEdit
       Left = 228
-      Height = 27
+      Height = 26
       Top = 24
       Width = 80
       TabOrder = 1
     end
     object Label3: TLabel
       Left = 8
-      Height = 17
+      Height = 18
       Top = 4
-      Width = 128
+      Width = 114
       Caption = 'Remote host name'
       ParentColor = False
     end
     object Label4: TLabel
       Left = 228
-      Height = 17
+      Height = 18
       Top = 4
-      Width = 72
+      Width = 65
       Caption = 'User name'
       ParentColor = False
     end
@@ -93,31 +94,31 @@ object f_setup: Tf_setup
     end
     object localport: TEdit
       Left = 88
-      Height = 27
+      Height = 26
       Top = 64
       Width = 54
       TabOrder = 2
     end
     object remoteport: TEdit
       Left = 254
-      Height = 27
+      Height = 26
       Top = 64
       Width = 54
       TabOrder = 3
     end
     object Label6: TLabel
       Left = 8
-      Height = 17
+      Height = 18
       Top = 68
-      Width = 69
+      Width = 60
       Caption = 'Local port'
       ParentColor = False
     end
     object Label7: TLabel
       Left = 160
-      Height = 17
+      Height = 18
       Top = 68
-      Width = 86
+      Width = 76
       Caption = 'Remote port'
       ParentColor = False
     end
@@ -133,25 +134,25 @@ object f_setup: Tf_setup
     TabOrder = 2
     object remote: TCheckBox
       Left = 8
-      Height = 24
+      Height = 23
       Top = 240
-      Width = 287
+      Width = 254
       Caption = 'Start indiserver on a remote computer'
       OnClick = remoteClick
       TabOrder = 0
     end
     object Label2: TLabel
       Left = 13
-      Height = 17
+      Height = 18
       Top = 114
-      Width = 178
+      Width = 153
       Caption = 'Additional server options:'
       ParentColor = False
       ParentShowHint = False
     end
     object serveroptions: TEdit
       Left = 8
-      Height = 27
+      Height = 26
       Hint = 'Do not add driver here, and do not use the -f option!'#10'Valid options:'#10' -l d     : log driver messages to <d>/YYYY-MM-DD.islog'#10' -m m  : kill client if gets more than this many MB behind, default 64'#10' -p p    : alternate IP port, default 7624'#10' -v       : show key events, no traffic'#10' -vv      : -v + key message content'#10' -vvv    : -vv + complete xml'
       Top = 134
       Width = 297
@@ -161,31 +162,31 @@ object f_setup: Tf_setup
     end
     object stayontop: TCheckBox
       Left = 8
-      Height = 24
+      Height = 23
       Top = 201
-      Width = 286
+      Width = 251
       Caption = 'Keep the server window always visible'
       TabOrder = 2
     end
     object autostart: TCheckBox
       Left = 8
-      Height = 24
+      Height = 23
       Top = 170
-      Width = 312
+      Width = 272
       Caption = 'Autostart the server with last used profile'
       TabOrder = 3
     end
     object Label1: TLabel
       Left = 13
-      Height = 17
+      Height = 18
       Top = 56
-      Width = 109
+      Width = 93
       Caption = 'Devices profile :'
       ParentColor = False
     end
     object SelectDevlist: TComboBox
       Left = 12
-      Height = 31
+      Height = 28
       Top = 72
       Width = 169
       ItemHeight = 0
@@ -204,15 +205,15 @@ object f_setup: Tf_setup
     end
     object Label8: TLabel
       Left = 13
-      Height = 17
+      Height = 18
       Top = 8
-      Width = 104
+      Width = 90
       Caption = 'Configuration :'
       ParentColor = False
     end
     object ConfigList: TComboBox
       Left = 12
-      Height = 31
+      Height = 28
       Top = 24
       Width = 169
       ItemHeight = 0
