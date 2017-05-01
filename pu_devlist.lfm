@@ -9,7 +9,7 @@ object f_devlist: Tf_devlist
   ClientWidth = 250
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  LCLVersion = '1.6.0.3'
+  LCLVersion = '1.6.4.0'
   Visible = False
   object TreeView1: TTreeView
     Left = 0
@@ -60,9 +60,9 @@ object f_devlist: Tf_devlist
     TabOrder = 2
     object CustomCheckBox: TCheckBox
       Left = 8
-      Height = 24
+      Height = 23
       Top = 2
-      Width = 116
+      Width = 110
       Caption = 'Custom driver'
       OnChange = CustomCheckBoxChange
       TabOrder = 0
@@ -80,30 +80,30 @@ object f_devlist: Tf_devlist
     Visible = False
     object CustomDriver: TEdit
       Left = 8
-      Height = 23
+      Height = 26
       Top = 40
       Width = 232
       TabOrder = 0
     end
     object Label1: TLabel
       Left = 8
-      Height = 17
+      Height = 18
       Top = 16
-      Width = 166
+      Width = 154
       Caption = 'Custom or remote driver :'
       ParentColor = False
     end
     object Label2: TLabel
       Left = 8
-      Height = 17
+      Height = 18
       Top = 80
-      Width = 89
+      Width = 83
       Caption = 'Remote host :'
       ParentColor = False
     end
     object CustomHost: TEdit
       Left = 8
-      Height = 23
+      Height = 26
       Top = 104
       Width = 232
       TabOrder = 1

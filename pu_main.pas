@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 interface
 
 uses pu_devlist, pu_setup, u_utils, pu_indigui, UniqueInstance, XMLConf, process,
-  indibaseclient, indibasedevice,
+  indibaseclient, indibasedevice, UScaleDPI,
   Classes, SysUtils, LazFileUtils, Forms, Controls, Graphics, Dialogs,
   ComCtrls, StdCtrls, Grids, ExtCtrls, ActnList, Menus;
 
@@ -170,6 +170,9 @@ begin
     configfile:=Application.GetOptionValue('c', 'config')+'.conf';
   end;
   LoadConfig(configfile);
+  UScaleDPI.UseScaling:=true;
+  UScaleDPI.SetScale(Canvas);
+  ScaleDPI(Self);
   if autostart then StartServer;
 end;
 
