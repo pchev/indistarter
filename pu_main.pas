@@ -644,6 +644,10 @@ var str:TStringList;
     i,r:integer;
 begin
 try
+if StringGrid1.RowCount<2 then begin
+  LabelStatus.Caption:='No driver configured!';
+  exit;
+end;
 StatusTimer.Enabled:=false;
   if ServerPid='' then begin
      str:=TStringList.Create;
