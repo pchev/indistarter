@@ -11,11 +11,10 @@ object f_main: Tf_main
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  LCLVersion = '1.6.4.0'
   Visible = False
   object StringGrid1: TStringGrid
     Left = 0
-    Height = 194
+    Height = 228
     Top = 0
     Width = 294
     Align = alClient
@@ -30,7 +29,7 @@ object f_main: Tf_main
   object Panel1: TPanel
     Left = 0
     Height = 81
-    Top = 194
+    Top = 228
     Width = 294
     Align = alBottom
     ClientHeight = 81
@@ -81,17 +80,17 @@ object f_main: Tf_main
     end
     object ConfigLabel: TLabel
       Left = 120
-      Height = 18
+      Height = 15
       Top = 4
-      Width = 72
+      Width = 74
       Caption = 'ConfigLabel'
       ParentColor = False
     end
     object Label1: TLabel
       Left = 6
-      Height = 18
+      Height = 15
       Top = 4
-      Width = 87
+      Width = 89
       Caption = 'Configuration:'
       ParentColor = False
     end
@@ -225,13 +224,6 @@ object f_main: Tf_main
     Interval = 2000
     OnTimer = StatusTimerTimer
     left = 136
-    top = 136
-  end
-  object IndiTimer: TTimer
-    Enabled = False
-    Interval = 5000
-    OnTimer = IndiTimerTimer
-    left = 224
     top = 136
   end
 end

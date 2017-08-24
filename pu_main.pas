@@ -60,14 +60,12 @@ type
     PopupMenu1: TPopupMenu;
     StringGrid1: TStringGrid;
     StatusTimer: TTimer;
-    IndiTimer: TTimer;
     procedure BtnAddClick(Sender: TObject);
     procedure BtnStartStopClick(Sender: TObject);
     procedure ClientBtnClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure IndiTimerTimer(Sender: TObject);
     procedure MenuAboutClick(Sender: TObject);
     procedure MenuDeleteDeviceClick(Sender: TObject);
     procedure MenuEditNameClick(Sender: TObject);
@@ -119,6 +117,7 @@ type
     procedure SetupConfigChange(Sender: TObject);
     procedure GetIndiDevices;
     procedure IndiNewDevice(dp: Basedevice);
+    procedure IndiDeleteDevice(dp: Basedevice);
   public
     { public declarations }
   end;
@@ -144,7 +143,6 @@ begin
   UniqueInstance1.OnInstanceRunning:=@InstanceRunning;
   UniqueInstance1.Enabled:=true;
   UniqueInstance1.Loaded;
-
   ActiveDevLst:=TStringList.Create;
   sshopt:=' -oBatchMode=yes -oConnectTimeout=10 ';
   ServerFifo:=slash(GetTempDir(true))+'IndiStarter.fifo';
@@ -421,7 +419,7 @@ procedure Tf_main.StatusTimerTimer(Sender: TObject);
 begin
   StatusTimer.Enabled:=false;
   Status;
-  if remote then StatusTimer.Interval:=30000 else StatusTimer.Interval:=10000;
+  if remote then StatusTimer.Interval:=15000 else StatusTimer.Interval:=2000;
   StatusTimer.Enabled:=true;
 end;
 
@@ -588,7 +586,6 @@ begin
          buf:='start '+drv+' -n "'+devname+'"';
      end;
      WriteCmd(buf);
-     StringGrid1.Cells[0,r]:='1';
   end;
 end;
 
@@ -611,7 +608,6 @@ begin
          buf:='stop '+drv+' -n "'+devname+'"';
      end;
      WriteCmd(buf);
-     StringGrid1.Cells[0,r]:='';
   end;
 end;
 
@@ -655,7 +651,7 @@ StatusTimer.Enabled:=false;
         ExecProcess('ssh '+sshopt+RemoteUser+'@'+RemoteHost+' rm '+ServerFifo,str);
         if ExecProcess('ssh '+sshopt+RemoteUser+'@'+RemoteHost+' mkfifo '+ServerFifo,str)<>0 then begin ShowErr(RemoteUser+'@'+RemoteHost+' mkfifo '+ServerFifo,str);exit;end;
         if ExecProcess('ssh '+sshopt+RemoteUser+'@'+RemoteHost+' "sh -c ''nohup indiserver '+serveroptions+' -f '+ServerFifo+' >/dev/null 2>&1 &''"',str)<>0 then begin ShowErr(RemoteUser+'@'+RemoteHost+' indiserver',str);exit;end;
-        Wait(1);
+        Wait(5);
         ServerStarted:=true;
         if StringGrid1.RowCount>1 then begin
            for i:=1 to StringGrid1.RowCount-1 do begin
@@ -681,6 +677,12 @@ StatusTimer.Enabled:=false;
        end;
      end;
      str.free;
+     ActiveDevLst.Clear;
+     indiclient:=TIndiBaseClient.Create;
+     indiclient.onNewDevice:=@IndiNewDevice;
+     indiclient.onDeleteDevice:=@IndiDeleteDevice;
+     indiclient.SetServer('localhost',GetServerPort);
+     indiclient.ConnectServer;
   end;
   Status;
 finally
@@ -692,6 +694,7 @@ procedure Tf_main.StopServer;
 var i:integer;
     str:TStringList;
 begin
+     indiclient.DisconnectServer;
      str:=TStringList.Create;
      if remote then begin
         StopTunnel;
@@ -723,6 +726,7 @@ procedure Tf_main.StartTunnel;
 begin
   if remote then begin
      TunnelProcess:=ExecProcessNoWait('ssh '+sshopt+' -N -L'+LocalPort+':'+RemoteHost+':'+RemotePort+' '+RemoteUser+'@'+RemoteHost);
+     Wait(5);
   end;
 end;
 
@@ -845,43 +849,24 @@ end;
 procedure Tf_main.GetIndiDevices;
 var i: integer;
 begin
-try
-  if IndiTimer.Enabled then exit;
-  ActiveDevLst.Clear;
-  indiclient:=TIndiBaseClient.Create;
-  indiclient.onNewDevice:=@IndiNewDevice;
-  indiclient.SetServer('localhost',GetServerPort);
-  indiclient.ConnectServer;
-  IndiTimer.Enabled:=true;
-except
-  for i:=1 to StringGrid1.RowCount-1 do begin
-     StringGrid1.Cells[0,i]:='';
-  end;
-end;
-end;
-
-procedure Tf_main.IndiTimerTimer(Sender: TObject);
-var i: integer;
-begin
-try
-  IndiTimer.Enabled:=false;
-  indiclient.DisconnectServer;
-  if StringGrid1.RowCount>1 then
-    for i:=1 to StringGrid1.RowCount-1 do begin
-     if ( ActiveDevLst.IndexOf(StringGrid1.Cells[2,i])>=0)
-        then StringGrid1.Cells[0,i]:='1'
-        else StringGrid1.Cells[0,i]:='';
-    end;
-except
-  for i:=1 to StringGrid1.RowCount-1 do begin
-     StringGrid1.Cells[0,i]:='';
-  end;
-end;
+ if StringGrid1.RowCount>1 then
+   for i:=1 to StringGrid1.RowCount-1 do begin
+    if ( ActiveDevLst.IndexOf(StringGrid1.Cells[2,i])>=0)
+       then StringGrid1.Cells[0,i]:='1'
+       else StringGrid1.Cells[0,i]:='';
+   end;
 end;
 
 procedure Tf_main.IndiNewDevice(dp: Basedevice);
 begin
   ActiveDevLst.Add(dp.getDeviceName);
+end;
+
+procedure Tf_main.IndiDeleteDevice(dp: Basedevice);
+var i: integer;
+begin
+  i:=ActiveDevLst.IndexOf(dp.getDeviceName);
+  if i>=0 then ActiveDevLst.Delete(i);
 end;
 
 end.
