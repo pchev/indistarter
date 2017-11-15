@@ -694,7 +694,7 @@ procedure Tf_main.StopServer;
 var i:integer;
     str:TStringList;
 begin
-     indiclient.DisconnectServer;
+     if indiclient<>nil then indiclient.DisconnectServer;
      str:=TStringList.Create;
      if remote then begin
         StopTunnel;
