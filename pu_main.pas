@@ -181,6 +181,7 @@ begin
   ConfigLabel.Caption:=ExtractFileNameOnly(cname);
   configfile:=cname;
   config.Filename:=slash(ConfigDir)+configfile;
+  devlist:=ChangeFileExt(config.Filename,'.devices');
   devlist:=config.GetValue('/Devices/List',devlist);
   autostart:=config.GetValue('/Server/Autostart',autostart);
   serveroptions:=config.GetValue('/Server/Options',serveroptions);
@@ -190,7 +191,7 @@ begin
   LocalPort:=config.GetValue('/RemoteServer/LocalPort',LocalPort);
   RemotePort:=config.GetValue('/RemoteServer/RemotePort',RemotePort);
   stayontop:=config.GetValue('/Window/StayOnTop',stayontop);
-  if FileExistsUTF8(devlist) then StringGrid1.LoadFromCSVFile(devlist);
+  if FileExistsUTF8(devlist) then StringGrid1.LoadFromCSVFile(devlist) else ClearGrid;
   ActiveDevLst.Clear;
   ActiveExecLst.Clear;
   for i:=1 to StringGrid1.RowCount-1 do begin
@@ -198,6 +199,24 @@ begin
   end;
   if stayontop then FormStyle:=fsStayOnTop else FormStyle:=fsNormal;
   if remote then StatusTimer.Interval:=15000 else StatusTimer.Interval:=5000;
+end;
+
+procedure Tf_main.SaveConfig;
+begin
+  devlist:=ChangeFileExt(config.Filename,'.devices');
+  StringGrid1.SaveToCSVFile(devlist);
+  config.DeleteValue('/Devices/List');
+  config.SetValue('/Server/Autostart',autostart);
+  config.SetValue('/Server/Options',serveroptions);
+  config.SetValue('/Server/Remote',remote);
+  config.SetValue('/RemoteServer/Host',RemoteHost);
+  config.SetValue('/RemoteServer/User',RemoteUser);
+  config.SetValue('/RemoteServer/LocalPort',LocalPort);
+  config.SetValue('/RemoteServer/RemotePort',RemotePort);
+  config.SetValue('/Window/StayOnTop',stayontop);
+  config.Flush;
+  rc.SetValue('/Current/Config',configfile);
+  rc.Flush;
 end;
 
 procedure Tf_main.OtherInstance(Sender : TObject; ParamCount: Integer; Parameters: array of String);
@@ -245,23 +264,6 @@ begin
   end;
 end;
 
-procedure Tf_main.SaveConfig;
-begin
-  StringGrid1.SaveToCSVFile(devlist);
-  config.SetValue('/Devices/List',devlist);
-  config.SetValue('/Server/Autostart',autostart);
-  config.SetValue('/Server/Options',serveroptions);
-  config.SetValue('/Server/Remote',remote);
-  config.SetValue('/RemoteServer/Host',RemoteHost);
-  config.SetValue('/RemoteServer/User',RemoteUser);
-  config.SetValue('/RemoteServer/LocalPort',LocalPort);
-  config.SetValue('/RemoteServer/RemotePort',RemotePort);
-  config.SetValue('/Window/StayOnTop',stayontop);
-  config.Flush;
-  rc.SetValue('/Current/Config',configfile);
-  rc.Flush;
-end;
-
 procedure Tf_main.ClearGrid;
 begin
   StringGrid1.RowCount:=1;
@@ -276,17 +278,16 @@ begin
 end;
 
 procedure Tf_main.MenuSetupClick(Sender: TObject);
-var savedevlist: string;
+var saveconfigname: string;
   savestayontop:boolean;
 begin
  if ServerPid='' then begin
   SaveConfig;
-  savedevlist:=devlist;
+  saveconfigname:=configfile;
   savestayontop:=stayontop;
   f_setup.onConfigChange:=@SetupConfigChange;
   f_setup.ConfigDir:=ConfigDir;
   f_setup.config:=ExtractFileNameOnly(configfile);
-  f_setup.devlist:=ExtractFileNameOnly(devlist);
   f_setup.serveroptions.Text:=serveroptions;
   f_setup.autostart.Checked:=autostart;
   f_setup.stayontop.Checked:=stayontop;
@@ -299,13 +300,6 @@ begin
   FormPos(f_setup,Mouse.CursorPos.X,Mouse.CursorPos.Y);
   f_setup.ShowModal;
   if f_setup.ModalResult=mrOK then begin
-    devlist:=slash(ConfigDir)+f_setup.devlist+'.devices';
-    if (devlist<>savedevlist) then begin
-      if FileExistsUTF8(devlist) then
-         StringGrid1.LoadFromCSVFile(devlist)
-      else
-         ClearGrid;
-    end;
     autostart := f_setup.autostart.Checked;
     serveroptions := f_setup.serveroptions.Text;
     remote     := f_setup.remote.Checked;
@@ -318,6 +312,9 @@ begin
       if stayontop then FormStyle:=fsStayOnTop else FormStyle:=fsNormal;
     end;
     SaveConfig;
+  end
+  else begin
+    LoadConfig(saveconfigname);
   end;
  end
  else
@@ -326,9 +323,7 @@ end;
 
 procedure Tf_main.SetupConfigChange(Sender: TObject);
 begin
-
  LoadConfig(f_setup.config+'.conf');
- f_setup.devlist:=ExtractFileNameOnly(devlist);
  f_setup.serveroptions.Text:=serveroptions;
  f_setup.autostart.Checked:=autostart;
  f_setup.stayontop.Checked:=stayontop;
@@ -338,7 +333,6 @@ begin
  f_setup.localport.Text:=LocalPort;
  f_setup.remoteport.Text:=RemotePort;
  f_setup.PanelRemote.Visible:=remote;
- f_setup.UpdDevices;
 end;
 
 procedure Tf_main.MenuQuitClick(Sender: TObject);

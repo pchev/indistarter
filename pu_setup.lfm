@@ -1,25 +1,24 @@
 object f_setup: Tf_setup
   Left = 406
-  Height = 480
+  Height = 430
   Top = 147
-  Width = 337
+  Width = 314
   ActiveControl = Button1
   AutoSize = True
   Caption = 'Setup'
-  ClientHeight = 480
-  ClientWidth = 337
+  ClientHeight = 430
+  ClientWidth = 314
   OnCreate = FormCreate
   OnShow = FormShow
-  LCLVersion = '1.6.4.0'
   Visible = False
   object PanelBot: TPanel
     Left = 0
     Height = 41
-    Top = 416
-    Width = 337
+    Top = 384
+    Width = 309
     Align = alTop
     ClientHeight = 41
-    ClientWidth = 337
+    ClientWidth = 309
     TabOrder = 0
     object Button1: TButton
       Left = 195
@@ -45,30 +44,30 @@ object f_setup: Tf_setup
   object PanelRemote: TPanel
     Left = 0
     Height = 144
-    Top = 272
-    Width = 337
+    Top = 240
+    Width = 309
     Align = alTop
     ClientHeight = 144
-    ClientWidth = 337
+    ClientWidth = 309
     TabOrder = 1
     Visible = False
     object remotehost: TEdit
       Left = 8
-      Height = 26
+      Height = 25
       Top = 24
       Width = 201
       TabOrder = 0
     end
     object remoteuser: TEdit
       Left = 228
-      Height = 26
+      Height = 25
       Top = 24
       Width = 80
       TabOrder = 1
     end
     object Label3: TLabel
       Left = 8
-      Height = 18
+      Height = 19
       Top = 4
       Width = 114
       Caption = 'Remote host name'
@@ -76,7 +75,7 @@ object f_setup: Tf_setup
     end
     object Label4: TLabel
       Left = 228
-      Height = 18
+      Height = 19
       Top = 4
       Width = 65
       Caption = 'User name'
@@ -94,21 +93,21 @@ object f_setup: Tf_setup
     end
     object localport: TEdit
       Left = 88
-      Height = 26
+      Height = 25
       Top = 64
       Width = 54
       TabOrder = 2
     end
     object remoteport: TEdit
       Left = 254
-      Height = 26
+      Height = 25
       Top = 64
       Width = 54
       TabOrder = 3
     end
     object Label6: TLabel
       Left = 8
-      Height = 18
+      Height = 19
       Top = 68
       Width = 60
       Caption = 'Local port'
@@ -116,7 +115,7 @@ object f_setup: Tf_setup
     end
     object Label7: TLabel
       Left = 160
-      Height = 18
+      Height = 19
       Top = 68
       Width = 76
       Caption = 'Remote port'
@@ -125,26 +124,26 @@ object f_setup: Tf_setup
   end
   object Panel1: TPanel
     Left = 0
-    Height = 272
+    Height = 240
     Top = 0
-    Width = 337
+    Width = 309
     Align = alTop
-    ClientHeight = 272
-    ClientWidth = 337
+    ClientHeight = 240
+    ClientWidth = 309
     TabOrder = 2
     object remote: TCheckBox
       Left = 8
-      Height = 23
-      Top = 240
-      Width = 254
+      Height = 21
+      Top = 206
+      Width = 253
       Caption = 'Start indiserver on a remote computer'
       OnClick = remoteClick
       TabOrder = 0
     end
     object Label2: TLabel
       Left = 13
-      Height = 18
-      Top = 114
+      Height = 19
+      Top = 80
       Width = 153
       Caption = 'Additional server options:'
       ParentColor = False
@@ -152,9 +151,9 @@ object f_setup: Tf_setup
     end
     object serveroptions: TEdit
       Left = 8
-      Height = 26
+      Height = 25
       Hint = 'Do not add driver here, and do not use the -f option!'#10'Valid options:'#10' -l d     : log driver messages to <d>/YYYY-MM-DD.islog'#10' -m m  : kill client if gets more than this many MB behind, default 64'#10' -p p    : alternate IP port, default 7624'#10' -v       : show key events, no traffic'#10' -vv      : -v + key message content'#10' -vvv    : -vv + complete xml'
-      Top = 134
+      Top = 100
       Width = 297
       ParentShowHint = False
       ShowHint = True
@@ -162,50 +161,23 @@ object f_setup: Tf_setup
     end
     object stayontop: TCheckBox
       Left = 8
-      Height = 23
-      Top = 201
-      Width = 251
+      Height = 21
+      Top = 167
+      Width = 250
       Caption = 'Keep the server window always visible'
       TabOrder = 2
     end
     object autostart: TCheckBox
       Left = 8
-      Height = 23
-      Top = 170
-      Width = 272
+      Height = 21
+      Top = 136
+      Width = 271
       Caption = 'Autostart the server with last used profile'
       TabOrder = 3
     end
-    object Label1: TLabel
-      Left = 13
-      Height = 18
-      Top = 56
-      Width = 93
-      Caption = 'Devices profile :'
-      ParentColor = False
-    end
-    object SelectDevlist: TComboBox
-      Left = 12
-      Height = 28
-      Top = 72
-      Width = 169
-      ItemHeight = 0
-      OnChange = SelectDevlistChange
-      Style = csDropDownList
-      TabOrder = 4
-    end
-    object BtnNewDevlist: TButton
-      Left = 206
-      Height = 25
-      Top = 76
-      Width = 75
-      Caption = 'New'
-      OnClick = BtnNewDevlistClick
-      TabOrder = 5
-    end
     object Label8: TLabel
       Left = 13
-      Height = 18
+      Height = 19
       Top = 8
       Width = 90
       Caption = 'Configuration :'
@@ -213,13 +185,13 @@ object f_setup: Tf_setup
     end
     object ConfigList: TComboBox
       Left = 12
-      Height = 28
+      Height = 35
       Top = 24
       Width = 169
       ItemHeight = 0
       OnChange = ConfigListChange
       Style = csDropDownList
-      TabOrder = 6
+      TabOrder = 4
     end
     object BtnNewConfig: TButton
       Left = 206
@@ -228,7 +200,7 @@ object f_setup: Tf_setup
       Width = 75
       Caption = 'New'
       OnClick = BtnNewConfigClick
-      TabOrder = 7
+      TabOrder = 5
     end
   end
 end
