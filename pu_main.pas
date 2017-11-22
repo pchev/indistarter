@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 interface
 
 uses pu_devlist, pu_setup, u_utils, pu_indigui, UniqueInstance, XMLConf, process,
-  indibaseclient, indibasedevice, UScaleDPI,
+  indibaseclient, indibasedevice, indiapi, indicom, UScaleDPI,
   Classes, SysUtils, LazFileUtils, Forms, Controls, Graphics, Dialogs,
   ComCtrls, StdCtrls, Grids, ExtCtrls, ActnList, Menus;
 
@@ -85,7 +85,7 @@ type
     { private declarations }
     f_indigui: Tf_indigui;
     indiclient: TIndiBaseClient;
-    ActiveDevLst: TStringList;
+    ActiveDevLst,ActiveExecLst: TStringList;
     TunnelProcess: TProcess;
     rc,config: TXMLConfig;
     ConfigDir,configfile,devlist,serveroptions: string;
@@ -116,7 +116,7 @@ type
     procedure GUIdestroy(Sender: TObject);
     procedure SetupConfigChange(Sender: TObject);
     procedure GetIndiDevices;
-    procedure IndiNewDevice(dp: Basedevice);
+    procedure IndiNewProperty(indiProp: IndiProperty);
     procedure IndiDeleteDevice(dp: Basedevice);
   public
     { public declarations }
@@ -144,6 +144,7 @@ begin
   UniqueInstance1.Enabled:=true;
   UniqueInstance1.Loaded;
   ActiveDevLst:=TStringList.Create;
+  ActiveExecLst:=TStringList.Create;
   sshopt:=' -oBatchMode=yes -oConnectTimeout=10 ';
   ServerFifo:=slash(GetTempDir(true))+'IndiStarter.fifo';
   ClientBtn.Enabled:=false;
@@ -191,6 +192,7 @@ begin
   stayontop:=config.GetValue('/Window/StayOnTop',stayontop);
   if FileExistsUTF8(devlist) then StringGrid1.LoadFromCSVFile(devlist);
   ActiveDevLst.Clear;
+  ActiveExecLst.Clear;
   for i:=1 to StringGrid1.RowCount-1 do begin
      StringGrid1.Cells[0,i]:='';
   end;
@@ -213,6 +215,7 @@ procedure Tf_main.FormDestroy(Sender: TObject);
 begin
   if ServerPid<>'' then StopServer;
   ActiveDevLst.Free;
+  ActiveExecLst.Free;
 end;
 
 
@@ -678,8 +681,9 @@ StatusTimer.Enabled:=false;
      end;
      str.free;
      ActiveDevLst.Clear;
+     ActiveExecLst.Clear;
      indiclient:=TIndiBaseClient.Create;
-     indiclient.onNewDevice:=@IndiNewDevice;
+     indiclient.onNewProperty:=@IndiNewProperty;
      indiclient.onDeleteDevice:=@IndiDeleteDevice;
      indiclient.SetServer('localhost',GetServerPort);
      indiclient.ConnectServer;
@@ -717,6 +721,7 @@ begin
      MenuRestartServer.Caption:='St&art server';
      MenuQuit.Caption:='&Quit';
      ActiveDevLst.Clear;
+     ActiveExecLst.Clear;
      for i:=1 to StringGrid1.RowCount-1 do begin
         StringGrid1.Cells[0,i]:='';
      end;
@@ -798,6 +803,7 @@ begin
       LabelStatus.Caption:='Server not running?';
     ImageList1.GetBitmap(0,led.Picture.Bitmap);
     ActiveDevLst.Clear;
+    ActiveExecLst.Clear;
     for i:=1 to StringGrid1.RowCount-1 do begin
        StringGrid1.Cells[0,i]:='';
     end;
@@ -847,26 +853,70 @@ begin
 end;
 
 procedure Tf_main.GetIndiDevices;
-var i: integer;
+var i,j: integer;
+    devuse: array of boolean;
 begin
- if StringGrid1.RowCount>1 then
+ if StringGrid1.RowCount>1 then begin
+   SetLength(devuse,ActiveDevLst.Count);
+   for i:=0 to ActiveDevLst.Count-1 do devuse[i]:=false;
+   // loop for exact match
    for i:=1 to StringGrid1.RowCount-1 do begin
-    if ( ActiveDevLst.IndexOf(StringGrid1.Cells[2,i])>=0)
-       then StringGrid1.Cells[0,i]:='1'
-       else StringGrid1.Cells[0,i]:='';
+    j:=ActiveDevLst.IndexOf(StringGrid1.Cells[2,i]);        // test for driver name
+    if (j>=0) and (not devuse[j])
+       then begin
+         devuse[j]:=true;
+         StringGrid1.Cells[0,i]:='1';
+       end
+       else
+           StringGrid1.Cells[0,i]:='';
+    end;
+   // try to find new dev name
+   for i:=1 to StringGrid1.RowCount-1 do begin
+       if StringGrid1.Cells[0,i]='1' then continue;
+       j:=ActiveExecLst.IndexOf(StringGrid1.Cells[3,i]);  // test for driver exec
+       if (j>=0)and (not devuse[j])
+         then begin
+           devuse[j]:=true;
+           StringGrid1.Cells[2,i]:=ActiveDevLst[j];
+           StringGrid1.Cells[0,i]:='1';
+         end
+         else
+           StringGrid1.Cells[0,i]:='';
    end;
-end;
-
-procedure Tf_main.IndiNewDevice(dp: Basedevice);
-begin
-  ActiveDevLst.Add(dp.getDeviceName);
+ end;
 end;
 
 procedure Tf_main.IndiDeleteDevice(dp: Basedevice);
 var i: integer;
 begin
   i:=ActiveDevLst.IndexOf(dp.getDeviceName);
-  if i>=0 then ActiveDevLst.Delete(i);
+  if i>=0 then begin
+    ActiveDevLst.Delete(i);
+    ActiveExecLst.Delete(i);
+  end;
+end;
+
+procedure Tf_main.IndiNewProperty(indiProp: IndiProperty);
+var propname: string;
+    proptype: INDI_TYPE;
+    drvinfo: ITextVectorProperty;
+    drvexec: IText;
+    dname,dexec: string;
+begin
+  propname:=indiProp.getName;
+  proptype:=indiProp.getType;
+  if (proptype=INDI_TEXT)and(propname='DRIVER_INFO') then begin
+     drvinfo:=indiProp.getText;
+     if drvinfo<>nil then begin
+       drvexec:=IUFindText(drvinfo,'DRIVER_EXEC');
+       if drvexec<>nil then begin
+         dexec:=drvexec.Text;
+         dname:=indiProp.getDeviceName;
+         ActiveDevLst.Add(dname);
+         ActiveExecLst.Add(dexec);
+       end;
+     end;
+  end;
 end;
 
 end.
