@@ -37,7 +37,7 @@ uses
 
 const
   starter_version='Version 1.0.0';
-  starterver = '1.0.0';
+  starterver = '1.1.0';
   blank=' ';
   CR = #$0d;
   LF = #$0a;
