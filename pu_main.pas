@@ -232,9 +232,13 @@ end;
 
 procedure Tf_main.FormDestroy(Sender: TObject);
 begin
+ if ActiveDevLst<>nil then begin
   if ServerPid<>'' then StopServer;
   ActiveDevLst.Free;
   ActiveExecLst.Free;
+ end
+ else
+  writeln('Exiting because other instance of indistarter is running.');
 end;
 
 
@@ -749,13 +753,16 @@ begin
     try
     c:=0;
     repeat
+      try
       if remote then begin
         i:=ExecProcess('ssh '+sshopt+RemoteUser+'@'+RemoteHost+' pidof indiserver',str);
       end
       else begin
          i:=ExecProcess('pidof indiserver',str);
       end;
-      inc(c);
+      finally
+        inc(c);
+      end;
       if i<>0 then sleep(100);
     until (i=0)or(c>3);
     if (i=0)and(str.Count>0) then
@@ -883,11 +890,14 @@ end;
 procedure Tf_main.IndiDeleteDevice(dp: Basedevice);
 var i: integer;
 begin
+try
   i:=ActiveDevLst.IndexOf(dp.getDeviceName);
   if i>=0 then begin
     ActiveDevLst.Delete(i);
     ActiveExecLst.Delete(i);
   end;
+except
+end;
 end;
 
 procedure Tf_main.IndiNewProperty(indiProp: IndiProperty);
@@ -897,6 +907,7 @@ var propname: string;
     drvexec: IText;
     dname,dexec: string;
 begin
+try
   propname:=indiProp.getName;
   proptype:=indiProp.getType;
   if (proptype=INDI_TEXT)and(propname='DRIVER_INFO') then begin
@@ -906,11 +917,15 @@ begin
        if drvexec<>nil then begin
          dexec:=drvexec.Text;
          dname:=indiProp.getDeviceName;
-         ActiveDevLst.Add(dname);
-         ActiveExecLst.Add(dexec);
+         if ActiveDevLst.IndexOf(dname)<0 then begin;
+            ActiveDevLst.Add(dname);
+            ActiveExecLst.Add(dexec);
+         end;
        end;
      end;
   end;
+except
+end;
 end;
 
 end.
