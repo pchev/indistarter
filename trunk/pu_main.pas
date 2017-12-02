@@ -680,11 +680,6 @@ StatusTimer.Enabled:=false;
      str.free;
      ActiveDevLst.Clear;
      ActiveExecLst.Clear;
-     indiclient:=TIndiBaseClient.Create;
-     indiclient.onNewProperty:=@IndiNewProperty;
-     indiclient.onDeleteDevice:=@IndiDeleteDevice;
-     indiclient.SetServer('localhost',GetServerPort);
-     indiclient.ConnectServer;
   end;
   Status;
 finally
@@ -857,6 +852,13 @@ procedure Tf_main.GetIndiDevices;
 var i,j: integer;
     devuse: array of boolean;
 begin
+ if (indiclient=nil)or(indiclient.Connected=false) then begin
+   indiclient:=TIndiBaseClient.Create;
+   indiclient.onNewProperty:=@IndiNewProperty;
+   indiclient.onDeleteDevice:=@IndiDeleteDevice;
+   indiclient.SetServer('localhost',GetServerPort);
+   indiclient.ConnectServer;
+ end;
  if StringGrid1.RowCount>1 then begin
    SetLength(devuse,ActiveDevLst.Count);
    for i:=0 to ActiveDevLst.Count-1 do devuse[i]:=false;
