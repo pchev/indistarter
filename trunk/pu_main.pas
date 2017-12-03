@@ -28,7 +28,7 @@ interface
 uses pu_devlist, pu_setup, u_utils, pu_indigui, UniqueInstance, XMLConf, process,
   indibaseclient, indibasedevice, indiapi, indicom, UScaleDPI,
   Classes, SysUtils, LazFileUtils, Forms, Controls, Graphics, Dialogs,
-  ComCtrls, StdCtrls, Grids, ExtCtrls, ActnList, Menus;
+  ComCtrls, StdCtrls, Grids, ExtCtrls, ActnList, Menus, LCLVersion, InterfaceBase;
 
 type
 
@@ -124,8 +124,15 @@ type
 
 var
   f_main: Tf_main;
+  compile_time, compile_version, compile_system, lclver: string;
 
 implementation
+
+{$if (lcl_fullversion >= 1070000)}
+  uses lclplatformdef;
+{$endif}
+
+{$i revision.inc}
 
 {$R *.lfm}
 
@@ -143,6 +150,10 @@ begin
   UniqueInstance1.OnInstanceRunning:=@InstanceRunning;
   UniqueInstance1.Enabled:=true;
   UniqueInstance1.Loaded;
+  lclver:=lcl_version;
+  compile_time:={$I %DATE%}+' '+{$I %TIME%};
+  compile_version:='Lazarus '+lcl_version+' Free Pascal '+{$I %FPCVERSION%}+' '+{$I %FPCTARGETOS%}+'-'+{$I %FPCTARGETCPU%}+'-'+LCLPlatformDirNames[WidgetSet.LCLPlatform];
+  compile_system:={$I %FPCTARGETOS%};
   ActiveDevLst:=TStringList.Create;
   ActiveExecLst:=TStringList.Create;
   sshopt:=' -oBatchMode=yes -oConnectTimeout=10 ';
@@ -246,7 +257,9 @@ procedure Tf_main.MenuAboutClick(Sender: TObject);
 var aboutmsg: string;
 begin
 aboutmsg:='INDI Starter '+crlf;
-aboutmsg:=aboutmsg+starter_version+crlf+crlf;
+aboutmsg:=aboutmsg+starter_version+'-'+RevisionStr+'  '+compile_time+crlf;
+aboutmsg:=aboutmsg+'Compiled with:'+crlf;
+aboutmsg:=aboutmsg+compile_version+crlf+crlf;
 aboutmsg:=aboutmsg+'A simple program to run a INDI server'+crlf;
 aboutmsg:=aboutmsg+'http://www.indilib.org'+crlf+crlf;
 aboutmsg:=aboutmsg+'Copyright (C) 2015 Patrick Chevalley'+crlf;
