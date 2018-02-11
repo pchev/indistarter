@@ -731,6 +731,7 @@ begin
      for i:=1 to StringGrid1.RowCount-1 do begin
         StringGrid1.Cells[0,i]:='';
      end;
+     indiclient:=nil;
 end;
 
 procedure Tf_main.StartTunnel;
