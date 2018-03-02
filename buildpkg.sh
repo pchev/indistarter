@@ -32,7 +32,7 @@ fi
 save_PATH=$PATH
 wd=`pwd`
 
-currentrev=$(LC_ALL=C svn info . | grep Revision: | sed 's/Revision: //')
+currentrev=$(git rev-list --count --first-parent HEAD)
 
 echo $version - $currentrev
 
@@ -63,6 +63,7 @@ if [[ $make_linux32 ]]; then
   cd $wd
   rsync -a --exclude=.svn system_integration/Linux/debian $builddir
   cd $builddir
+  mkdir debian/indistarter/usr/
   mv bin debian/indistarter/usr/
   mv share debian/indistarter/usr/
   cd debian
@@ -77,6 +78,11 @@ if [[ $make_linux32 ]]; then
   cd $wd
   rsync -a --exclude=.svn system_integration/Linux/rpm $builddir
   cd $builddir
+  mkdir -p rpm/RPMS/x86_64
+  mkdir -p rpm/RPMS/i386
+  mkdir rpm/SRPMS
+  mkdir rpm/tmp
+  mkdir -p rpm/indistarter/usr/
   mv debian/indistarter/usr/* rpm/indistarter/usr/
   cd rpm
   sed -i "/Version:/ s/3/$version/"  SPECS/indistarter.spec
@@ -110,6 +116,7 @@ if [[ $make_linux64 ]]; then
   cd $wd
   rsync -a --exclude=.svn system_integration/Linux/debian $builddir
   cd $builddir
+  mkdir debian/indistarter64/usr/
   mv bin debian/indistarter64/usr/
   mv share debian/indistarter64/usr/
   cd debian
@@ -124,6 +131,11 @@ if [[ $make_linux64 ]]; then
   cd $wd
   rsync -a --exclude=.svn system_integration/Linux/rpm $builddir
   cd $builddir
+  mkdir -p rpm/RPMS/x86_64
+  mkdir -p rpm/RPMS/i386
+  mkdir rpm/SRPMS
+  mkdir rpm/tmp
+  mkdir -p rpm/indistarter/usr/
   mv debian/indistarter64/usr/* rpm/indistarter/usr/
   cd rpm
   sed -i "/Version:/ s/3/$version/"  SPECS/indistarter64.spec

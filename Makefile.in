@@ -51,7 +51,7 @@ outdir:
 all: outdir component_all indistarter$(EXEEXT)
 
 revision:
-	$(LAZDIR)/tools/svn2revisioninc . revision.inc
+	./git-version.sh
 
 install: 
 	./install.sh $(PREFIX) $(CPU_TARGET)

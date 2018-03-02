@@ -1,0 +1,19 @@
+# ignore backup dir
+backup/
+# ignore fpc makefiles
+Makefile
+Makefile.fpc
+Makefile.fpcxxx
+# ignore build dir
+units/
+component/lib/
+component/indiclient/lib/
+component/synapse/source/lib/lib/
+component/uniqueinstance/lib/
+# ignore binary
+indistarter
+indistarter.dbg
+indistarter*.rpm
+indistarter*.deb
+indistarter*.tar.xz
+indistarter*.tar.bz2

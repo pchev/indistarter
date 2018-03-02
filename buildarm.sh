@@ -23,7 +23,7 @@ fi
 save_PATH=$PATH
 wd=`pwd`
 
-currentrev=$(LC_ALL=C svn info . | grep Revision: | sed 's/Revision: //')
+currentrev=$(git rev-list --count --first-parent HEAD)
 
 echo $version - $currentrev
 
@@ -53,6 +53,7 @@ if [[ $make_linuxarm ]]; then
   cd $wd
   rsync -a --exclude=.svn system_integration/Linux/debian $builddir
   cd $builddir
+  mkdir debian/indistarterarm/usr/
   mv bin debian/indistarterarm/usr/
   mv share debian/indistarterarm/usr/
   cd debian
