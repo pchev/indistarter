@@ -11,3 +11,4 @@ This software is part of a full suite for astronomical observation:
 - https://github.com/pchev/ccdciel
 - https://github.com/pchev/eqmodgui
 
+See also http://www.indilib.org/
