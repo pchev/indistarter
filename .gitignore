@@ -12,6 +12,7 @@ component/synapse/source/lib/lib/
 component/uniqueinstance/lib/
 # ignore binary
 indistarter
+indigui
 indistarter.dbg
 indistarter*.rpm
 indistarter*.deb

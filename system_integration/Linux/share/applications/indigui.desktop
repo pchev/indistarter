@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Name=INDIstarter
+Comment=A simple INDI client 
+Exec=indigui
+Icon=indigui
+Terminal=false
+Type=Application
+Categories=Education;Science;Astronomy;
+GenericName=INDIgui
