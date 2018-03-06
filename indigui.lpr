@@ -7,7 +7,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  pu_indigui, Forms;
+  pu_indigui, Dialogs, Forms;
 
 {$R *.res}
 
@@ -16,5 +16,7 @@ begin
   Application.Initialize;
   Application.CreateForm(Tf_indigui,f_indigui);
   Application.Run;
+  if f_indigui.DisconnectedServer then ShowMessage('Disconnected from server');
+
 end.
 
