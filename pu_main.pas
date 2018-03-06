@@ -49,6 +49,8 @@ type
     MenuHelp: TMenuItem;
     MenuAbout: TMenuItem;
     MenuEditName: TMenuItem;
+    MenuHelpOnline: TMenuItem;
+    MenuHelpPdf: TMenuItem;
     MenuSetup: TMenuItem;
     MenuRestartDevice: TMenuItem;
     MenuStopDevice: TMenuItem;
@@ -69,6 +71,8 @@ type
     procedure MenuAboutClick(Sender: TObject);
     procedure MenuDeleteDeviceClick(Sender: TObject);
     procedure MenuEditNameClick(Sender: TObject);
+    procedure MenuHelpOnlineClick(Sender: TObject);
+    procedure MenuHelpPdfClick(Sender: TObject);
     procedure MenuQuitClick(Sender: TObject);
     procedure MenuRestartDeviceClick(Sender: TObject);
     procedure MenuRestartServerClick(Sender: TObject);
@@ -95,6 +99,8 @@ type
     ServerFifo: string;
     CurrentCol, CurrentRow: integer;
     UniqueInstance1: TCdCUniqueInstance;
+    Appdir, Docdir: string;
+    Procedure GetAppDir;
     procedure LoadConfig(cname:string);
     procedure OtherInstance(Sender : TObject; ParamCount: Integer; Parameters: array of String);
     procedure InstanceRunning(Sender : TObject);
@@ -183,8 +189,51 @@ begin
   UScaleDPI.UseScaling:=true;
   UScaleDPI.SetScale(Canvas);
   ScaleDPI(Self);
+  Getappdir;
   if autostart then StartServer;
 end;
+
+Procedure Tf_main.GetAppDir;
+var buf:string;
+begin
+ Appdir:=getcurrentdir;
+ if not DirectoryExists(slash(Appdir)+slash('..')+slash('share')+slash('doc')+'indistarter') then begin
+     Appdir:=ExtractFilePath(ParamStr(0));
+ end;
+ Appdir:=expandfilename(Appdir);
+ // Be sur the doc directory exists
+ if (not directoryexists(slash(Appdir)+slash('..')+slash('share')+slash('doc')+'indistarter')) then begin
+   // try under the current directory
+   buf:=GetCurrentDir;
+   if (directoryexists(slash(buf)+slash('..')+slash('share')+slash('doc')+'indistarter')) then
+      appdir:=buf
+   else begin
+      // try under the program directory
+      buf:=ExtractFilePath(ParamStr(0));
+      if (directoryexists(slash(buf)+slash(buf)+slash('..')+slash('share')+slash('doc')+'indistarter')) then
+         appdir:=buf
+      else begin
+            // try in /usr
+             buf:=ExpandFileName(slash('/usr/bin'));
+             if (directoryexists(slash(buf)+slash('..')+slash('share')+slash('doc')+'indistarter')) then
+                appdir:=buf
+          else begin
+             // try /usr/local
+             buf:=ExpandFileName(slash('/usr/local/bin'));
+             if (directoryexists(slash(buf)+slash('..')+slash('share')+slash('doc')+'indistarter')) then
+                appdir:=buf
+             else begin
+                 Showmessage('Error: Can''t locate the doc directory !!'+crlf+'Please try to reinstall the software');
+             end;
+          end;
+      end;
+   end;
+ end;
+ Appdir:=expandfilename(Appdir);
+ Docdir:=slash(Appdir)+slash('..')+slash('share')+slash('doc')+'indistarter';
+ Docdir:=expandfilename(Docdir);
+end;
+
 
 procedure Tf_main.LoadConfig(cname:string);
 var i: integer;
@@ -535,6 +584,18 @@ begin
     EditDeviceName(CurrentRow)
  else
     ShowMessage('The device must be stopped.');
+end;
+
+procedure Tf_main.MenuHelpOnlineClick(Sender: TObject);
+begin
+  ExecuteFile('https://github.com/pchev/indistarter/wiki');
+end;
+
+procedure Tf_main.MenuHelpPdfClick(Sender: TObject);
+var pdffn: string;
+begin
+  pdffn:=ExpandFileNameUTF8(slash(Docdir)+'indistarter.pdf');
+  ExecuteFile(pdffn);
 end;
 
 procedure Tf_main.CheckDuplicateDevice(dev: Tdevicenode);

@@ -30,7 +30,7 @@ uses
        Windows, registry,
      {$endif}
      {$ifdef unix}
-       unix,
+       Unix, BaseUnix,
      {$endif}
      process, dom, Classes, LCLType, FileUtil,
      Math, SysUtils, Forms, Controls, StdCtrls, Graphics;
@@ -57,6 +57,7 @@ Function sgn(x:Double):Double ;
 function ExecBG(cmd: string):integer;
 function ExecProcessNoWait(cmd: string):TProcess;
 Function ExecProcess(cmd: string; output: TStringList; ShowConsole:boolean=false): integer;
+Function ExecuteFile(const FileName: string): integer;
 procedure Wait(wait:integer=5);
 function  Rmod(x,y:Double):Double;
 function GetAttrib(node:TDOMNode; attr:string):TDOMNode;
@@ -294,6 +295,55 @@ except
     param.Free;
   end;
 end;
+end;
+
+{$ifdef unix}
+function ExecFork(cmd:string;p1:string='';p2:string='';p3:string='';p4:string='';p5:string=''):integer;
+var
+  parg: array[1..7] of PChar;
+begin
+  result := fpFork;
+  if result = 0 then
+  begin
+    parg[1] := Pchar(cmd);
+    if p1='' then parg[2]:=nil else parg[2] := PChar(p1);
+    if p2='' then parg[3]:=nil else parg[3] := PChar(p2);
+    if p3='' then parg[4]:=nil else parg[4] := PChar(p3);
+    if p4='' then parg[5]:=nil else parg[5] := PChar(p4);
+    if p5='' then parg[6]:=nil else parg[6] := PChar(p5);
+    parg[7] := nil;
+    if fpExecVP(cmd,PPChar(@parg[1])) = -1 then
+    begin
+      //writetrace('Could not launch '+cmd);
+    end;
+  end;
+end;
+{$endif}
+
+Function ExecuteFile(const FileName: string): integer;
+{$ifdef mswindows}
+var
+  zFileName, zParams, zDir: array[0..255] of Char;
+begin
+  //writetrace('Try to launch: '+FileName);
+  Result := ShellExecute(Application.MainForm.Handle, nil, StrPCopy(zFileName, FileName),
+                         StrPCopy(zParams, ''), StrPCopy(zDir, ''), SW_SHOWNOACTIVATE);
+{$endif}
+{$ifdef unix}
+var cmd,p1,p2,p3,p4: string;
+const OpenFileCMD: string = 'xdg-open';
+begin
+  cmd:=trim(words(OpenFileCMD,blank,1,1));
+  p1:=trim(words(OpenFileCMD,blank,2,1));
+  p2:=trim(words(OpenFileCMD,blank,3,1));
+  p3:=trim(words(OpenFileCMD,blank,4,1));
+  p4:=trim(words(OpenFileCMD,blank,5,1));
+  if p1='' then result:=ExecFork(cmd,FileName)
+  else if p2='' then result:=ExecFork(cmd,p1,FileName)
+  else if p3='' then result:=ExecFork(cmd,p1,p2,FileName)
+  else if p4='' then result:=ExecFork(cmd,p1,p2,p3,FileName)
+  else result:=ExecFork(cmd,p1,p2,p3,p4,FileName);
+{$endif}
 end;
 
 procedure Wait(wait:integer=5);

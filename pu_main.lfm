@@ -7,6 +7,7 @@ object f_main: Tf_main
   Caption = 'INDI server'
   ClientHeight = 309
   ClientWidth = 294
+  DesignTimePPI = 95
   Menu = MainMenu1
   OnClose = FormClose
   OnCreate = FormCreate
@@ -80,17 +81,17 @@ object f_main: Tf_main
     end
     object ConfigLabel: TLabel
       Left = 120
-      Height = 15
+      Height = 19
       Top = 4
-      Width = 74
+      Width = 72
       Caption = 'ConfigLabel'
       ParentColor = False
     end
     object Label1: TLabel
       Left = 6
-      Height = 15
+      Height = 19
       Top = 4
-      Width = 89
+      Width = 87
       Caption = 'Configuration:'
       ParentColor = False
     end
@@ -122,6 +123,14 @@ object f_main: Tf_main
     end
     object MenuHelp: TMenuItem
       Caption = '&Help'
+      object MenuHelpPdf: TMenuItem
+        Caption = 'PDF help'
+        OnClick = MenuHelpPdfClick
+      end
+      object MenuHelpOnline: TMenuItem
+        Caption = 'Online help'
+        OnClick = MenuHelpOnlineClick
+      end
       object MenuAbout: TMenuItem
         Caption = '&About'
         OnClick = MenuAboutClick

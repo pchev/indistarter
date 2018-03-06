@@ -30,6 +30,7 @@ install -v -m 644 system_integration/Linux/share/applications/indigui.desktop $d
 install -v -m 644 system_integration/Linux/share/appdata/indistarter.appdata.xml $destdir/share/appdata/indistarter.appdata.xml
 install -v -m 644 system_integration/Linux/share/doc/indistarter/changelog $destdir/share/doc/indistarter/changelog
 install -v -m 644 system_integration/Linux/share/doc/indistarter/copyright $destdir/share/doc/indistarter/copyright
+install -v -m 644 doc/indistarter.pdf $destdir/share/doc/indistarter/indistarter.pdf
 install -v -m 644 system_integration/Linux/share/pixmaps/indistarter.png $destdir/share/pixmaps/indistarter.png
 install -v -m 644 system_integration/Linux/share/pixmaps/indigui.png $destdir/share/pixmaps/indigui.png
 install -v -m 644 system_integration/Linux/share/icons/hicolor/48x48/apps/indistarter.png $destdir/share/icons/hicolor/48x48/apps/indistarter.png
