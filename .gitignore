@@ -10,6 +10,10 @@ component/lib/
 component/indiclient/lib/
 component/synapse/source/lib/lib/
 component/uniqueinstance/lib/
+# doc
+/doc/indistarter.html  
+/doc/indistarter.wiki  
+/doc/wikiimages
 # ignore binary
 indistarter
 indigui

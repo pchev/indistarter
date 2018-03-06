@@ -1,0 +1,25 @@
+Install:
+
+https://github.com/yakivmospan/github-wikito-converter
++ wkhtmltopdf
+
+
+Get the markdown documentation and the images:
+
+git clone https://github.com/pchev/indistarter.wiki.git
+git clone https://github.com/pchev/wikiimages.git
+
+
+Create html doc:
+
+gwtc -n indistarter ./indistarter.wiki
+
+
+Replace image link by local copy:
+
+sed -i 's/img src="https:\/\/github\.com\/pchev\/wikiimages\/raw\/master\/indistarter\//img src="wikiimages\/indistarter\//g' indistarter.html
+
+
+Create pdf:
+
+wkhtmltopdf indistarter.html indistarter.pdf
