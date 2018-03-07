@@ -13,7 +13,6 @@ component/uniqueinstance/lib/
 # doc
 /doc/indistarter.html  
 /doc/indistarter.wiki  
-/doc/wikiimages
 # ignore binary
 indistarter
 indigui
