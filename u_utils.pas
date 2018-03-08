@@ -36,7 +36,7 @@ uses
      Math, SysUtils, Forms, Controls, StdCtrls, Graphics;
 
 const
-  starterver = '1.2.0';
+  starterver = '1.3.0';
   starter_version='Version '+starterver;
   blank=' ';
   CR = #$0d;
