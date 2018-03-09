@@ -6,6 +6,9 @@ The INDI server can be launched locally or remotely on another computer. In this
 
 Please report any issue at https://www.ap-i.net/mantis/set_project.php?project_id=5
 
+You can download pre-compiled binary from https://sourceforge.net/projects/indistarter/
+Or by adding the Skychart apt repository https://www.ap-i.net/skychart/en/documentation/installation_on_linux_debian
+
 This software is part of a full suite for astronomical observation:
 - https://github.com/pchev/skychart
 - https://github.com/pchev/ccdciel
