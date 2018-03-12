@@ -19,7 +19,7 @@ Indistarter is a user interface to run a INDI server.
 %defattr(-,root,root)
 /usr/bin/indistarter
 /usr/bin/indigui
-/usr/share/appdata/indistarter.appdata.xml
+/usr/share/metainfo/indistarter.appdata.xml
 /usr/share/applications/indistarter.desktop
 /usr/share/applications/indigui.desktop
 /usr/share/pixmaps/indistarter.png
