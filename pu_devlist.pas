@@ -105,17 +105,24 @@ begin
   else
     fn:='';
   if not FileExists(fn) then begin
-    {$ifdef darwin}
-    fn:=ExpandFileName(slash(Appdir)+'Resources/drivers.xml');
-    {$endif}
+    if Bindir<>'' then
+       fn:=slash(Bindir)+'..'+ '/share/indi/drivers.xml';
     if not FileExists(fn) then begin
-    fn:='/usr/share/indi/drivers.xml';
+      {$ifdef darwin}
+      if Bindir<>'' then
+         fn:=ExpandFileName(slash(Bindir)+'../Resources/drivers.xml');
+      else
+         fn:=ExpandFileName(slash(Appdir)+'Resources/drivers.xml');
+      {$endif}
       if not FileExists(fn) then begin
-       fn:='/usr/local/share/indi/drivers.xml';
-       if not FileExists(fn) then begin
-         ShowMessage('Cannot find INDI drivers.xml file. Please give the file location using the --drivers= option.');
-         halt(1);
-       end;
+      fn:='/usr/share/indi/drivers.xml';
+        if not FileExists(fn) then begin
+         fn:='/usr/local/share/indi/drivers.xml';
+         if not FileExists(fn) then begin
+           ShowMessage('Cannot find INDI drivers.xml file. Please give the file location using the --drivers= option.');
+           halt(1);
+         end;
+        end;
       end;
     end;
   end;
