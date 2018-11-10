@@ -106,8 +106,7 @@ begin
     fn:='';
   if not FileExists(fn) then begin
     {$ifdef darwin}
-    // try xIndi first
-    fn:='/Applications/INDI Server.app/Contents/Resources/share/indi/drivers.xml';
+    fn:=ExpandFileName(slash(Appdir)+'Resources/drivers.xml');
     {$endif}
     if not FileExists(fn) then begin
     fn:='/usr/share/indi/drivers.xml';

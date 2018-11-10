@@ -47,6 +47,9 @@ const
   rad2deg=180/pi;
   deg2rad=pi/180;
 
+var
+  Appdir, Docdir, Bindir: string;
+
 Procedure FormPos(form : Tform; x,y : integer);
 Function FormEntry(aOwner:TComponent; lbl,defaultstr:string):string;
 function words(str,sep : string; p,n : integer; isep:char=blank) : string;

@@ -99,7 +99,6 @@ type
     ServerFifo: string;
     CurrentCol, CurrentRow: integer;
     UniqueInstance1: TCdCUniqueInstance;
-    Appdir, Docdir, Bindir: string;
     Procedure GetAppDir;
     procedure LoadConfig(cname:string);
     procedure OtherInstance(Sender : TObject; ParamCount: Integer; Parameters: array of String);
