@@ -53,6 +53,7 @@ type
     procedure CustomCheckBoxChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     { private declarations }
     procedure ProcessDevices;
@@ -73,7 +74,6 @@ implementation
 procedure Tf_devlist.FormCreate(Sender: TObject);
 begin
   ScaleDPI(Self);
-  ProcessDevices;
 end;
 
 procedure Tf_devlist.CustomCheckBoxChange(Sender: TObject);
@@ -88,6 +88,13 @@ begin
   for i:=0 to TreeView1.Items.Count-1 do begin
      if TreeView1.Items[i].Data<>nil then Tdevicenode(TreeView1.Items[i].Data).Free;
   end;
+end;
+
+procedure Tf_devlist.FormShow(Sender: TObject);
+begin
+  CustomPanel.Visible:=CustomCheckBox.Checked;
+  TreeView1.Visible:= not CustomPanel.Visible;
+  ProcessDevices;
 end;
 
 procedure Tf_devlist.ProcessDevices;
@@ -110,7 +117,7 @@ begin
     if not FileExists(fn) then begin
       {$ifdef darwin}
       if Bindir<>'' then
-         fn:=ExpandFileName(slash(Bindir)+'../Resources/drivers.xml');
+         fn:=ExpandFileName(slash(Bindir)+'../Resources/drivers.xml')
       else
          fn:=ExpandFileName(slash(Appdir)+'Resources/drivers.xml');
       {$endif}
@@ -128,6 +135,7 @@ begin
   end;
   fdir:=ExtractFilePath(fn);
   i:=findfirst(slash(fdir)+'*.xml',0,fs);
+  TreeView1.BeginUpdate;
   while i=0 do begin
     fn:=slash(fdir)+fs.name;
     if FileExists(fn) then begin
@@ -156,6 +164,7 @@ begin
   end;
   FindClose(fs);
   TreeView1.SortType:=stText;
+  TreeView1.EndUpdate;
 end;
 
 procedure Tf_devlist.processGroup(Node: TDOMNode);
