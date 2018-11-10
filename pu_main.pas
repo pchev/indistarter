@@ -145,7 +145,6 @@ implementation
 { Tf_main }
 
 procedure Tf_main.FormCreate(Sender: TObject);
-var i:integer;
 begin
   DefaultFormatSettings.DecimalSeparator:='.';
   DefaultFormatSettings.TimeSeparator:=':';
@@ -174,6 +173,7 @@ begin
   RemotePort:='7624';
   stayontop:=false;
   ClearGrid;
+  Getappdir;
   ConfigExtension:= '.conf';
   rc:=TXMLConfig.Create(self);
   config:=TXMLConfig.Create(self);
@@ -189,13 +189,14 @@ begin
   UScaleDPI.UseScaling:=true;
   UScaleDPI.SetScale(Canvas);
   ScaleDPI(Self);
-  Getappdir;
   if autostart then StartServer;
 end;
 
 Procedure Tf_main.GetAppDir;
 var buf:string;
+    {$ifdef darwin}
     i: integer;
+    {$endif}
 begin
 {$ifdef darwin}
  Appdir:=ExtractFilePath(ParamStr(0));
@@ -256,6 +257,7 @@ begin
   config.Filename:=slash(ConfigDir)+configfile;
   devlist:=ChangeFileExt(config.Filename,'.devices');
   devlist:=config.GetValue('/Devices/List',devlist);
+  Bindir:=config.GetValue('/Server/Bindir',Bindir);
   autostart:=config.GetValue('/Server/Autostart',autostart);
   serveroptions:=config.GetValue('/Server/Options',serveroptions);
   remote:=config.GetValue('/Server/Remote',remote);
@@ -279,6 +281,7 @@ begin
   devlist:=ChangeFileExt(config.Filename,'.devices');
   StringGrid1.SaveToCSVFile(devlist);
   config.DeleteValue('/Devices/List');
+  config.SetValue('/Server/Bindir',Bindir);
   config.SetValue('/Server/Autostart',autostart);
   config.SetValue('/Server/Options',serveroptions);
   config.SetValue('/Server/Remote',remote);
@@ -324,7 +327,7 @@ aboutmsg:=aboutmsg+'Compiled with:'+crlf;
 aboutmsg:=aboutmsg+compile_version+crlf+crlf;
 aboutmsg:=aboutmsg+'A simple program to run a INDI server'+crlf;
 aboutmsg:=aboutmsg+'http://www.indilib.org'+crlf+crlf;
-aboutmsg:=aboutmsg+'Copyright (C) 2015 Patrick Chevalley'+crlf;
+aboutmsg:=aboutmsg+'Copyright (C) 2018 Patrick Chevalley'+crlf;
 aboutmsg:=aboutmsg+'http://www.ap-i.net'+crlf+crlf;
 aboutmsg:=aboutmsg+'This program is free software; you can redistribute it and/or'+crlf;
 aboutmsg:=aboutmsg+'modify it under the terms of the GNU General Public License'+crlf;
@@ -367,6 +370,7 @@ begin
   f_setup.onConfigChange:=@SetupConfigChange;
   f_setup.ConfigDir:=ConfigDir;
   f_setup.config:=ExtractFileNameOnly(configfile);
+  f_setup.indipath.Directory:=Bindir;
   f_setup.serveroptions.Text:=serveroptions;
   f_setup.autostart.Checked:=autostart;
   f_setup.stayontop.Checked:=stayontop;
@@ -381,6 +385,7 @@ begin
   if f_setup.ModalResult=mrOK then begin
     autostart := f_setup.autostart.Checked;
     serveroptions := f_setup.serveroptions.Text;
+    Bindir     := f_setup.indipath.Directory;
     remote     := f_setup.remote.Checked;
     RemoteHost := f_setup.remotehost.Text;
     RemoteUser := f_setup.remoteuser.Text;
@@ -868,8 +873,7 @@ begin
 end;
 
 procedure Tf_main.Status;
-var str: TStringList;
-    i: integer;
+var i: integer;
 begin
   if ServerPid<>'' then begin
     ImageList1.GetBitmap(1,led.Picture.Bitmap);

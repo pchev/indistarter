@@ -33,7 +33,7 @@ uses
        Unix, BaseUnix,
      {$endif}
      process, dom, Classes, LCLType, FileUtil,
-     Math, SysUtils, Forms, Controls, StdCtrls, Graphics;
+     SysUtils, Forms, Controls, StdCtrls, Graphics;
 
 const
   starterver = '1.3.0';

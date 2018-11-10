@@ -39,6 +39,8 @@ type
     Button2: TButton;
     BtnNewConfig: TButton;
     ConfigList: TComboBox;
+    indipath: TDirectoryEdit;
+    Label1: TLabel;
     Label8: TLabel;
     localport: TEdit;
     Panel1: TPanel;
