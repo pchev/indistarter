@@ -331,7 +331,11 @@ begin
 {$endif}
 {$ifdef unix}
 var cmd,p1,p2,p3,p4: string;
+{$ifdef darwin}
+const OpenFileCMD: string = 'open';
+{$else}
 const OpenFileCMD: string = 'xdg-open';
+{$endif}
 begin
   cmd:=trim(words(OpenFileCMD,blank,1,1));
   p1:=trim(words(OpenFileCMD,blank,2,1));

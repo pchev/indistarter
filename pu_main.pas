@@ -99,7 +99,7 @@ type
     ServerFifo: string;
     CurrentCol, CurrentRow: integer;
     UniqueInstance1: TCdCUniqueInstance;
-    Appdir, Docdir: string;
+    Appdir, Docdir, Bindir: string;
     Procedure GetAppDir;
     procedure LoadConfig(cname:string);
     procedure OtherInstance(Sender : TObject; ParamCount: Integer; Parameters: array of String);
@@ -195,7 +195,18 @@ end;
 
 Procedure Tf_main.GetAppDir;
 var buf:string;
+    i: integer;
 begin
+{$ifdef darwin}
+ Appdir:=ExtractFilePath(ParamStr(0));
+ i := pos('MacOS/',Appdir);
+ if i>0 then
+   Appdir:=ExtractFilePath(copy(appdir,1,i))
+ else
+   Appdir:='/Applications/IndiStarter.app/Contents';
+ bindir:=slash(appdir)+slash('MacOS');
+ Docdir:=slash(Appdir)+slash('Resources');
+{$else}
  Appdir:=getcurrentdir;
  if not DirectoryExists(slash(Appdir)+slash('..')+slash('share')+slash('doc')+'indistarter') then begin
      Appdir:=ExtractFilePath(ParamStr(0));
@@ -229,9 +240,11 @@ begin
       end;
    end;
  end;
+ bindir:='';
  Appdir:=expandfilename(Appdir);
  Docdir:=slash(Appdir)+slash('..')+slash('share')+slash('doc')+'indistarter';
  Docdir:=expandfilename(Docdir);
+ {$endif}
 end;
 
 
@@ -711,8 +724,8 @@ end;
 
 procedure Tf_main.StartServer;
 var str:TStringList;
-    buf:string;
-    i,r:integer;
+    cmd:string;
+    i:integer;
 begin
 try
 if StringGrid1.RowCount<2 then begin
@@ -738,7 +751,12 @@ StatusTimer.Enabled:=false;
      else begin
        DeleteFile(ServerFifo);
        if (ExecProcess('mkfifo '+ServerFifo,str)=0) then begin
-          r:=ExecBG('indiserver '+serveroptions+' -f '+ServerFifo);
+          if bindir<>'' then
+            cmd:='export PATH='+bindir+':$PATH && '
+          else
+            cmd:='';
+          cmd:=cmd+'indiserver '+serveroptions+' -f '+ServerFifo;
+          ExecBG(cmd);
           Wait(1);
           ServerStarted:=true;
           if StringGrid1.RowCount>1 then begin
@@ -825,10 +843,10 @@ begin
     repeat
       try
       if remote then begin
-        i:=ExecProcess('ssh '+sshopt+RemoteUser+'@'+RemoteHost+' pidof indiserver',str);
+        i:=ExecProcess('ssh '+sshopt+RemoteUser+'@'+RemoteHost+' pgrep indiserver',str);
       end
       else begin
-         i:=ExecProcess('pidof indiserver',str);
+         i:=ExecProcess('pgrep indiserver',str);
       end;
       finally
         inc(c);

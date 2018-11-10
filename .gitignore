@@ -10,6 +10,8 @@ component/lib/
 component/indiclient/lib/
 component/synapse/source/lib/lib/
 component/uniqueinstance/lib/
+indistarter.app
+indistarter.lps
 # doc
 /doc/indistarter.html  
 /doc/indistarter.wiki  
