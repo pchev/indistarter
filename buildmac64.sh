@@ -21,7 +21,7 @@ echo $version - $currentrev
 
 # delete old files
   rm indistarter*.dmg
-  rm -rf $builddir
+  rm -rf $basedir
 
 # make x86_64 Mac version
   ./configure $configopt prefix=$builddir target=x86_64-darwin
@@ -50,6 +50,6 @@ echo $version - $currentrev
   if [[ $? -ne 0 ]]; then exit 1;fi
 
   cd $wd
-  rm -rf $builddir
+  rm -rf $basedir
 
 
