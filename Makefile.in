@@ -37,8 +37,13 @@ fpcopts=-O3 -CX -XX -Xs
 endif
 # LCL Platform
 ifndef LCL_PLATFORM
+ifeq ($(OS_TARGET),darwin)
+LCL_PLATFORM=cocoa
+opt_target= -k-macosx_version_min -k10.10
+else
 LCL_PLATFORM=gtk2
 opt_target=
+endif
 endif
 export LCL_PLATFORM
 
@@ -53,5 +58,10 @@ all: outdir component_all indistarter$(EXEEXT) indigui$(EXEEXT)
 revision:
 	./git-version.sh
 
+ifeq ($(OS_TARGET),darwin)
+install: 
+	./install_darwin.sh $(PREFIX)
+else
 install: 
 	./install.sh $(PREFIX) $(CPU_TARGET)
+endif
