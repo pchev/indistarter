@@ -2,19 +2,20 @@
   This source is only used to compile and install the package.
  }
 
-unit synapse; 
+unit synapse;
 
+{$warn 5023 off : no warning about unused units}
 interface
 
 uses
-  blcksock, ftpsend, httpsend, synaser, LazarusPackageIntf;
+  blcksock, ftpsend, httpsend, synaser, ssl_openssl, dnssend, LazarusPackageIntf;
 
 implementation
 
-procedure Register; 
+procedure Register;
 begin
-end; 
+end;
 
 initialization
-  RegisterPackage('synapse', @Register); 
+  RegisterPackage('synapse', @Register);
 end.
