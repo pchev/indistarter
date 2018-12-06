@@ -135,6 +135,7 @@ begin
   end;
   fdir:=ExtractFilePath(fn);
   i:=findfirst(slash(fdir)+'*.xml',0,fs);
+  TreeView1.Items.Clear;
   TreeView1.BeginUpdate;
   while i=0 do begin
     fn:=slash(fdir)+fs.name;
