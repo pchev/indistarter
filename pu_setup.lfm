@@ -57,7 +57,7 @@ object f_setup: Tf_setup
     Visible = False
     object remotehost: TEdit
       Left = 8
-      Height = 29
+      Height = 31
       Top = 24
       Width = 199
       ParentFont = False
@@ -65,7 +65,7 @@ object f_setup: Tf_setup
     end
     object remoteuser: TEdit
       Left = 226
-      Height = 29
+      Height = 31
       Top = 24
       Width = 79
       ParentFont = False
@@ -73,18 +73,18 @@ object f_setup: Tf_setup
     end
     object Label3: TLabel
       Left = 8
-      Height = 17
+      Height = 19
       Top = 4
-      Width = 123
+      Width = 114
       Caption = 'Remote host name'
       ParentColor = False
       ParentFont = False
     end
     object Label4: TLabel
       Left = 226
-      Height = 17
+      Height = 19
       Top = 4
-      Width = 71
+      Width = 65
       Caption = 'User name'
       ParentColor = False
       ParentFont = False
@@ -102,7 +102,7 @@ object f_setup: Tf_setup
     end
     object localport: TEdit
       Left = 87
-      Height = 29
+      Height = 31
       Top = 63
       Width = 53
       ParentFont = False
@@ -110,7 +110,7 @@ object f_setup: Tf_setup
     end
     object remoteport: TEdit
       Left = 251
-      Height = 29
+      Height = 31
       Top = 63
       Width = 53
       ParentFont = False
@@ -118,18 +118,18 @@ object f_setup: Tf_setup
     end
     object Label6: TLabel
       Left = 8
-      Height = 17
+      Height = 19
       Top = 67
-      Width = 64
+      Width = 60
       Caption = 'Local port'
       ParentColor = False
       ParentFont = False
     end
     object Label7: TLabel
       Left = 158
-      Height = 17
+      Height = 19
       Top = 67
-      Width = 80
+      Width = 76
       Caption = 'Remote port'
       ParentColor = False
       ParentFont = False
@@ -149,7 +149,7 @@ object f_setup: Tf_setup
       Left = 8
       Height = 21
       Top = 240
-      Width = 273
+      Width = 253
       Caption = 'Start indiserver on a remote computer'
       OnClick = remoteClick
       ParentFont = False
@@ -157,9 +157,9 @@ object f_setup: Tf_setup
     end
     object Label2: TLabel
       Left = 13
-      Height = 17
+      Height = 19
       Top = 120
-      Width = 167
+      Width = 154
       Caption = 'Additional server options:'
       ParentColor = False
       ParentFont = False
@@ -167,7 +167,7 @@ object f_setup: Tf_setup
     end
     object serveroptions: TEdit
       Left = 8
-      Height = 29
+      Height = 31
       Hint = 'Do not add driver here, and do not use the -f option!'#10'Valid options:'#10' -l d     : log driver messages to <d>/YYYY-MM-DD.islog'#10' -m m  : kill client if gets more than this many MB behind, default 64'#10' -p p    : alternate IP port, default 7624'#10' -v       : show key events, no traffic'#10' -vv      : -v + key message content'#10' -vvv    : -vv + complete xml'
       Top = 140
       Width = 294
@@ -180,7 +180,7 @@ object f_setup: Tf_setup
       Left = 8
       Height = 21
       Top = 206
-      Width = 277
+      Width = 250
       Caption = 'Keep the server window always visible'
       ParentFont = False
       TabOrder = 2
@@ -189,28 +189,29 @@ object f_setup: Tf_setup
       Left = 8
       Height = 21
       Top = 176
-      Width = 294
+      Width = 271
       Caption = 'Autostart the server with last used profile'
       ParentFont = False
       TabOrder = 3
     end
     object Label8: TLabel
       Left = 13
-      Height = 17
+      Height = 19
       Top = 8
-      Width = 95
+      Width = 91
       Caption = 'Configuration :'
       ParentColor = False
       ParentFont = False
     end
     object ConfigList: TComboBox
       Left = 12
-      Height = 33
+      Height = 35
       Top = 24
       Width = 167
       ItemHeight = 0
       OnChange = ConfigListChange
       ParentFont = False
+      Sorted = True
       Style = csDropDownList
       TabOrder = 4
     end
@@ -226,7 +227,7 @@ object f_setup: Tf_setup
     end
     object indipath: TDirectoryEdit
       Left = 8
-      Height = 29
+      Height = 31
       Top = 84
       Width = 294
       ShowHidden = False
@@ -237,9 +238,9 @@ object f_setup: Tf_setup
     end
     object Label1: TLabel
       Left = 13
-      Height = 17
+      Height = 19
       Top = 64
-      Width = 117
+      Width = 109
       Caption = 'INDI binaries path'
       ParentColor = False
     end

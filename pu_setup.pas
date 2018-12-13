@@ -91,13 +91,19 @@ begin
   while i=0 do begin
     buf:=ExtractFileNameOnly(fs.name);
     n:=ConfigList.Items.Add(buf);
-    if buf=config then ConfigList.ItemIndex:=n;
     i:=findnext(fs);
   end;
   findclose(fs);
   if ConfigList.Items.Count=0 then begin
     ConfigList.Items.Add('default');
     ConfigList.ItemIndex:=0;
+  end else begin
+    for i:=0 to ConfigList.Items.Count-1 do begin
+       if ConfigList.Items[i]=config then begin
+          ConfigList.ItemIndex:=i;
+          break;
+       end;
+    end;
   end;
 end;
 
