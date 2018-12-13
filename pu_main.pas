@@ -92,7 +92,7 @@ type
     ActiveDevLst,ActiveExecLst: TStringList;
     TunnelProcess: TProcess;
     rc,config: TXMLConfig;
-    ConfigDir,configfile,devlist,serveroptions: string;
+    ConfigDir,configfile,devlist,serveroptions,serverlog: string;
     RemoteHost,RemoteUser,LocalPort,RemotePort,sshopt: string;
     autostart,stayontop,remote,ServerStarted: boolean;
     GUIready: boolean;
@@ -165,6 +165,7 @@ begin
   ClientBtn.Enabled:=false;
   autostart:=false;
   serveroptions:='';
+  serverlog:='';
   remote:=false;
   RemoteHost:='';
   RemoteUser:='';
@@ -259,6 +260,7 @@ begin
   Bindir:=config.GetValue('/Server/Bindir',Bindir);
   autostart:=config.GetValue('/Server/Autostart',autostart);
   serveroptions:=config.GetValue('/Server/Options',serveroptions);
+  serverlog:=config.GetValue('/Server/Log','');
   remote:=config.GetValue('/Server/Remote',remote);
   RemoteHost:=config.GetValue('/RemoteServer/Host',RemoteHost);
   RemoteUser:=config.GetValue('/RemoteServer/User',RemoteUser);
@@ -283,6 +285,7 @@ begin
   config.SetValue('/Server/Bindir',Bindir);
   config.SetValue('/Server/Autostart',autostart);
   config.SetValue('/Server/Options',serveroptions);
+  config.SetValue('/Server/Log',serverlog);
   config.SetValue('/Server/Remote',remote);
   config.SetValue('/RemoteServer/Host',RemoteHost);
   config.SetValue('/RemoteServer/User',RemoteUser);
@@ -371,6 +374,7 @@ begin
   f_setup.config:=ExtractFileNameOnly(configfile);
   f_setup.indipath.Directory:=Bindir;
   f_setup.serveroptions.Text:=serveroptions;
+  f_setup.LogFileName.FileName:=serverlog;
   f_setup.autostart.Checked:=autostart;
   f_setup.stayontop.Checked:=stayontop;
   f_setup.remote.Checked:=remote;
@@ -384,6 +388,10 @@ begin
   if f_setup.ModalResult=mrOK then begin
     autostart := f_setup.autostart.Checked;
     serveroptions := f_setup.serveroptions.Text;
+    if f_setup.LogFileName.Visible then
+       serverlog := trim(f_setup.LogFileName.FileName)
+    else
+       serverlog := '';
     Bindir     := f_setup.indipath.Directory;
     remote     := f_setup.remote.Checked;
     RemoteHost := f_setup.remotehost.Text;
@@ -408,6 +416,7 @@ procedure Tf_main.SetupConfigChange(Sender: TObject);
 begin
  LoadConfig(f_setup.config+'.conf');
  f_setup.serveroptions.Text:=serveroptions;
+ f_setup.LogFileName.FileName:=serverlog;
  f_setup.autostart.Checked:=autostart;
  f_setup.stayontop.Checked:=stayontop;
  f_setup.remote.Checked:=remote;
@@ -760,7 +769,7 @@ StatusTimer.Enabled:=false;
           else
             cmd:='';
           cmd:=cmd+'indiserver '+serveroptions+' -f '+ServerFifo;
-          ExecBG(cmd);
+          ExecBG(cmd,serverlog);
           Wait(1);
           ServerStarted:=true;
           if StringGrid1.RowCount>1 then begin

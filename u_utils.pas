@@ -57,7 +57,7 @@ procedure SplitRec(buf,sep:string; var arg: TStringList);
 Procedure SplitCmd(S : String; List : TStringList);
 function Slash(nom : string) : string;
 Function sgn(x:Double):Double ;
-function ExecBG(cmd: string):integer;
+function ExecBG(cmd: string; logfile: string=''):integer;
 function ExecProcessNoWait(cmd: string):TProcess;
 Function ExecProcess(cmd: string; output: TStringList; ShowConsole:boolean=false): integer;
 Function ExecuteFile(const FileName: string): integer;
@@ -212,9 +212,12 @@ else
    sgn:=  1 ;
 end ;
 
-function ExecBG(cmd: string):integer;
+function ExecBG(cmd: string; logfile: string=''):integer;
 begin
-  result:=fpSystem(cmd+' &');
+  if logfile<>'' then
+    result:=fpSystem(cmd+' >'+logfile+' 2>&1 &')
+  else
+    result:=fpSystem(cmd+' &')
 end;
 
 function ExecProcessNoWait(cmd: string):TProcess;

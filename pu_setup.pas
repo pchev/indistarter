@@ -39,9 +39,11 @@ type
     Button2: TButton;
     BtnNewConfig: TButton;
     ConfigList: TComboBox;
+    LogFileName: TFileNameEdit;
     indipath: TDirectoryEdit;
     Label1: TLabel;
     Label8: TLabel;
+    Label9: TLabel;
     localport: TEdit;
     Panel1: TPanel;
     remoteport: TEdit;
@@ -110,6 +112,8 @@ end;
 procedure Tf_setup.remoteClick(Sender: TObject);
 begin
   PanelRemote.Visible:=remote.Checked;
+  LogFileName.Visible:=not PanelRemote.Visible;
+  label9.Visible:=LogFileName.Visible;
   AutoSize:=false;
   AutoSize:=true;
 end;
