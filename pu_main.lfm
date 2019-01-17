@@ -1,22 +1,22 @@
 object f_main: Tf_main
   Left = 389
-  Height = 312
+  Height = 309
   Top = 145
-  Width = 297
+  Width = 288
   ActiveControl = StringGrid1
   Caption = 'INDI server'
-  ClientHeight = 312
-  ClientWidth = 297
+  ClientHeight = 309
+  ClientWidth = 288
+  DesignTimePPI = 95
   Menu = MainMenu1
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  LCLVersion = '2.0.0.3'
   object StringGrid1: TStringGrid
     Left = 0
-    Height = 230
+    Height = 228
     Top = 0
-    Width = 297
+    Width = 288
     Align = alClient
     ColCount = 4
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goColSizing, goRowMoving, goSmoothScroll]
@@ -29,35 +29,35 @@ object f_main: Tf_main
   end
   object Panel1: TPanel
     Left = 0
-    Height = 82
-    Top = 230
-    Width = 297
+    Height = 81
+    Top = 228
+    Width = 288
     Align = alBottom
-    ClientHeight = 82
-    ClientWidth = 297
+    ClientHeight = 81
+    ClientWidth = 288
     ParentFont = False
     TabOrder = 1
     object BtnAdd: TButton
       Left = 6
       Height = 25
       Top = 24
-      Width = 86
+      Width = 85
       Caption = 'Add driver'
       OnClick = BtnAddClick
       ParentFont = False
       TabOrder = 0
     end
     object led: TImage
-      Left = 164
+      Left = 162
       Height = 16
       Top = 26
       Width = 16
     end
     object LabelStatus: TLabel
-      Left = 183
+      Left = 181
       Height = 34
       Top = 26
-      Width = 108
+      Width = 107
       AutoSize = False
       Caption = '                        '
       ParentColor = False
@@ -65,10 +65,10 @@ object f_main: Tf_main
       WordWrap = True
     end
     object BtnStartStop: TButton
-      Left = 99
+      Left = 98
       Height = 25
       Top = 24
-      Width = 61
+      Width = 60
       Caption = 'Start'
       OnClick = BtnStartStopClick
       ParentFont = False
@@ -77,35 +77,35 @@ object f_main: Tf_main
     object ClientBtn: TButton
       Left = 6
       Height = 25
-      Top = 53
-      Width = 154
+      Top = 52
+      Width = 152
       Caption = 'INDI Client'
       OnClick = ClientBtnClick
       ParentFont = False
       TabOrder = 2
     end
     object ConfigLabel: TLabel
-      Left = 121
-      Height = 16
+      Left = 120
+      Height = 19
       Top = 4
-      Width = 73
+      Width = 72
       Caption = 'ConfigLabel'
       ParentColor = False
       ParentFont = False
     end
     object Label1: TLabel
       Left = 6
-      Height = 16
+      Height = 19
       Top = 4
-      Width = 86
+      Width = 88
       Caption = 'Configuration:'
       ParentColor = False
       ParentFont = False
     end
   end
   object MainMenu1: TMainMenu
-    Left = 32
-    Top = 81
+    left = 32
+    top = 80
     object MenuFile: TMenuItem
       Caption = '&File'
       object MenuRestartServer: TMenuItem
@@ -149,8 +149,8 @@ object f_main: Tf_main
   end
   object PopupMenu1: TPopupMenu
     OnPopup = PopupMenu1Popup
-    Left = 138
-    Top = 81
+    left = 137
+    top = 80
     object MenuRestartDevice: TMenuItem
       Caption = 'Restart device'
       OnClick = MenuRestartDeviceClick
@@ -169,8 +169,8 @@ object f_main: Tf_main
     end
   end
   object ImageList1: TImageList
-    Left = 32
-    Top = 137
+    left = 32
+    top = 136
     Bitmap = {
       4C69020000001000000010000000000000000000000000000000000000000000
       CB0000000000000000000000000000000000000000004848EC00000000000000
@@ -242,7 +242,7 @@ object f_main: Tf_main
   object StatusTimer: TTimer
     Interval = 2000
     OnTimer = StatusTimerTimer
-    Left = 137
-    Top = 137
+    left = 136
+    top = 136
   end
 end
