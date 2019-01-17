@@ -189,6 +189,9 @@ begin
   UScaleDPI.UseScaling:=true;
   UScaleDPI.SetScale(Canvas);
   ScaleDPI(Self);
+  {$ifdef lclcocoa}
+  StringGrid1.FixedColor:=clBackground;
+  {$endif}
   if autostart then StartServer;
 end;
 
