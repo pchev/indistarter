@@ -51,6 +51,7 @@ type
     MenuEditName: TMenuItem;
     MenuHelpOnline: TMenuItem;
     MenuHelpPdf: TMenuItem;
+    MenuEdit: TMenuItem;
     MenuSetup: TMenuItem;
     MenuRestartDevice: TMenuItem;
     MenuStopDevice: TMenuItem;
@@ -73,10 +74,10 @@ type
     procedure MenuEditNameClick(Sender: TObject);
     procedure MenuHelpOnlineClick(Sender: TObject);
     procedure MenuHelpPdfClick(Sender: TObject);
+    procedure MenuSetupClick(Sender: TObject);
     procedure MenuQuitClick(Sender: TObject);
     procedure MenuRestartDeviceClick(Sender: TObject);
     procedure MenuRestartServerClick(Sender: TObject);
-    procedure MenuSetupClick(Sender: TObject);
     procedure MenuStopDeviceClick(Sender: TObject);
     procedure MenuStopServerClick(Sender: TObject);
     procedure PopupMenu1Popup(Sender: TObject);
@@ -369,6 +370,7 @@ var saveconfigname: string;
   savestayontop:boolean;
 begin
  if ServerPid='' then begin
+  if f_setup.Visible then exit;
   SaveConfig;
   saveconfigname:=configfile;
   savestayontop:=stayontop;
