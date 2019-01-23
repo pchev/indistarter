@@ -2,7 +2,7 @@
 
 version=1.4.0
 
-basedir=/tmp/indistarter  # Be sure this is set to a non existent directory, it is removed after the run!
+basedir=/Volumes/TmpInst/indistarter  # Be sure this is set to a non existent directory, it is removed after the run!
 
 builddir=$basedir/indistarter
 
