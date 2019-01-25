@@ -12,6 +12,7 @@ object f_main: Tf_main
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  LCLVersion = '2.0.0.3'
   object StringGrid1: TStringGrid
     Left = 0
     Height = 228

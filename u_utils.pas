@@ -39,6 +39,7 @@ const
   starterver = '1.4.0';
   starter_version='Version '+starterver;
   blank=' ';
+  TAB = #$09;
   CR = #$0d;
   LF = #$0a;
   CRLF = CR + LF;

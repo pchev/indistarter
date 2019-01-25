@@ -325,15 +325,17 @@ end;
 
 
 procedure Tf_main.MenuAboutClick(Sender: TObject);
-var aboutmsg: string;
+var aboutmsg,cdate: string;
 begin
+cdate:={$I %DATE%};
+cdate:=copy(cdate,1,4);
 aboutmsg:='INDI Starter '+crlf;
 aboutmsg:=aboutmsg+starter_version+'-'+RevisionStr+'  '+compile_time+crlf;
 aboutmsg:=aboutmsg+'Compiled with:'+crlf;
 aboutmsg:=aboutmsg+compile_version+crlf+crlf;
 aboutmsg:=aboutmsg+'A simple program to run a INDI server'+crlf;
 aboutmsg:=aboutmsg+'http://www.indilib.org'+crlf+crlf;
-aboutmsg:=aboutmsg+'Copyright (C) 2018 Patrick Chevalley'+crlf;
+aboutmsg:=aboutmsg+'Copyright (C) '+cdate+' Patrick Chevalley'+crlf;
 aboutmsg:=aboutmsg+'http://www.ap-i.net'+crlf+crlf;
 aboutmsg:=aboutmsg+'This program is free software; you can redistribute it and/or'+crlf;
 aboutmsg:=aboutmsg+'modify it under the terms of the GNU General Public License'+crlf;
