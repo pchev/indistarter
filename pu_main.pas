@@ -209,6 +209,9 @@ begin
    Appdir:=ExtractFilePath(copy(appdir,1,i))
  else
    Appdir:='/Applications/IndiStarter.app/Contents';
+ if not FileExists(slash(Appdir)+slash('Resources')+'indistarter.pdf') then
+   Appdir:='/Applications/IndiStarter.app/Contents';
+ AppBaseDir:=noslash(ExtractFilePath(Appdir));
  bindir:=slash(appdir)+slash('MacOS');
  Docdir:=slash(Appdir)+slash('Resources');
 {$else}
@@ -249,6 +252,7 @@ begin
  Appdir:=expandfilename(Appdir);
  Docdir:=slash(Appdir)+slash('..')+slash('share')+slash('doc')+'indistarter';
  Docdir:=expandfilename(Docdir);
+ AppBaseDir:='';
  {$endif}
 end;
 
@@ -771,12 +775,21 @@ StatusTimer.Enabled:=false;
      else begin
        DeleteFile(ServerFifo);
        if (ExecProcess('mkfifo '+ServerFifo,str)=0) then begin
+          {$ifdef darwin}
+          cmd:='PATH="'+slash(appdir)+'Resources/DriverSupport:'+slash(appdir)+'MacOS/indi:$PATH"';
+          cmd:=cmd+' INDIPREFIX="'+AppBaseDir+'"';
+          cmd:=cmd+' IOLIBS="'+slash(appdir)+'Resources/DriverSupport/gphoto/IOLIBS"';
+          cmd:=cmd+' CAMLIBS="'+slash(appdir)+'Resources/DriverSupport/gphoto/CAMLIBS"';
+          cmd:=cmd+' indiserver '+serveroptions+' -f '+ServerFifo;
+          ExecBG(cmd,serverlog);
+          {$else}
           if bindir<>'' then
             cmd:='export PATH='+bindir+':$PATH && '
           else
             cmd:='';
           cmd:=cmd+'indiserver '+serveroptions+' -f '+ServerFifo;
           ExecBG(cmd,serverlog);
+          {$endif}
           Wait(1);
           ServerStarted:=true;
           if StringGrid1.RowCount>1 then begin

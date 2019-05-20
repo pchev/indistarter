@@ -127,6 +127,10 @@ end;
 procedure Tf_setup.FormCreate(Sender: TObject);
 begin
    ScaleDPI(Self);
+   {$ifdef darwin}
+   indipath.Visible:=false;
+   Label1.Visible:=false;
+   {$endif}
 end;
 
 procedure Tf_setup.BtnNewConfigClick(Sender: TObject);

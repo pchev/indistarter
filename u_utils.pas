@@ -49,7 +49,7 @@ const
   deg2rad=pi/180;
 
 var
-  Appdir, Docdir, Bindir: string;
+  Appdir, Docdir, Bindir, AppBaseDir: string;
 
 Procedure FormPos(form : Tform; x,y : integer);
 Function FormEntry(aOwner:TComponent; lbl,defaultstr:string):string;
@@ -57,6 +57,7 @@ function words(str,sep : string; p,n : integer; isep:char=blank) : string;
 procedure SplitRec(buf,sep:string; var arg: TStringList);
 Procedure SplitCmd(S : String; List : TStringList);
 function Slash(nom : string) : string;
+function NoSlash(nom: string): string;
 Function sgn(x:Double):Double ;
 function ExecBG(cmd: string; logfile: string=''):integer;
 function ExecProcessNoWait(cmd: string):TProcess;
@@ -202,6 +203,14 @@ function Slash(nom : string) : string;
 begin
 result:=trim(nom);
 if copy(result,length(result),1)<>PathDelim then result:=result+PathDelim;
+end;
+
+function NoSlash(nom: string): string;
+begin
+  Result := trim(nom);
+
+  if copy(Result, length(nom), 1) = PathDelim then
+    Result := copy(Result, 1, length(nom) - 1);
 end;
 
 Function sgn(x:Double):Double ;
