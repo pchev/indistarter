@@ -174,6 +174,7 @@ begin
   RemotePort:='7624';
   stayontop:=false;
   ClearGrid;
+  GSCdir:='';
   Getappdir;
   ConfigExtension:= '.conf';
   rc:=TXMLConfig.Create(self);
@@ -266,6 +267,7 @@ begin
   devlist:=ChangeFileExt(config.Filename,'.devices');
   devlist:=config.GetValue('/Devices/List',devlist);
   Bindir:=config.GetValue('/Server/Bindir',Bindir);
+  GSCdir:=config.GetValue('/Server/GSCdir',GSCdir);
   autostart:=config.GetValue('/Server/Autostart',autostart);
   serveroptions:=config.GetValue('/Server/Options',serveroptions);
   serverlog:=config.GetValue('/Server/Log','');
@@ -291,6 +293,7 @@ begin
   StringGrid1.SaveToCSVFile(devlist);
   config.DeleteValue('/Devices/List');
   config.SetValue('/Server/Bindir',Bindir);
+  config.SetValue('/Server/GSCdir',GSCdir);
   config.SetValue('/Server/Autostart',autostart);
   config.SetValue('/Server/Options',serveroptions);
   config.SetValue('/Server/Log',serverlog);
@@ -384,6 +387,7 @@ begin
   f_setup.ConfigDir:=ConfigDir;
   f_setup.config:=ExtractFileNameOnly(configfile);
   f_setup.indipath.Directory:=Bindir;
+  f_setup.gscpath.Directory:=GSCdir;
   f_setup.serveroptions.Text:=serveroptions;
   f_setup.LogFileName.FileName:=serverlog;
   f_setup.autostart.Checked:=autostart;
@@ -404,6 +408,7 @@ begin
     else
        serverlog := '';
     Bindir     := f_setup.indipath.Directory;
+    GSCdir     := f_setup.gscpath.Directory;
     remote     := f_setup.remote.Checked;
     RemoteHost := f_setup.remotehost.Text;
     RemoteUser := f_setup.remoteuser.Text;
@@ -780,6 +785,7 @@ StatusTimer.Enabled:=false;
           cmd:=cmd+' INDIPREFIX="'+AppBaseDir+'"';
           cmd:=cmd+' IOLIBS="'+slash(appdir)+'Resources/DriverSupport/gphoto/IOLIBS"';
           cmd:=cmd+' CAMLIBS="'+slash(appdir)+'Resources/DriverSupport/gphoto/CAMLIBS"';
+          if GSCdir<>'' then cmd:=cmd+' GSCDAT="'+GSCdir+'"';
           cmd:=cmd+' indiserver '+serveroptions+' -f '+ServerFifo;
           ExecBG(cmd,serverlog);
           {$else}

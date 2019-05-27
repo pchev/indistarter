@@ -39,6 +39,8 @@ type
     Button2: TButton;
     BtnNewConfig: TButton;
     ConfigList: TComboBox;
+    gscpath: TDirectoryEdit;
+    Label10: TLabel;
     LogFileName: TFileNameEdit;
     indipath: TDirectoryEdit;
     Label1: TLabel;
@@ -46,6 +48,8 @@ type
     Label9: TLabel;
     localport: TEdit;
     Panel1: TPanel;
+    PanelPath: TPanel;
+    PanelGSC: TPanel;
     remoteport: TEdit;
     Label3: TLabel;
     Label4: TLabel;
@@ -128,8 +132,11 @@ procedure Tf_setup.FormCreate(Sender: TObject);
 begin
    ScaleDPI(Self);
    {$ifdef darwin}
-   indipath.Visible:=false;
-   Label1.Visible:=false;
+   PanelPath.Visible:=false;
+   PanelGSC.Visible:=true;
+   {$else}
+   PanelPath.Visible:=true;
+   PanelGSC.Visible:=false;
    {$endif}
 end;
 

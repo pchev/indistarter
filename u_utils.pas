@@ -49,7 +49,7 @@ const
   deg2rad=pi/180;
 
 var
-  Appdir, Docdir, Bindir, AppBaseDir: string;
+  Appdir, Docdir, Bindir, AppBaseDir, GSCdir: string;
 
 Procedure FormPos(form : Tform; x,y : integer);
 Function FormEntry(aOwner:TComponent; lbl,defaultstr:string):string;
