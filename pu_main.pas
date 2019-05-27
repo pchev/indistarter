@@ -212,7 +212,7 @@ begin
    Appdir:='/Applications/IndiStarter.app/Contents';
  if not FileExists(slash(Appdir)+slash('Resources')+'indistarter.pdf') then
    Appdir:='/Applications/IndiStarter.app/Contents';
- AppBaseDir:=noslash(ExtractFilePath(Appdir));
+ AppBaseDir:=StringReplace(Appdir,'/Contents','',[]);
  bindir:=slash(appdir)+slash('MacOS');
  Docdir:=slash(Appdir)+slash('Resources');
 {$else}
