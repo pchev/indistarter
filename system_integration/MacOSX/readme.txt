@@ -1,9 +1,9 @@
 IndiStarter
-Version indistarter_version beta
+Version indistarter_version
 
 A simple program to run a INDI server 
 
-Copyright (C) 2018 Patrick Chevalley
+Copyright (C) 2019 Patrick Chevalley
 
 https://github.com/pchev/indistarter
 https://sourceforge.net/projects/indistarter/

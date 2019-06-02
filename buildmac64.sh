@@ -1,6 +1,7 @@
 #!/bin/bash 
 
-version=1.4.0
+version=2.0.0
+indiversion=1.7.8
 
 basedir=/Volumes/TmpInst/indistarter  # Be sure this is set to a non existent directory, it is removed after the run!
 
@@ -39,12 +40,12 @@ echo $version - $currentrev
   cd $basedir
   sed -i.bak "s/indistarter_version/$version/g" indistarter.pkgproj 
   rm indistarter.pkgproj.bak
-  sed -i.bak "s/indistarter_version/$version/" readme.txt
+  sed -i.bak "s/indistarter_version/$version, INDI $indiversion/" readme.txt
   rm readme.txt.bak
   packagesbuild -v indistarter.pkgproj
   if [[ $? -ne 0 ]]; then exit 1;fi
   cp readme.txt build/
-  hdiutil create -anyowners -volname indistarter-$version-$currentrev-x86_64-macosx -imagekey zlib-level=9 -format UDZO -srcfolder ./build indistarter-$version-$currentrev-x86_64-macosx.dmg
+  hdiutil create -anyowners -volname indistarter-$version-$currentrev-indi-$indiversion-x86_64-macosx -imagekey zlib-level=9 -format UDZO -srcfolder ./build indistarter-$version-$currentrev-indi-$indiversion-x86_64-macosx.dmg
   if [[ $? -ne 0 ]]; then exit 1;fi
   mv indistarter*.dmg $wd
   if [[ $? -ne 0 ]]; then exit 1;fi

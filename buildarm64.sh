@@ -1,6 +1,6 @@
 #!/bin/bash 
 
-version=1.4.0
+version=2.0.0
 
 builddir=/tmp/indistarter  # Be sure this is set to a non existent directory, it is removed after the run!
 
