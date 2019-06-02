@@ -36,10 +36,10 @@ type
 
   Tf_main = class(TForm)
     BtnAdd: TButton;
+    BtnSetup: TButton;
     BtnStartStop: TButton;
     ClientBtn: TButton;
     ConfigLabel: TLabel;
-    Label1: TLabel;
     led: TImage;
     ImageList1: TImageList;
     LabelStatus: TLabel;
