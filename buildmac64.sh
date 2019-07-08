@@ -1,7 +1,7 @@
 #!/bin/bash 
 
 version=2.0.0
-indiversion=1.7.8
+indiversion=1.7.9
 
 basedir=/Volumes/TmpInst/indistarter  # Be sure this is set to a non existent directory, it is removed after the run!
 
