@@ -1,4 +1,4 @@
-unit indibaseclient;
+unit indiblobclient;
 
 {
 Copyright (C) 2014 Patrick Chevalley
@@ -22,7 +22,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 {
    Pascal Indi client library freely inspired by libindiclient.
    See: http://www.indilib.org/
+
+   Same as indibaseclient but specialized to receive blob
+   using a big buffer size.
 }
+
 
 {$mode objfpc}{$H+}
 
@@ -49,7 +53,7 @@ type
     property Sock: TTCPBlockSocket read FSock;
   end;
 
-  TIndiBaseClient = class(TThread)
+  TIndiBlobClient = class(TThread)
   private
     FinitProps: boolean;
     FTargetHost, FTargetPort, FErrorDesc, FRecvData, Fsendbuffer: string;
@@ -66,13 +70,8 @@ type
     FServerDisconnected: TNotifyEvent;
     FIndiDeviceEvent: TIndiDeviceEvent;
     FIndiDeleteDeviceEvent: TIndiDeviceEvent;
-    FIndiMessageEvent: TIndiMessageEvent;
     FIndiPropertyEvent: TIndiPropertyEvent;
     FIndiDeletePropertyEvent: TIndiPropertyEvent;
-    FIndiNumberEvent: TIndiNumberEvent;
-    FIndiTextEvent: TIndiTextEvent;
-    FIndiSwitchEvent: TIndiSwitchEvent;
-    FIndiLightEvent: TIndiLightEvent;
     FIndiBlobEvent: TIndiBlobEvent;
     SyncindiDev: Basedevice;
     SyncindiProp: IndiProperty;
@@ -81,13 +80,8 @@ type
     {$endif}
     procedure IndiDeviceEvent(dp: Basedevice);
     procedure IndiDeleteDeviceEvent(dp: Basedevice);
-    procedure IndiMessageEvent(mp: IMessage);
     procedure IndiPropertyEvent(indiProp: IndiProperty);
     procedure IndiDeletePropertyEvent(indiProp: IndiProperty);
-    procedure IndiNumberEvent(nvp: INumberVectorProperty);
-    procedure IndiTextEvent(tvp: ITextVectorProperty);
-    procedure IndiSwitchEvent(svp: ISwitchVectorProperty);
-    procedure IndiLightEvent(lvp: ILightVectorProperty);
     procedure IndiBlobEvent(bp: IBLOB);
     procedure SyncServerConnected;
     procedure SyncServerDisonnected;
@@ -95,19 +89,13 @@ type
     procedure SyncDeleteDeviceEvent;
     procedure SyncPropertyEvent;
     procedure SyncDeletePropertyEvent;
-    procedure ASyncNumberEvent(Data: PtrInt);
-    procedure ASyncTextEvent(Data: PtrInt);
-    procedure ASyncSwitchEvent(Data: PtrInt);
-    procedure ASyncLightEvent(Data: PtrInt);
     procedure ASyncBlobEvent(Data: PtrInt);
-    procedure ASyncMessageEvent(Data: PtrInt);
     function findDev(root: TDOMNode; createifnotexist: boolean;
       out errmsg: string): BaseDevice;
     function findDev(root: TDOMNode; out errmsg: string): BaseDevice;
-    function ProcessData(s: TStringStream): boolean;
-    procedure ProcessDataThread(s: TStringStream);
+    function ProcessData(s: TMemoryStream): boolean;
+    procedure ProcessDataThread(s: TMemoryStream);
     procedure ProcessDataAsync(Data: PtrInt);
-    procedure setDriverConnection(status: boolean; deviceName: string);
     procedure OpenProtocolTrace(fnraw, fnlog, fnerr: string);
     procedure CloseProtocolTrace;
     procedure WriteProtocolTrace(buf: string);
@@ -124,21 +112,10 @@ type
     procedure setBLOBMode(blobH: BLOBHandling; dev: string; prop: string = '');
     procedure ConnectServer;
     procedure DisconnectServer;
-    procedure connectDevice(deviceName: string);
-    procedure disconnectDevice(deviceName: string);
     procedure Send(const Value: string);
     property devices: TObjectList read Fdevices;
     function getDevice(deviceName: string): Basedevice;
     procedure deleteDevice(deviceName: string; out errmsg: string);
-    procedure sendNewNumber(nvp: INumberVectorProperty);
-    procedure sendNewText(tvp: ITextVectorProperty);
-    procedure sendNewSwitch(svp: ISwitchVectorProperty);
-    function WaitBusy(nvp: INumberVectorProperty; timeout: integer = 5000;
-      minwait: integer = 0): boolean;
-    function WaitBusy(tvp: ITextVectorProperty; timeout: integer = 5000;
-      minwait: integer = 0): boolean;
-    function WaitBusy(svp: ISwitchVectorProperty; timeout: integer = 5000;
-      minwait: integer = 0): boolean;
     property Timeout: integer read FTimeout write FTimeout;
     property ProtocolTrace: boolean read FProtocolTrace write FProtocolTrace;
     property ProtocolRawFile: string read FProtocolRawFile write FProtocolRawFile;
@@ -156,16 +133,10 @@ type
     property onNewDevice: TIndiDeviceEvent read FIndiDeviceEvent write FIndiDeviceEvent;
     property onDeleteDevice: TIndiDeviceEvent
       read FIndiDeleteDeviceEvent write FIndiDeleteDeviceEvent;
-    property onNewMessage: TIndiMessageEvent
-      read FIndiMessageEvent write FIndiMessageEvent;
     property onNewProperty: TIndiPropertyEvent
       read FIndiPropertyEvent write FIndiPropertyEvent;
     property onDeleteProperty: TIndiPropertyEvent
       read FIndiDeletePropertyEvent write FIndiDeletePropertyEvent;
-    property onNewNumber: TIndiNumberEvent read FIndiNumberEvent write FIndiNumberEvent;
-    property onNewText: TIndiTextEvent read FIndiTextEvent write FIndiTextEvent;
-    property onNewSwitch: TIndiSwitchEvent read FIndiSwitchEvent write FIndiSwitchEvent;
-    property onNewLight: TIndiLightEvent read FIndiLightEvent write FIndiLightEvent;
     property onNewBlob: TIndiBlobEvent read FIndiBlobEvent write FIndiBlobEvent;
   end;
 
@@ -207,9 +178,9 @@ begin
   Result := IntToStr(FSock.LastError) + ' ' + FSock.GetErrorDesc(FSock.LastError);
 end;
 
-///////////////////////  TIndiBaseClient //////////////////////////
+///////////////////////  TIndiBlobClient //////////////////////////
 
-constructor TIndiBaseClient.Create;
+constructor TIndiBlobClient.Create;
 begin
   // start suspended to let time to the main thread to set the parameters
   inherited Create(True);
@@ -233,10 +204,10 @@ begin
   FwatchDevices := TStringList.Create;
 end;
 
-destructor TIndiBaseClient.Destroy;
+destructor TIndiBlobClient.Destroy;
 begin
   if Ftrace then
-    writeln('TIndiBaseClient.Destroy');
+    writeln('TIndiBlobClient.Destroy');
   Fdevices.Free;
   FwatchDevices.Free;
 {$ifndef mswindows}
@@ -244,7 +215,7 @@ begin
 {$endif}
 end;
 
-procedure TIndiBaseClient.OpenProtocolTrace(fnraw, fnlog, fnerr: string);
+procedure TIndiBlobClient.OpenProtocolTrace(fnraw, fnlog, fnerr: string);
 begin
   try
     if not FProtocolTrace then
@@ -279,7 +250,7 @@ begin
   end;
 end;
 
-procedure TIndiBaseClient.CloseProtocolTrace;
+procedure TIndiBlobClient.CloseProtocolTrace;
 begin
   if not FProtocolTrace then
     exit;
@@ -295,7 +266,7 @@ begin
   end;
 end;
 
-procedure TIndiBaseClient.WriteProtocolTrace(buf: string);
+procedure TIndiBlobClient.WriteProtocolTrace(buf: string);
 begin
   try
     if FProtocolTrace then begin
@@ -312,7 +283,7 @@ begin
   end;
 end;
 
-procedure TIndiBaseClient.WriteProtocolRaw(buf: string);
+procedure TIndiBlobClient.WriteProtocolRaw(buf: string);
 begin
   try
     if FProtocolTrace then begin
@@ -329,7 +300,7 @@ begin
   end;
 end;
 
-procedure TIndiBaseClient.WriteProtocolError(buf: string);
+procedure TIndiBlobClient.WriteProtocolError(buf: string);
 begin
   try
     if FProtocolTrace then begin
@@ -346,18 +317,69 @@ begin
   end;
 end;
 
-procedure TIndiBaseClient.Execute;
+procedure TIndiBlobClient.Execute;
+const
+  buffersize = 10240;
 var
-  buf, rbuf, tbuf: string;
+  buf: string;
   init: boolean;
-  s: TStringStream;
-  n, c, tl: integer;
-  cmdok: boolean;
+  buffer: array[0..buffersize-1] of char;
+  tbuf: array[0..1024] of char;
+  s: TMemoryStream;
+  i, n, level, c, tl: integer;
+  closing: boolean;
+  lastc: char;
+
+  function ReadElement(newc: char): boolean; inline;
+  begin
+    Result := False;
+    case newc of
+      chr(0):
+      begin
+        s.Clear;
+        s.WriteBuffer('<INDIMSG>', 9);
+        level := 0;
+      end;
+      '/':
+      begin
+        s.Write(newc, 1);
+        if (lastc = '<') then
+        begin
+          Dec(level);
+          closing := True;
+        end;
+      end;
+      '<':
+      begin
+        Inc(level);
+        closing := False;
+        s.Write(newc, 1);
+      end;
+      '>':
+      begin
+        s.Write(newc, 1);
+        if (lastc = '/') or closing then
+        begin
+          Dec(level);
+          if level = 0 then
+          begin
+            s.WriteBuffer('</INDIMSG>', 10);
+            Result := True;
+          end;
+        end;
+      end;
+      else
+      begin
+        s.Write(newc, 1);
+      end;
+    end;
+    lastc := newc;
+  end;
 
 begin
   try
     tcpclient := TTCPClient.Create;
-    s := TStringStream.Create('');
+    s := TMemoryStream.Create;
     try
       OpenProtocolTrace(FProtocolRawFile, FProtocolTraceFile, FProtocolErrorFile);
       {$ifdef withCriticalsection}
@@ -367,68 +389,62 @@ begin
       FinitProps := False;
       if FProtocolTrace then
         WriteProtocolTrace('Connect host=' + FTargetHost + ' port=' +
-          FTargetPort + ' timeout=' + IntToStr(FTimeout));
+          FTargetPort + ' timeout=' + IntToStr(2*FTimeout));
       tcpclient.TargetHost := FTargetHost;
       tcpclient.TargetPort := FTargetPort;
-      tcpclient.Timeout := FTimeout;
+      tcpclient.Timeout := 2*FTimeout;
       FConnected := tcpclient.Connect;
       if FProtocolTrace then
         WriteProtocolTrace('Connection result=' + tcpclient.GetErrorDesc);
       if FConnected then
       begin
-        // first send a getProperties
         RefreshProps;
         // main loop
         buf := '';
-        s.WriteString('<INDIMSG>');
+        level := 0;
+        s.WriteBuffer('<INDIMSG>', 9);
         c := 0;
         repeat
           if terminated then
             break;
-          rbuf := tcpclient.Sock.RecvTerminated(FTimeout, LF);
-          n:=Length(rbuf);
+          n := tcpclient.Sock.RecvBufferEx(@buffer, buffersize, 2*FTimeout);
           if (tcpclient.Sock.lastError <> 0) and
             (tcpclient.Sock.lastError <> WSAETIMEDOUT) then
             break;
           if n > 0 then
           begin
             if FProtocolTrace then
-              WriteProtocolRaw('Receive buffer size=' + IntToStr(n) +': '+ rbuf);
-            s.WriteString(rbuf);
-            // detect closing of first level
-            cmdok:=(copy(rbuf,1,2)='</');
-            if cmdok then
+              WriteProtocolRaw('Receive buffer size=' + IntToStr(n) +
+                crlf + Copy(buffer,1,n));
+            for i := 0 to n - 1 do
+            begin
+              if ReadElement(buffer[i]) then
               begin
-                s.WriteString('</INDIMSG>');
                 if FProtocolTrace then
                 begin
                   s.Position := 0;
-                  tbuf := s.DataString;
-                  tl:=length(tbuf);
+                  tl := s.Read(tbuf, 1024);
                   if tl<=1024 then
                     WriteProtocolTrace('Process data=' + StringReplace(
-                      StringReplace(tbuf, cr, '', [rfReplaceAll]),
+                      StringReplace(copy(tbuf, 1, tl), cr, '', [rfReplaceAll]),
                       lf, '', [rfReplaceAll]))
                   else
                     WriteProtocolTrace('Process data=' + StringReplace(
-                      StringReplace(copy(tbuf, 1, 1024), cr, '', [rfReplaceAll]),
+                      StringReplace(copy(tbuf, 1, tl), cr, '', [rfReplaceAll]),
                       lf, '', [rfReplaceAll]) + '...');
                 end;
-                // process this buffer
                 ProcessDataThread(s);
-                // initialize a new buffer
-                s := TStringStream.Create('');
-                s.WriteString('<INDIMSG>');
+                s := TMemoryStream.Create;
+                s.WriteBuffer('<INDIMSG>', 9);
               end;
+            end;
           end;
           if init then
           begin
-            // try to detect the last defProp
             Inc(c);
-            if c > 50 then // wait a max of 50*timeout = 5 seconds
-              FinitProps := True;  // no setProp? continue
-            // no more data received
-            if FinitProps and (rbuf='') then
+            if c > 50 then
+              FinitProps := True;  // no response? continue
+            if FinitProps then
             begin
               if FProtocolTrace then
                 WriteProtocolTrace('Initialized');
@@ -483,7 +499,7 @@ begin
   end;
 end;
 
-procedure TIndiBaseClient.Send(const Value: string);
+procedure TIndiBlobClient.Send(const Value: string);
 begin
   if Value > '' then
   begin
@@ -503,7 +519,7 @@ begin
   end;
 end;
 
-function TIndiBaseClient.findDev(root: TDOMNode; out errmsg: string): BaseDevice;
+function TIndiBlobClient.findDev(root: TDOMNode; out errmsg: string): BaseDevice;
 var
   i: integer;
   buf: string;
@@ -527,7 +543,7 @@ begin
   end;
 end;
 
-function TIndiBaseClient.findDev(root: TDOMNode; createifnotexist: boolean;
+function TIndiBlobClient.findDev(root: TDOMNode; createifnotexist: boolean;
   out errmsg: string): BaseDevice;
 var
   buf: string;
@@ -544,13 +560,8 @@ begin
       errmsg := '';
       Result := BaseDevice.Create;
       Result.setDeviceName(buf);
-      Result.onNewMessage := @IndiMessageEvent;
       Result.onNewProperty := @IndiPropertyEvent;
       Result.onDeleteProperty := @IndiDeletePropertyEvent;
-      Result.onNewNumber := @IndiNumberEvent;
-      Result.onNewText := @IndiTextEvent;
-      Result.onNewSwitch := @IndiSwitchEvent;
-      Result.onNewLight := @IndiLightEvent;
       Result.onNewBlob := @IndiBlobEvent;
       Fdevices.Add(Result);
       if assigned(FIndiDeviceEvent) then
@@ -566,7 +577,7 @@ begin
   end;
 end;
 
-function TIndiBaseClient.getDevice(deviceName: string): Basedevice;
+function TIndiBlobClient.getDevice(deviceName: string): Basedevice;
 var
   i: integer;
 begin
@@ -580,7 +591,7 @@ begin
   end;
 end;
 
-procedure TIndiBaseClient.deleteDevice(deviceName: string; out errmsg: string);
+procedure TIndiBlobClient.deleteDevice(deviceName: string; out errmsg: string);
 var
   dp: BaseDevice;
   i: integer;
@@ -598,7 +609,7 @@ begin
     end;
 end;
 
-procedure TIndiBaseClient.ProcessDataThread(s: TStringStream);
+procedure TIndiBlobClient.ProcessDataThread(s: TMemoryStream);
 begin
   if not terminated then
     Application.QueueAsyncCall(@ProcessDataAsync, PtrInt(s))
@@ -606,32 +617,27 @@ begin
     s.Free;
 end;
 
-procedure TIndiBaseClient.ProcessDataAsync(Data: PtrInt);
+procedure TIndiBlobClient.ProcessDataAsync(Data: PtrInt);
 var mp:IMessage;
 begin
   try
     if not terminated then
     begin
-      if not ProcessData(TStringStream(Data)) then
-      begin
-        mp:=IMessage.Create;
-        mp.msg:='Bad INDI message';
-        IndiMessageEvent(mp);
-      end;
+      ProcessData(TMemoryStream(Data));
     end
     else
-      TStringStream(Data).Free;
+      TMemoryStream(Data).Free;
   except
   end;
 end;
 
-function TIndiBaseClient.ProcessData(s: TStringStream): boolean;
+function TIndiBlobClient.ProcessData(s: TMemoryStream): boolean;
 var
   Doc: TXMLDocument;
   Node: TDOMNode;
   dp: BaseDevice;
   isBlob: boolean;
-  ebuf: string;
+  ebuf: array[0..1024] of char;
   n: integer;
   buf, errmsg, dname, pname: string;
 begin
@@ -646,9 +652,9 @@ begin
       begin
         WriteProtocolError('Read XML error:' + e.Message);
         s.Position := 0;
-        ebuf := copy(s.DataString,1,256);
+        n := s.Read(ebuf, 1024);
         WriteProtocolError('Error data=' + trim(
-          StringReplace(StringReplace(ebuf, cr, '', [rfReplaceAll]),
+          StringReplace(StringReplace(copy(ebuf, 1, n), cr, '', [rfReplaceAll]),
           lf, '', [rfReplaceAll])) + '...');
       end;
       Result := False;
@@ -656,7 +662,6 @@ begin
       exit;
     end;
   end;
-
   try
     Node := Doc.DocumentElement.FirstChild;
     while Node <> nil do
@@ -725,157 +730,7 @@ begin
   end;
 end;
 
-procedure TIndiBaseClient.sendNewNumber(nvp: INumberVectorProperty);
-var
-  buf: string;
-  i: integer;
-begin
-  nvp.s := IPS_BUSY;
-  buf := '<newNumberVector';
-  buf := buf + '  device="' + nvp.device + '"';
-  buf := buf + '  name="' + nvp.Name + '">';
-  for i := 0 to nvp.nnp - 1 do
-  begin
-    buf := buf + '  <oneNumber';
-    buf := buf + '    name="' + nvp.np[i].Name + '">';
-    buf := buf + '   ' + FloatToStr(nvp.np[i].Value);
-    buf := buf + '  </oneNumber>';
-  end;
-  buf := buf + '</newNumberVector>';
-  Send(buf);
-end;
-
-procedure TIndiBaseClient.sendNewText(tvp: ITextVectorProperty);
-var
-  buf: string;
-  i: integer;
-begin
-  tvp.s := IPS_BUSY;
-  buf := '<newTextVector';
-  buf := buf + '  device="' + tvp.device + '"';
-  buf := buf + '  name="' + tvp.Name + '">';
-  for i := 0 to tvp.ntp - 1 do
-  begin
-    buf := buf + '  <oneText';
-    buf := buf + '    name="' + tvp.tp[i].Name + '">';
-    buf := buf + '   ' + tvp.tp[i].Text;
-    buf := buf + '  </oneText>';
-  end;
-  buf := buf + '</newTextVector>';
-  Send(buf);
-end;
-
-procedure TIndiBaseClient.sendNewSwitch(svp: ISwitchVectorProperty);
-var
-  buf: string;
-  i: integer;
-  onSwitch: ISwitch;
-begin
-  svp.s := IPS_BUSY;
-  onSwitch := IUFindOnSwitch(svp);
-  buf := '<newSwitchVector';
-  buf := buf + '  device="' + svp.device + '"';
-  buf := buf + '  name="' + svp.Name + '">';
-  if (svp.r = ISR_1OFMANY) and (onSwitch <> nil) then
-  begin
-    buf := buf + '  <oneSwitch';
-    buf := buf + '    name="' + onSwitch.Name + '">';
-    buf := buf + '      On ';
-    buf := buf + '  </oneSwitch>';
-  end
-  else
-  begin
-    for i := 0 to svp.nsp - 1 do
-    begin
-      buf := buf + '  <oneSwitch';
-      buf := buf + '    name="' + svp.sp[i].Name + '">';
-      if svp.sp[i].s = ISS_ON then
-        buf := buf + '    On'
-      else
-        buf := buf + '    Off';
-      buf := buf + '  </oneSwitch>';
-    end;
-  end;
-  buf := buf + '</newSwitchVector>';
-  Send(buf);
-end;
-
-function TIndiBaseClient.WaitBusy(nvp: INumberVectorProperty;
-  timeout: integer = 5000; minwait: integer = 0): boolean;
-var
-  Count, maxcount, mincount: integer;
-begin
-  mincount := minwait div 100;
-  Count := 0;
-  if mincount > 0 then
-    while (Count < mincount) do
-    begin
-      sleep(100);
-      if GetCurrentThreadId=MainThreadID then Application.ProcessMessages;
-      Inc(Count);
-    end;
-  maxcount := timeout div 100;
-  Count := 0;
-  while (nvp.s = IPS_BUSY) and (Count < maxcount) do
-  begin
-    sleep(100);
-    if GetCurrentThreadId=MainThreadID then Application.ProcessMessages;
-    Inc(Count);
-  end;
-  Result := (Count < maxcount);
-end;
-
-function TIndiBaseClient.WaitBusy(tvp: ITextVectorProperty;
-  timeout: integer = 5000; minwait: integer = 0): boolean;
-var
-  Count, maxcount, mincount: integer;
-begin
-  mincount := minwait div 100;
-  Count := 0;
-  if mincount > 0 then
-    while (Count < mincount) do
-    begin
-      sleep(100);
-      if GetCurrentThreadId=MainThreadID then Application.ProcessMessages;
-      Inc(Count);
-    end;
-  maxcount := timeout div 100;
-  Count := 0;
-  while (tvp.s = IPS_BUSY) and (Count < maxcount) do
-  begin
-    sleep(100);
-    if GetCurrentThreadId=MainThreadID then Application.ProcessMessages;
-    Inc(Count);
-  end;
-  Result := (Count < maxcount);
-end;
-
-function TIndiBaseClient.WaitBusy(svp: ISwitchVectorProperty;
-  timeout: integer = 5000; minwait: integer = 0): boolean;
-var
-  Count, maxcount, mincount: integer;
-begin
-  mincount := minwait div 100;
-  Count := 0;
-  if mincount > 0 then
-    while (Count < mincount) do
-    begin
-      sleep(100);
-      if GetCurrentThreadId=MainThreadID then Application.ProcessMessages;
-      Inc(Count);
-    end;
-  maxcount := timeout div 100;
-  Count := 0;
-  while (svp.s = IPS_BUSY) and (Count < maxcount) do
-  begin
-    sleep(100);
-    if GetCurrentThreadId=MainThreadID then Application.ProcessMessages;
-    Inc(Count);
-  end;
-  Result := (Count < maxcount);
-end;
-
-procedure TIndiBaseClient.SetServer(host, port: string);
+procedure TIndiBlobClient.SetServer(host, port: string);
 {$ifdef UNIX}
 var
   H: THostEntry;
@@ -936,12 +791,12 @@ begin
   FTargetPort := port;
 end;
 
-procedure TIndiBaseClient.watchDevice(devicename: string);
+procedure TIndiBlobClient.watchDevice(devicename: string);
 begin
   FwatchDevices.Add(devicename);
 end;
 
-procedure TIndiBaseClient.setBLOBMode(blobH: BLOBHandling; dev: string;
+procedure TIndiBlobClient.setBLOBMode(blobH: BLOBHandling; dev: string;
   prop: string = '');
 var
   buf: string;
@@ -961,62 +816,17 @@ begin
   send(buf);
 end;
 
-procedure TIndiBaseClient.ConnectServer;
+procedure TIndiBlobClient.ConnectServer;
 begin
   Start;
 end;
 
-procedure TIndiBaseClient.DisconnectServer;
+procedure TIndiBlobClient.DisconnectServer;
 begin
   Terminate;
 end;
 
-procedure TIndiBaseClient.connectDevice(deviceName: string);
-begin
-  setDriverConnection(True, deviceName);
-end;
-
-procedure TIndiBaseClient.disconnectDevice(deviceName: string);
-begin
-  setDriverConnection(False, deviceName);
-end;
-
-procedure TIndiBaseClient.setDriverConnection(status: boolean; deviceName: string);
-var
-  drv: BaseDevice;
-  drv_connection: ISwitchVectorProperty;
-begin
-  drv := getDevice(deviceName);
-  if drv = nil then
-    exit;
-
-  drv_connection := drv.getSwitch('CONNECTION');
-  if drv_connection = nil then
-    exit;
-
-  if status then
-  begin
-    if (drv_connection.sp[0].s = ISS_ON) then
-      exit;
-    IUResetSwitch(drv_connection);
-    drv_connection.s := IPS_BUSY;
-    drv_connection.sp[0].s := ISS_ON;
-    drv_connection.sp[1].s := ISS_OFF;
-    sendNewSwitch(drv_connection);
-  end
-  else
-  begin
-    if (drv_connection.sp[1].s = ISS_ON) then
-      exit;
-    IUResetSwitch(drv_connection);
-    drv_connection.s := IPS_BUSY;
-    drv_connection.sp[0].s := ISS_OFF;
-    drv_connection.sp[1].s := ISS_ON;
-    sendNewSwitch(drv_connection);
-  end;
-end;
-
-procedure TIndiBaseClient.RefreshProps;
+procedure TIndiBlobClient.RefreshProps;
 var
   i: integer;
 begin
@@ -1027,125 +837,69 @@ begin
       Send('<getProperties version="' + INDIV + '" device="' + FwatchDevices[i] + '"/>');
 end;
 
-procedure TIndiBaseClient.SyncServerConnected;
+procedure TIndiBlobClient.SyncServerConnected;
 begin
   if assigned(FServerConnected) then
     FServerConnected(self);
 end;
 
-procedure TIndiBaseClient.SyncServerDisonnected;
+procedure TIndiBlobClient.SyncServerDisonnected;
 begin
   if assigned(FServerDisconnected) then
     FServerDisconnected(self);
 end;
 
-procedure TIndiBaseClient.SyncPropertyEvent;
+procedure TIndiBlobClient.SyncPropertyEvent;
 begin
   if assigned(FIndiPropertyEvent) then
     FIndiPropertyEvent(SyncindiProp);
 end;
 
-procedure TIndiBaseClient.SyncDeletePropertyEvent;
+procedure TIndiBlobClient.SyncDeletePropertyEvent;
 begin
   if assigned(FIndiDeletePropertyEvent) then
     FIndiDeletePropertyEvent(SyncindiProp);
 end;
 
-procedure TIndiBaseClient.IndiDeviceEvent(dp: Basedevice);
+procedure TIndiBlobClient.IndiDeviceEvent(dp: Basedevice);
 begin
   SyncindiDev := dp;
   // Device event must be processed synchronously
   Synchronize(@SyncDeviceEvent);
 end;
 
-procedure TIndiBaseClient.SyncDeviceEvent;
+procedure TIndiBlobClient.SyncDeviceEvent;
 begin
   if assigned(FIndiDeviceEvent) then
     FIndiDeviceEvent(SyncindiDev);
 end;
 
-procedure TIndiBaseClient.IndiDeleteDeviceEvent(dp: Basedevice);
+procedure TIndiBlobClient.IndiDeleteDeviceEvent(dp: Basedevice);
 begin
   SyncindiDev := dp;
   // Device event must be processed synchronously
   Synchronize(@SyncDeleteDeviceEvent);
 end;
 
-procedure TIndiBaseClient.SyncDeleteDeviceEvent;
+procedure TIndiBlobClient.SyncDeleteDeviceEvent;
 begin
   if assigned(FIndiDeleteDeviceEvent) then
     FIndiDeleteDeviceEvent(SyncindiDev);
 end;
 
-procedure TIndiBaseClient.IndiPropertyEvent(indiProp: IndiProperty);
+procedure TIndiBlobClient.IndiPropertyEvent(indiProp: IndiProperty);
 begin
   SyncindiProp := indiProp;
   Synchronize(@SyncPropertyEvent);
 end;
 
-procedure TIndiBaseClient.IndiDeletePropertyEvent(indiProp: IndiProperty);
+procedure TIndiBlobClient.IndiDeletePropertyEvent(indiProp: IndiProperty);
 begin
   SyncindiProp := indiProp;
   Synchronize(@SyncDeletePropertyEvent);
 end;
 
-procedure TIndiBaseClient.IndiNumberEvent(nvp: INumberVectorProperty);
-begin
-  Application.QueueAsyncCall(@ASyncNumberEvent, PtrInt(nvp));
-end;
-
-procedure TIndiBaseClient.ASyncNumberEvent(Data: PtrInt);
-begin
-try
-  if assigned(FIndiNumberEvent) then
-    FIndiNumberEvent(INumberVectorProperty(Data));
-except
-end;
-end;
-
-procedure TIndiBaseClient.IndiTextEvent(tvp: ITextVectorProperty);
-begin
-  Application.QueueAsyncCall(@ASyncTextEvent, PtrInt(tvp));
-end;
-
-procedure TIndiBaseClient.ASyncTextEvent(Data: PtrInt);
-begin
-try
-  if assigned(FIndiTextEvent) then
-    FIndiTextEvent(ITextVectorProperty(Data));
-except
-end;
-end;
-
-procedure TIndiBaseClient.IndiSwitchEvent(svp: ISwitchVectorProperty);
-begin
-  Application.QueueAsyncCall(@ASyncSwitchEvent, PtrInt(svp));
-end;
-
-procedure TIndiBaseClient.ASyncSwitchEvent(Data: PtrInt);
-begin
-try
-  if assigned(FIndiSwitchEvent) then
-    FIndiSwitchEvent(ISwitchVectorProperty(Data));
-except
-end;
-end;
-
-procedure TIndiBaseClient.IndiLightEvent(lvp: ILightVectorProperty);
-begin
-  Application.QueueAsyncCall(@ASyncLightEvent, PtrInt(lvp));
-end;
-
-procedure TIndiBaseClient.ASyncLightEvent(Data: PtrInt);
-begin
-try
-  if assigned(FIndiLightEvent) then
-    FIndiLightEvent(ILightVectorProperty(Data));
-except
-end;
-end;
-
-procedure TIndiBaseClient.IndiBlobEvent(bp: IBLOB);
+procedure TIndiBlobClient.IndiBlobEvent(bp: IBLOB);
 begin
   if FlockBlobEvent then
   begin
@@ -1160,7 +914,7 @@ begin
   end;
 end;
 
-procedure TIndiBaseClient.ASyncBlobEvent(Data: PtrInt);
+procedure TIndiBlobClient.ASyncBlobEvent(Data: PtrInt);
 begin
   try
     if not terminated then
@@ -1171,26 +925,6 @@ begin
   finally
     // blob processing terminated, we can process next
     FlockBlobEvent := False;
-  end;
-end;
-
-procedure TIndiBaseClient.IndiMessageEvent(mp: IMessage);
-begin
-  try
-  Application.QueueAsyncCall(@ASyncMessageEvent, PtrInt(mp));
-  except
-  end;
-end;
-
-
-procedure TIndiBaseClient.ASyncMessageEvent(Data: PtrInt);
-begin
-  try
-  if assigned(FIndiMessageEvent) then
-    FIndiMessageEvent(IMessage(data))
-  else
-    IMessage(data).Free;
-  except
   end;
 end;
 
