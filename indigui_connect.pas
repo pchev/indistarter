@@ -75,7 +75,7 @@ begin
   f_indigui.IndiPort:=ServerPort.Text;
   hide;
   f_indigui.ShowModal;
-  if f_indigui.NoConnection.Visible then
+  if not f_indigui.ConnectedServer then
     show
   else begin
     if f_indigui.DisconnectedServer then ShowMessage('Disconnected from server');
