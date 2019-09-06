@@ -12,6 +12,8 @@ component/synapse/source/lib/lib/
 component/uniqueinstance/lib/
 /indistarter.app
 indistarter.lps
+indigui.app/
+indigui.lps
 # doc
 /doc/indistarter.html  
 /doc/indistarter.wiki  
@@ -24,4 +26,4 @@ indistarter*.deb
 indistarter*.dmg
 indistarter*.tar.xz
 indistarter*.tar.bz2
-indimac.tgz
+indimac*.tgz

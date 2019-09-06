@@ -1,7 +1,6 @@
 #!/bin/bash 
 
 version=2.0.0
-indiversion=1.7.9
 
 basedir=/Volumes/TmpInst/indistarter  # Be sure this is set to a non existent directory, it is removed after the run!
 
@@ -16,9 +15,11 @@ fi
 
 wd=`pwd`
 
+indiversion==$(ls indimac*.tgz| sed 's/indimac-//; s/.tgz//')
+
 currentrev=$(git rev-list --count --first-parent HEAD)
 
-echo $version - $currentrev
+echo $version - $currentrev - $indiversion
 
 # delete old files
   rm indistarter*.dmg
