@@ -15,7 +15,7 @@ fi
 
 wd=`pwd`
 
-indiversion==$(ls indimac*.tgz| sed 's/indimac-//; s/.tgz//')
+indiversion=$(ls indimac*.tgz| sed 's/indimac-//; s/.tgz//')
 
 currentrev=$(git rev-list --count --first-parent HEAD)
 
