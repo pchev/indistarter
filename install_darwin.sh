@@ -23,6 +23,6 @@ install -v -m 644 doc/indistarter.pdf    $destdir/IndiStarter.app/Contents/Resou
 
 # download from https://sourceforge.net/projects/indistarter/files/indi-mac/indimac.tgz/download
 # or build following the instruction at https://github.com/pchev/indi-mac
-if [ -e indimac.tgz ]; then
-  tar xvf indimac.tgz -C $destdir/IndiStarter.app/
+if [ -e indimac*.tgz ]; then
+  tar xvf indimac*.tgz -C $destdir/IndiStarter.app/
 fi
