@@ -124,7 +124,7 @@ begin
          fn:='/usr/local/share/indi/drivers.xml';
          if not FileExists(fn) then begin
            ShowMessage('Cannot find INDI drivers.xml file. Please give the file location using the --drivers= option.');
-           halt(1);
+           exit;
          end;
         end;
       end;
