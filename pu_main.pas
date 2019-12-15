@@ -25,8 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 interface
 
-uses pu_devlist, pu_setup, u_utils, pu_indigui, UniqueInstance, XMLConf, process,
-  indibaseclient, indibasedevice, indiapi, indicom, UScaleDPI,
+uses pu_devlist, pu_setup, u_utils, pu_indigui, XMLConf, process,
+  indibaseclient, indibasedevice, indiapi, indicom, UniqueInstance, UScaleDPI,
   Classes, SysUtils, LazFileUtils, Forms, Controls, Graphics, Dialogs,
   ComCtrls, StdCtrls, Grids, ExtCtrls, ActnList, Menus, LCLVersion, InterfaceBase;
 
@@ -63,6 +63,7 @@ type
     PopupMenu1: TPopupMenu;
     StringGrid1: TStringGrid;
     StatusTimer: TTimer;
+    UniqueInstance1: TUniqueInstance;
     procedure BtnAddClick(Sender: TObject);
     procedure BtnStartStopClick(Sender: TObject);
     procedure ClientBtnClick(Sender: TObject);
@@ -86,6 +87,7 @@ type
     procedure StringGrid1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure StatusTimerTimer(Sender: TObject);
+    procedure UniqueInstance1OtherInstance(Sender: TObject; ParamCount: Integer; const Parameters: array of String);
   private
     { private declarations }
     f_indigui: Tf_indigui;
@@ -99,11 +101,8 @@ type
     GUIready: boolean;
     ServerFifo: string;
     CurrentCol, CurrentRow: integer;
-    UniqueInstance1: TCdCUniqueInstance;
     Procedure GetAppDir;
     procedure LoadConfig(cname:string);
-    procedure OtherInstance(Sender : TObject; ParamCount: Integer; Parameters: array of String);
-    procedure InstanceRunning(Sender : TObject);
     procedure ClearGrid;
     procedure SaveConfig;
     function  WriteCmd(cmd:string): boolean;
@@ -149,12 +148,6 @@ begin
   DefaultFormatSettings.DecimalSeparator:='.';
   DefaultFormatSettings.TimeSeparator:=':';
   ServerStarted:=true; // to check if the server is already started
-  UniqueInstance1:=TCdCUniqueInstance.Create(self);
-  UniqueInstance1.Identifier:='IndiStarter';
-  UniqueInstance1.OnOtherInstance:=@OtherInstance;
-  UniqueInstance1.OnInstanceRunning:=@InstanceRunning;
-  UniqueInstance1.Enabled:=true;
-  UniqueInstance1.Loaded;
   lclver:=lcl_version;
   compile_time:={$I %DATE%}+' '+{$I %TIME%};
   compile_version:='Lazarus '+lcl_version+' Free Pascal '+{$I %FPCVERSION%}+' '+{$I %FPCTARGETOS%}+'-'+{$I %FPCTARGETCPU%}+'-'+LCLPlatformDirNames[WidgetSet.LCLPlatform];
@@ -308,15 +301,9 @@ begin
   rc.Flush;
 end;
 
-procedure Tf_main.OtherInstance(Sender : TObject; ParamCount: Integer; Parameters: array of String);
+procedure Tf_main.UniqueInstance1OtherInstance(Sender: TObject; ParamCount: Integer; const Parameters: array of String);
 begin
   BringToFront;
-end;
-
-procedure Tf_main.InstanceRunning(Sender : TObject);
-begin
-  writeln('Other instance of indistarter is running?');
-  UniqueInstance1.RetryOrHalt;
 end;
 
 procedure Tf_main.FormDestroy(Sender: TObject);
