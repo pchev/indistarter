@@ -2,38 +2,55 @@ object f_main: Tf_main
   Left = 389
   Height = 356
   Top = 145
-  Width = 293
+  Width = 390
   ActiveControl = StringGrid1
   Caption = 'INDI server'
   ClientHeight = 356
-  ClientWidth = 293
+  ClientWidth = 390
   Menu = MainMenu1
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  LCLVersion = '2.0.6.0'
   object StringGrid1: TStringGrid
     Left = 0
     Height = 263
     Top = 0
-    Width = 293
+    Width = 390
     Align = alClient
-    ColCount = 4
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goColSizing, goRowMoving, goSmoothScroll]
+    Columns = <    
+      item
+        Title.Caption = 'Title'
+      end    
+      item
+        Title.Caption = 'Title'
+      end    
+      item
+        ButtonStyle = cbsCheckboxColumn
+        Title.Caption = 'Title'
+      end    
+      item
+        Title.Caption = 'Title'
+      end>
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goColSizing, goRowMoving, goEditing, goAlwaysShowEditor, goSmoothScroll]
     ParentFont = False
     PopupMenu = PopupMenu1
     RowCount = 1
     TabOrder = 0
+    OnCheckboxToggled = StringGrid1CheckboxToggled
     OnDrawCell = StringGrid1DrawCell
+    OnEditingDone = StringGrid1EditingDone
     OnMouseDown = StringGrid1MouseDown
+    OnSelectEditor = StringGrid1SelectEditor
   end
   object Panel1: TPanel
     Left = 0
     Height = 93
     Top = 263
-    Width = 293
+    Width = 390
     Align = alBottom
-    ClientHeight = 89
-    ClientWidth = 289
+    ClientHeight = 93
+    ClientWidth = 390
     ParentFont = False
     TabOrder = 1
     object BtnAdd: TButton
@@ -47,16 +64,16 @@ object f_main: Tf_main
       TabOrder = 0
     end
     object led: TImage
-      Left = 164
+      Left = 168
       Height = 16
       Top = 34
       Width = 16
     end
     object LabelStatus: TLabel
-      Left = 183
+      Left = 200
       Height = 34
       Top = 34
-      Width = 108
+      Width = 152
       AutoSize = False
       Caption = '                        '
       ParentColor = False
@@ -249,7 +266,7 @@ object f_main: Tf_main
     Enabled = True
     Identifier = 'IndiStarter'
     OnOtherInstance = UniqueInstance1OtherInstance
-    left = 232
-    top = 88
+    left = 248
+    top = 81
   end
 end

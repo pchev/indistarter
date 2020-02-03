@@ -82,11 +82,14 @@ type
     procedure MenuStopDeviceClick(Sender: TObject);
     procedure MenuStopServerClick(Sender: TObject);
     procedure PopupMenu1Popup(Sender: TObject);
+    procedure StringGrid1CheckboxToggled(sender: TObject; aCol, aRow: Integer; aState: TCheckboxState);
     procedure StringGrid1DrawCell(Sender: TObject; aCol, aRow: Integer;
       aRect: TRect; aState: TGridDrawState);
+    procedure StringGrid1EditingDone(Sender: TObject);
     procedure StringGrid1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure StatusTimerTimer(Sender: TObject);
+    procedure StringGrid1SelectEditor(Sender: TObject; aCol, aRow: Integer; var Editor: TWinControl);
     procedure UniqueInstance1OtherInstance(Sender: TObject; ParamCount: Integer; const Parameters: array of String);
   private
     { private declarations }
@@ -101,6 +104,7 @@ type
     GUIready: boolean;
     ServerFifo: string;
     CurrentCol, CurrentRow: integer;
+    AutoConnectList: string;
     Procedure GetAppDir;
     procedure LoadConfig(cname:string);
     procedure ClearGrid;
@@ -123,6 +127,8 @@ type
     procedure GetIndiDevices;
     procedure IndiNewProperty(indiProp: IndiProperty);
     procedure IndiDeleteDevice(dp: Basedevice);
+    function CheckDevList(fn:string):boolean;
+    procedure SetAutoConnect;
   public
     { public declarations }
   end;
@@ -130,6 +136,9 @@ type
 var
   f_main: Tf_main;
   compile_time, compile_version, compile_system, lclver: string;
+
+const
+  colactive=0; colgroup=1; colname=2; colconnect=3; coldriver=4;
 
 implementation
 
@@ -167,6 +176,7 @@ begin
   RemotePort:='7624';
   stayontop:=false;
   ClearGrid;
+  Width:=StringGrid1.Left+StringGrid1.ColWidths[colactive]+StringGrid1.ColWidths[colgroup]+StringGrid1.ColWidths[colname]+StringGrid1.ColWidths[colconnect]+2;
   GSCdir:='';
   Getappdir;
   ConfigExtension:= '.conf';
@@ -250,6 +260,50 @@ begin
  {$endif}
 end;
 
+procedure Tf_main.SetAutoConnect;
+var i:integer;
+begin
+ AutoConnectList:='';
+ for i:=1 to StringGrid1.RowCount-1 do begin
+   if StringGrid1.Cells[colconnect,i]='1' then begin
+      AutoConnectList:=AutoConnectList+'|'+StringGrid1.Cells[colname,i]+'|';
+   end;
+ end;
+end;
+
+function Tf_main.CheckDevList(fn:string): boolean;
+var i,j: integer;
+    rows,fields: TStringList;
+    buf: string;
+begin
+  result:=true;
+  rows:=TStringList.Create;
+  fields:=TStringList.Create;
+  try
+  rows.LoadFromFile(fn);
+  for i:=0 to rows.Count-1 do begin
+     SplitRec(rows[i],',',fields);
+     if fields.Count>4 then exit;
+     if fields.Count>5 then begin
+        result:=false;
+        exit;
+     end;
+     if i=0 then
+       fields.Insert(3,'Auto-Connect')
+     else
+       fields.Insert(3,'0');
+     buf:='';
+     for j:=0 to fields.Count-1 do
+       buf:=buf+fields[j]+',';
+     delete(buf,Length(buf),1);
+     rows[i]:=buf;
+  end;
+  rows.SaveToFile(fn);
+  finally
+    rows.Free;
+    fields.Free;
+  end;
+end;
 
 procedure Tf_main.LoadConfig(cname:string);
 var i: integer;
@@ -270,11 +324,21 @@ begin
   LocalPort:=config.GetValue('/RemoteServer/LocalPort',LocalPort);
   RemotePort:=config.GetValue('/RemoteServer/RemotePort',RemotePort);
   stayontop:=config.GetValue('/Window/StayOnTop',stayontop);
-  if FileExistsUTF8(devlist) then StringGrid1.LoadFromCSVFile(devlist) else ClearGrid;
+  if FileExistsUTF8(devlist) then begin
+    if CheckDevList(devlist) then begin
+      StringGrid1.LoadFromCSVFile(devlist);
+      SetAutoConnect;
+    end
+    else begin
+      ShowMessage('Invalid device list!');
+      ClearGrid;
+    end;
+  end
+  else ClearGrid;
   ActiveDevLst.Clear;
   ActiveExecLst.Clear;
   for i:=1 to StringGrid1.RowCount-1 do begin
-     StringGrid1.Cells[0,i]:='';
+     StringGrid1.Cells[colactive,i]:='';
   end;
   if stayontop then FormStyle:=fsStayOnTop else FormStyle:=fsNormal;
   if remote then StatusTimer.Interval:=15000 else StatusTimer.Interval:=5000;
@@ -351,14 +415,17 @@ end;
 procedure Tf_main.ClearGrid;
 begin
   StringGrid1.RowCount:=1;
-  StringGrid1.ColWidths[0]:=23;
-  StringGrid1.ColWidths[1]:=110;
-  StringGrid1.ColWidths[2]:=156;
-  StringGrid1.ColWidths[3]:=250;
-  StringGrid1.Cells[0,0]:='';
-  StringGrid1.Cells[1,0]:='Group';
-  StringGrid1.Cells[2,0]:='Driver name';
-  StringGrid1.Cells[3,0]:='Driver';
+  StringGrid1.ColWidths[colactive]:=23;
+  StringGrid1.ColWidths[colgroup]:=110;
+  StringGrid1.ColWidths[colname]:=156;
+  StringGrid1.ColWidths[colconnect]:=100;
+  StringGrid1.ColWidths[coldriver]:=250;
+  StringGrid1.Cells[colactive,0]:='';
+  StringGrid1.Cells[colgroup,0]:='Group';
+  StringGrid1.Cells[colname,0]:='Driver name';
+  StringGrid1.Cells[colconnect,0]:='Auto-Connect';
+  StringGrid1.Cells[coldriver,0]:='Driver';
+  AutoConnectList:='';
 end;
 
 procedure Tf_main.MenuSetupClick(Sender: TObject);
@@ -467,7 +534,7 @@ procedure Tf_main.StringGrid1DrawCell(Sender: TObject; aCol, aRow: Integer;
   aRect: TRect; aState: TGridDrawState);
 begin
   with Sender as TStringGrid do begin
-    if (aCol=0)and(aRow>0) then begin
+    if (aCol=colactive)and(aRow>0) then begin
       Canvas.Brush.style := bssolid;
       if (cells[aCol,aRow]='1')then begin
         Canvas.Brush.Color := clWindow;
@@ -480,6 +547,16 @@ begin
       end;
     end;
   end;
+end;
+
+procedure Tf_main.StringGrid1EditingDone(Sender: TObject);
+begin
+  SetAutoConnect;
+end;
+
+procedure Tf_main.StringGrid1CheckboxToggled(sender: TObject; aCol, aRow: Integer; aState: TCheckboxState);
+begin
+  SetAutoConnect;
 end;
 
 procedure Tf_main.StringGrid1MouseDown(Sender: TObject; Button: TMouseButton;
@@ -500,7 +577,7 @@ begin
     MenuRestartDevice.Caption:='Start server';
  end
  else begin
- if (CurrentRow>0)and(CurrentRow<StringGrid1.RowCount)and(StringGrid1.Cells[0,CurrentRow]='1') then
+ if (CurrentRow>0)and(CurrentRow<StringGrid1.RowCount)and(StringGrid1.Cells[colactive,CurrentRow]='1') then
     MenuRestartDevice.Caption:='Restart device'
  else
     MenuRestartDevice.Caption:='Start device';
@@ -513,6 +590,14 @@ begin
   Status;
   if remote then StatusTimer.Interval:=15000 else StatusTimer.Interval:=2000;
   StatusTimer.Enabled:=true;
+end;
+
+procedure Tf_main.StringGrid1SelectEditor(Sender: TObject; aCol, aRow: Integer; var Editor: TWinControl);
+begin
+   if aCol=colconnect then
+     Editor:=StringGrid1.EditorByStyle(cbsCheckboxColumn)
+   else
+     Editor:=StringGrid1.EditorByStyle(cbsNone);
 end;
 
 procedure Tf_main.MenuRestartDeviceClick(Sender: TObject);
@@ -560,10 +645,11 @@ begin
            buf:='"'+cdrv+'"@'+chost;
         StringGrid1.RowCount:=StringGrid1.RowCount+1;
         r:=StringGrid1.RowCount-1;
-        StringGrid1.Cells[0,r]:='';
-        StringGrid1.Cells[1,r]:='Custom';
-        StringGrid1.Cells[2,r]:=cdrv;
-        StringGrid1.Cells[3,r]:=buf;
+        StringGrid1.Cells[colactive,r]:='';
+        StringGrid1.Cells[colgroup,r]:='Custom';
+        StringGrid1.Cells[colname,r]:=cdrv;
+        StringGrid1.Cells[colconnect,r]:='0';
+        StringGrid1.Cells[coldriver,r]:=buf;
         if ServerPid<>'' then StartDevice(r);
       end;
     end else begin
@@ -574,10 +660,11 @@ begin
             CheckDuplicateDevice(dev);
             StringGrid1.RowCount:=StringGrid1.RowCount+1;
             r:=StringGrid1.RowCount-1;
-            StringGrid1.Cells[0,r]:='';
-            StringGrid1.Cells[1,r]:=dev.GroupName;
-            StringGrid1.Cells[2,r]:=dev.DevLbl;
-            StringGrid1.Cells[3,r]:=dev.Drv;
+            StringGrid1.Cells[colactive,r]:='';
+            StringGrid1.Cells[colgroup,r]:=dev.GroupName;
+            StringGrid1.Cells[colname,r]:=dev.DevLbl;
+            StringGrid1.Cells[colconnect,r]:='0';
+            StringGrid1.Cells[coldriver,r]:=dev.Drv;
             if ServerPid<>'' then StartDevice(r);
          end;
       end;
@@ -594,10 +681,11 @@ begin
      Screen.Cursor:=crHourGlass;
      StopDevice(CurrentRow);
      for i:=CurrentRow to StringGrid1.RowCount-2 do begin
-       StringGrid1.Cells[0,i]:=StringGrid1.Cells[0,i+1];
-       StringGrid1.Cells[1,i]:=StringGrid1.Cells[1,i+1];
-       StringGrid1.Cells[2,i]:=StringGrid1.Cells[2,i+1];
-       StringGrid1.Cells[3,i]:=StringGrid1.Cells[3,i+1];
+       StringGrid1.Cells[colactive,i]:=StringGrid1.Cells[colactive,i+1];
+       StringGrid1.Cells[colgroup,i]:=StringGrid1.Cells[colgroup,i+1];
+       StringGrid1.Cells[colname,i]:=StringGrid1.Cells[colname,i+1];
+       StringGrid1.Cells[colconnect,i]:=StringGrid1.Cells[colconnect,i+1];
+       StringGrid1.Cells[coldriver,i]:=StringGrid1.Cells[coldriver,i+1];
      end;
      StringGrid1.RowCount:=StringGrid1.RowCount-1;
      StringGrid1.SaveToCSVFile(devlist);
@@ -609,7 +697,7 @@ end;
 
 procedure Tf_main.MenuEditNameClick(Sender: TObject);
 begin
- if StringGrid1.Cells[0,CurrentRow]<>'1' then
+ if StringGrid1.Cells[colactive,CurrentRow]<>'1' then
     EditDeviceName(CurrentRow)
  else
     ShowMessage('The device must be stopped.');
@@ -634,8 +722,8 @@ begin
   drvname:=trim(dev.Drv);
   devname:=trim(dev.DevLbl);
   for i:=1 to StringGrid1.RowCount-1 do begin
-    if (trim(StringGrid1.Cells[3,i])=drvname)and(trim(StringGrid1.Cells[2,i])=devname) then begin
-       while trim(StringGrid1.Cells[2,i])=devname do
+    if (trim(StringGrid1.Cells[coldriver,i])=drvname)and(trim(StringGrid1.Cells[colname,i])=devname) then begin
+       while trim(StringGrid1.Cells[colname,i])=devname do
             devname:=FormEntry(self,'Duplicate, enter new name',devname);
        dev.DevLbl:=devname;
        break;
@@ -648,17 +736,17 @@ var drvname,devname: string;
     i: integer;
 begin
  if (r>0)and(r<StringGrid1.RowCount) then begin
-  drvname:=trim(StringGrid1.Cells[3,r]);
-  devname:=trim(StringGrid1.Cells[2,r]);
+  drvname:=trim(StringGrid1.Cells[coldriver,r]);
+  devname:=trim(StringGrid1.Cells[colname,r]);
   devname:=FormEntry(self,'Enter new name',devname);
   for i:=1 to StringGrid1.RowCount-1 do begin
-    if (i<>r)and(trim(StringGrid1.Cells[3,i])=drvname)and(trim(StringGrid1.Cells[2,i])=devname) then begin
-       while trim(StringGrid1.Cells[2,i])=devname do
+    if (i<>r)and(trim(StringGrid1.Cells[coldriver,i])=drvname)and(trim(StringGrid1.Cells[colname,i])=devname) then begin
+       while trim(StringGrid1.Cells[colname,i])=devname do
             devname:=FormEntry(self,'Duplicate, enter new name',devname);
        break;
     end;
   end;
-  StringGrid1.Cells[2,r]:=devname;
+  StringGrid1.Cells[colname,r]:=devname;
  end;
 end;
 
@@ -675,9 +763,9 @@ procedure Tf_main.StartDevice(r:integer);
 var group,drv,devname,buf: string;
 begin
   if (r>0)and(r<StringGrid1.RowCount) then begin
-     group:=StringGrid1.Cells[1,r];
-     drv:=StringGrid1.Cells[3,r];
-     devname:=StringGrid1.Cells[2,r];
+     group:=StringGrid1.Cells[colgroup,r];
+     drv:=StringGrid1.Cells[coldriver,r];
+     devname:=StringGrid1.Cells[colname,r];
      if group='Custom' then begin
        if remote then
          buf:='start '+drv
@@ -697,9 +785,9 @@ procedure Tf_main.StopDevice(r:integer);
 var group,drv,devname,buf: string;
 begin
   if (r>0)and(r<StringGrid1.RowCount) then begin
-     group:=StringGrid1.Cells[1,r];
-     drv:=StringGrid1.Cells[3,r];
-     devname:=StringGrid1.Cells[2,r];
+     group:=StringGrid1.Cells[colgroup,r];
+     drv:=StringGrid1.Cells[coldriver,r];
+     devname:=StringGrid1.Cells[colname,r];
     if group='Custom' then begin
        if remote then
          buf:='stop '+drv
@@ -820,7 +908,7 @@ begin
         ExecProcess('killall indiserver',str);
         DeleteFile(ServerFifo);
         for i:=1 to StringGrid1.RowCount-1 do begin
-           StringGrid1.Cells[0,i]:='';
+           StringGrid1.Cells[colactive,i]:='';
         end;
      end;
      str.free;
@@ -834,7 +922,7 @@ begin
      ActiveDevLst.Clear;
      ActiveExecLst.Clear;
      for i:=1 to StringGrid1.RowCount-1 do begin
-        StringGrid1.Cells[0,i]:='';
+        StringGrid1.Cells[colactive,i]:='';
      end;
      indiclient:=nil;
 end;
@@ -919,7 +1007,7 @@ begin
     ActiveDevLst.Clear;
     ActiveExecLst.Clear;
     for i:=1 to StringGrid1.RowCount-1 do begin
-       StringGrid1.Cells[0,i]:='';
+       StringGrid1.Cells[colactive,i]:='';
     end;
   end;
 end;
@@ -982,27 +1070,27 @@ begin
    for i:=0 to ActiveDevLst.Count-1 do devuse[i]:=false;
    // loop for exact match
    for i:=1 to StringGrid1.RowCount-1 do begin
-    j:=ActiveDevLst.IndexOf(StringGrid1.Cells[2,i]);        // test for driver name
+    j:=ActiveDevLst.IndexOf(StringGrid1.Cells[colname,i]);        // test for driver name
     if (j>=0) and (not devuse[j])
        then begin
          devuse[j]:=true;
-         StringGrid1.Cells[0,i]:='1';
+         StringGrid1.Cells[colactive,i]:='1';
        end
        else
-           StringGrid1.Cells[0,i]:='';
+           StringGrid1.Cells[colactive,i]:='';
     end;
    // try to find new dev name
    for i:=1 to StringGrid1.RowCount-1 do begin
-       if StringGrid1.Cells[0,i]='1' then continue;
-       j:=ActiveExecLst.IndexOf(StringGrid1.Cells[3,i]);  // test for driver exec
+       if StringGrid1.Cells[colactive,i]='1' then continue;
+       j:=ActiveExecLst.IndexOf(StringGrid1.Cells[coldriver,i]);  // test for driver exec
        if (j>=0)and (not devuse[j])
          then begin
            devuse[j]:=true;
-           StringGrid1.Cells[2,i]:=ActiveDevLst[j];
-           StringGrid1.Cells[0,i]:='1';
+           StringGrid1.Cells[colname,i]:=ActiveDevLst[j];
+           StringGrid1.Cells[colactive,i]:='1';
          end
          else
-           StringGrid1.Cells[0,i]:='';
+           StringGrid1.Cells[colactive,i]:='';
    end;
  end;
 end;
@@ -1043,6 +1131,11 @@ try
          end;
        end;
      end;
+  end
+  else if (proptype=INDI_SWITCH)and(propname='CONNECTION') then begin
+    dname:=indiProp.getDeviceName;
+    if pos('|'+dname+'|',AutoConnectList)>0 then
+      indiclient.connectDevice(dname);
   end;
 except
 end;
