@@ -108,6 +108,7 @@ type
     Procedure GetAppDir;
     procedure LoadConfig(cname:string);
     procedure ClearGrid;
+    procedure SetTitle;
     procedure SaveConfig;
     function  WriteCmd(cmd:string): boolean;
     procedure ShowErr(msg:string; str:TStringList);
@@ -327,6 +328,7 @@ begin
   if FileExistsUTF8(devlist) then begin
     if CheckDevList(devlist) then begin
       StringGrid1.LoadFromCSVFile(devlist);
+      SetTitle;
       SetAutoConnect;
     end
     else begin
@@ -415,17 +417,21 @@ end;
 procedure Tf_main.ClearGrid;
 begin
   StringGrid1.RowCount:=1;
-  StringGrid1.ColWidths[colactive]:=23;
-  StringGrid1.ColWidths[colgroup]:=110;
-  StringGrid1.ColWidths[colname]:=156;
-  StringGrid1.ColWidths[colconnect]:=100;
-  StringGrid1.ColWidths[coldriver]:=250;
-  StringGrid1.Cells[colactive,0]:='';
-  StringGrid1.Cells[colgroup,0]:='Group';
-  StringGrid1.Cells[colname,0]:='Driver name';
-  StringGrid1.Cells[colconnect,0]:='Auto-Connect';
-  StringGrid1.Cells[coldriver,0]:='Driver';
+  StringGrid1.ColWidths[0]:=23;
+  StringGrid1.Columns[colgroup-1].Width:=110;
+  StringGrid1.Columns[colname-1].Width:=156;
+  StringGrid1.Columns[colconnect-1].Width:=100;
+  StringGrid1.Columns[coldriver-1].Width:=250;
   AutoConnectList:='';
+  SetTitle;
+end;
+
+procedure Tf_main.SetTitle;
+begin
+  StringGrid1.Columns[colgroup-1].Title.Caption:='Group';
+  StringGrid1.Columns[colname-1].Title.Caption:='Driver name';
+  StringGrid1.Columns[colconnect-1].Title.Caption:='Auto-Connect';
+  StringGrid1.Columns[coldriver-1].Title.Caption:='Driver';
 end;
 
 procedure Tf_main.MenuSetupClick(Sender: TObject);
