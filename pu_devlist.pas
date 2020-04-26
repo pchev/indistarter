@@ -136,6 +136,7 @@ begin
   TreeView1.Items.Clear;
   TreeView1.BeginUpdate;
   while i=0 do begin
+    try
     fn:=slash(fdir)+fs.name;
     if FileExists(fn) then begin
       AssignFile(f,fn);
@@ -158,6 +159,9 @@ begin
       end;
       s.Free;
       Doc.Free;
+    end;
+    except
+      on E: Exception do ShowMessage('Error processing file '+fn+crlf+ E.Message);
     end;
     i:=findnext(fs);
   end;
