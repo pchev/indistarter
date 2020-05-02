@@ -13,6 +13,9 @@ Create html doc:
 
 gwtc -n indistarter ./indistarter.wiki
 
+Use local images:
+sed -i 's/https:\/\/raw\.githubusercontent\.com\/wiki\/pchev\/indistarter\//indistarter\.wiki\//g' indistarter.html
+
 
 Create pdf:
 
