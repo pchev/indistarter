@@ -34,10 +34,10 @@ uses
 {$R *.res}
 
 begin
-  {$ifdef USEHEAPTRC}
+(*  {$ifdef USEHEAPTRC}
   DeleteFile('/tmp/indistarter_heap.trc');
   SetHeapTraceOutput('/tmp/indistarter_heap.trc');
-  {$endif}
+  {$endif} *)
   RequireDerivedFormResource := True;
   Application.Initialize;
   Application.CreateForm(Tf_main, f_main);
