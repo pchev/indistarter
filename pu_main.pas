@@ -864,6 +864,7 @@ StatusTimer.Enabled:=false;
           {$ifdef darwin}
           cmd:='PATH="'+slash(appdir)+'Resources/DriverSupport:'+slash(appdir)+'MacOS/indi:$PATH"';
           cmd:=cmd+' INDIPREFIX="'+AppBaseDir+'"';
+          cmd:=cmd+' DYLD_LIBRARY_PATH="'+slash(appdir)+'Frameworks"';
           cmd:=cmd+' IOLIBS="'+slash(appdir)+'Resources/DriverSupport/gphoto/IOLIBS"';
           cmd:=cmd+' CAMLIBS="'+slash(appdir)+'Resources/DriverSupport/gphoto/CAMLIBS"';
           if GSCdir<>'' then cmd:=cmd+' GSCDAT="'+GSCdir+'"';
