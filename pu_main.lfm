@@ -75,6 +75,7 @@ object f_main: Tf_main
       Width = 152
       AutoSize = False
       Caption = '                        '
+      ParentColor = False
       ParentFont = False
       WordWrap = True
     end
@@ -104,6 +105,7 @@ object f_main: Tf_main
       Top = 7
       Width = 73
       Caption = 'ConfigLabel'
+      ParentColor = False
       ParentFont = False
     end
     object BtnSetup: TButton

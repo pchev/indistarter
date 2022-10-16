@@ -905,6 +905,10 @@ var i:integer;
     str:TStringList;
 begin
      if indiclient<>nil then indiclient.DisconnectServer;
+     for i:=1 to StringGrid1.RowCount-1 do begin
+       StopDevice(i);
+     end;
+     Wait(2);
      str:=TStringList.Create;
      if remote then begin
         StopTunnel;
