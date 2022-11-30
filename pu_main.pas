@@ -862,7 +862,7 @@ StatusTimer.Enabled:=false;
        DeleteFile(ServerFifo);
        if (ExecProcess('mkfifo '+ServerFifo,str)=0) then begin
           {$ifdef darwin}
-          cmd:='PATH="'+slash(appdir)+'Resources/DriverSupport:'+slash(appdir)+'MacOS/indi:$PATH"';
+          cmd:='PATH="'+slash(appdir)+'Resources/DriverSupport:'+slash(appdir)+'MacOS:$PATH"';
           cmd:=cmd+' INDIPREFIX="'+AppBaseDir+'"';
           cmd:=cmd+' DYLD_LIBRARY_PATH="'+slash(appdir)+'Frameworks"';
           cmd:=cmd+' IOLIBS="'+slash(appdir)+'Resources/DriverSupport/gphoto/IOLIBS"';
