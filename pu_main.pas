@@ -1147,15 +1147,12 @@ try
      end;
   end
   else if (proptype=INDI_SWITCH)and(propname='CONFIG_PROCESS') then begin
-    dname:=indiProp.getDeviceName;
-    if pos('|'+dname+'|',AutoConnectList)>0 then begin
-      configprop:=indiProp.getSwitch;
-      if configprop<>nil then configload:=IUFindSwitch(configprop,'CONFIG_LOAD');
-      if configload<>nil then begin
-        IUResetSwitch(configprop);
-        configload.s:=ISS_ON;
-        indiclient.sendNewSwitch(configprop);
-      end;
+    configprop:=indiProp.getSwitch;
+    if configprop<>nil then configload:=IUFindSwitch(configprop,'CONFIG_LOAD');
+    if configload<>nil then begin
+      IUResetSwitch(configprop);
+      configload.s:=ISS_ON;
+      indiclient.sendNewSwitch(configprop);
     end;
   end
   else if (proptype=INDI_SWITCH)and(propname='CONNECTION') then begin
