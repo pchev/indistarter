@@ -1126,6 +1126,8 @@ var propname: string;
     drvinfo: ITextVectorProperty;
     drvexec: IText;
     dname,dexec: string;
+    configprop: ISwitchVectorProperty;
+    configload: ISwitch;
 begin
 try
   propname:=indiProp.getName;
@@ -1143,6 +1145,18 @@ try
          end;
        end;
      end;
+  end
+  else if (proptype=INDI_SWITCH)and(propname='CONFIG_PROCESS') then begin
+    dname:=indiProp.getDeviceName;
+    if pos('|'+dname+'|',AutoConnectList)>0 then begin
+      configprop:=indiProp.getSwitch;
+      if configprop<>nil then configload:=IUFindSwitch(configprop,'CONFIG_LOAD');
+      if configload<>nil then begin
+        IUResetSwitch(configprop);
+        configload.s:=ISS_ON;
+        indiclient.sendNewSwitch(configprop);
+      end;
+    end;
   end
   else if (proptype=INDI_SWITCH)and(propname='CONNECTION') then begin
     dname:=indiProp.getDeviceName;
