@@ -852,6 +852,7 @@ StatusTimer.Enabled:=false;
   if ServerPid='' then begin
      str:=TStringList.Create;
      if remote then begin
+        ServerFifo:='/tmp/IndiStarter.fifo';
         ExecProcess('ssh '+sshopt+' -p '+RemoteSshPort+' '+RemoteUser+'@'+RemoteHost+' rm '+ServerFifo,str);
         if ExecProcess('ssh '+sshopt+' -p '+RemoteSshPort+' '+RemoteUser+'@'+RemoteHost+' mkfifo '+ServerFifo,str)<>0 then begin ShowErr(RemoteUser+'@'+RemoteHost+' mkfifo '+ServerFifo,str);exit;end;
         if ExecProcess('ssh '+sshopt+' -p '+RemoteSshPort+' '+RemoteUser+'@'+RemoteHost+' "sh -c ''nohup indiserver '+serveroptions+' -f '+ServerFifo+' >/dev/null 2>&1 &''"',str)<>0 then begin ShowErr(RemoteUser+'@'+RemoteHost+' indiserver',str);exit;end;
@@ -865,6 +866,7 @@ StatusTimer.Enabled:=false;
         StartTunnel;
      end
      else begin
+       ServerFifo:=slash(GetTempDir(true))+'IndiStarter.fifo';
        DeleteFile(ServerFifo);
        if (ExecProcess('mkfifo '+ServerFifo,str)=0) then begin
           {$ifdef darwin}
