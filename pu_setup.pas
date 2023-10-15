@@ -39,8 +39,10 @@ type
     Button2: TButton;
     BtnNewConfig: TButton;
     ConfigList: TComboBox;
+    sshport: TEdit;
     gscpath: TDirectoryEdit;
     Label10: TLabel;
+    Label11: TLabel;
     LogFileName: TFileNameEdit;
     indipath: TDirectoryEdit;
     Label1: TLabel;

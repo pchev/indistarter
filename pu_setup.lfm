@@ -56,15 +56,15 @@ object f_setup: Tf_setup
     Visible = False
     object remotehost: TEdit
       Left = 8
-      Height = 30
+      Height = 32
       Top = 24
-      Width = 201
+      Width = 152
       ParentFont = False
       TabOrder = 0
     end
     object remoteuser: TEdit
       Left = 228
-      Height = 30
+      Height = 32
       Top = 24
       Width = 80
       ParentFont = False
@@ -72,18 +72,20 @@ object f_setup: Tf_setup
     end
     object Label3: TLabel
       Left = 8
-      Height = 19
+      Height = 18
       Top = 4
-      Width = 117
+      Width = 116
       Caption = 'Remote host name'
+      ParentColor = False
       ParentFont = False
     end
     object Label4: TLabel
       Left = 228
-      Height = 19
+      Height = 18
       Top = 4
-      Width = 68
+      Width = 67
       Caption = 'User name'
+      ParentColor = False
       ParentFont = False
     end
     object Label5: TLabel
@@ -93,12 +95,13 @@ object f_setup: Tf_setup
       Width = 300
       AutoSize = False
       Caption = 'You must configure ssh key-based authentication for username on hostname.'
+      ParentColor = False
       ParentFont = False
       WordWrap = True
     end
     object localport: TEdit
       Left = 88
-      Height = 30
+      Height = 32
       Top = 64
       Width = 54
       ParentFont = False
@@ -106,7 +109,7 @@ object f_setup: Tf_setup
     end
     object remoteport: TEdit
       Left = 254
-      Height = 30
+      Height = 32
       Top = 64
       Width = 54
       ParentFont = False
@@ -114,19 +117,36 @@ object f_setup: Tf_setup
     end
     object Label6: TLabel
       Left = 8
-      Height = 19
+      Height = 18
       Top = 68
       Width = 61
       Caption = 'Local port'
+      ParentColor = False
       ParentFont = False
     end
     object Label7: TLabel
       Left = 160
-      Height = 19
+      Height = 18
       Top = 68
-      Width = 79
+      Width = 77
       Caption = 'Remote port'
+      ParentColor = False
       ParentFont = False
+    end
+    object sshport: TEdit
+      Left = 163
+      Height = 32
+      Top = 24
+      Width = 60
+      TabOrder = 4
+    end
+    object Label11: TLabel
+      Left = 163
+      Height = 18
+      Top = 4
+      Width = 50
+      Caption = 'ssh port'
+      ParentColor = False
     end
   end
   object Panel1: TPanel
@@ -141,9 +161,9 @@ object f_setup: Tf_setup
     TabOrder = 2
     object remote: TCheckBox
       Left = 8
-      Height = 21
+      Height = 22
       Top = 299
-      Width = 262
+      Width = 264
       Caption = 'Start indiserver on a remote computer'
       OnClick = remoteClick
       ParentFont = False
@@ -151,16 +171,17 @@ object f_setup: Tf_setup
     end
     object Label2: TLabel
       Left = 13
-      Height = 19
+      Height = 18
       Top = 121
-      Width = 159
+      Width = 157
       Caption = 'Additional server options:'
+      ParentColor = False
       ParentFont = False
       ParentShowHint = False
     end
     object serveroptions: TEdit
       Left = 8
-      Height = 30
+      Height = 32
       Hint = 'Do not add driver here, and do not use the -f option!'#10'Valid options:'#10' -l d     : log driver messages to <d>/YYYY-MM-DD.islog'#10' -m m  : kill client if gets more than this many MB behind, default 64'#10' -p p    : alternate IP port, default 7624'#10' -v       : show key events, no traffic'#10' -vv      : -v + key message content'#10' -vvv    : -vv + complete xml'
       Top = 141
       Width = 297
@@ -171,36 +192,37 @@ object f_setup: Tf_setup
     end
     object stayontop: TCheckBox
       Left = 8
-      Height = 21
+      Height = 22
       Top = 265
-      Width = 258
+      Width = 261
       Caption = 'Keep the server window always visible'
       ParentFont = False
       TabOrder = 2
     end
     object autostart: TCheckBox
       Left = 8
-      Height = 21
+      Height = 22
       Top = 234
-      Width = 280
+      Width = 281
       Caption = 'Autostart the server with last used profile'
       ParentFont = False
       TabOrder = 3
     end
     object Label8: TLabel
       Left = 13
-      Height = 19
+      Height = 18
       Top = 8
-      Width = 91
+      Width = 92
       Caption = 'Configuration :'
+      ParentColor = False
       ParentFont = False
     end
     object ConfigList: TComboBox
       Left = 12
-      Height = 35
+      Height = 32
       Top = 24
       Width = 169
-      ItemHeight = 0
+      ItemHeight = 18
       OnChange = ConfigListChange
       ParentFont = False
       Sorted = True
@@ -219,14 +241,15 @@ object f_setup: Tf_setup
     end
     object Label9: TLabel
       Left = 13
-      Height = 19
+      Height = 18
       Top = 178
-      Width = 207
+      Width = 206
       Caption = 'Server log file   ( blank for stdout )'
+      ParentColor = False
     end
     object LogFileName: TFileNameEdit
       Left = 8
-      Height = 30
+      Height = 32
       Top = 198
       Width = 297
       FilterIndex = 0
@@ -247,14 +270,15 @@ object f_setup: Tf_setup
       TabOrder = 7
       object Label1: TLabel
         Left = 13
-        Height = 19
+        Height = 18
         Top = 2
-        Width = 113
+        Width = 112
         Caption = 'INDI binaries path'
+        ParentColor = False
       end
       object indipath: TDirectoryEdit
         Left = 8
-        Height = 30
+        Height = 32
         Top = 22
         Width = 297
         ShowHidden = False
@@ -275,14 +299,15 @@ object f_setup: Tf_setup
       TabOrder = 8
       object Label10: TLabel
         Left = 13
-        Height = 19
+        Height = 18
         Top = 2
         Width = 166
         Caption = 'GSC path for the simulator '
+        ParentColor = False
       end
       object gscpath: TDirectoryEdit
         Left = 8
-        Height = 30
+        Height = 32
         Top = 22
         Width = 297
         ShowHidden = False

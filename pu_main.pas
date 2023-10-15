@@ -99,7 +99,7 @@ type
     TunnelProcess: TProcess;
     rc,config: TXMLConfig;
     ConfigDir,configfile,devlist,serveroptions,serverlog: string;
-    RemoteHost,RemoteUser,LocalPort,RemotePort,sshopt: string;
+    RemoteHost,RemoteSshPort,RemoteUser,LocalPort,RemotePort,sshopt: string;
     autostart,stayontop,remote,ServerStarted: boolean;
     GUIready: boolean;
     ServerFifo: string;
@@ -172,6 +172,7 @@ begin
   serverlog:='';
   remote:=false;
   RemoteHost:='';
+  RemoteSshPort:='22';
   RemoteUser:='';
   LocalPort:='7624';
   RemotePort:='7624';
@@ -321,6 +322,7 @@ begin
   serverlog:=config.GetValue('/Server/Log','');
   remote:=config.GetValue('/Server/Remote',remote);
   RemoteHost:=config.GetValue('/RemoteServer/Host',RemoteHost);
+  RemoteSshPort:=config.GetValue('/RemoteServer/SshPort','22');
   RemoteUser:=config.GetValue('/RemoteServer/User',RemoteUser);
   LocalPort:=config.GetValue('/RemoteServer/LocalPort',LocalPort);
   RemotePort:=config.GetValue('/RemoteServer/RemotePort',RemotePort);
@@ -358,6 +360,7 @@ begin
   config.SetValue('/Server/Log',serverlog);
   config.SetValue('/Server/Remote',remote);
   config.SetValue('/RemoteServer/Host',RemoteHost);
+  config.SetValue('/RemoteServer/SshPort',RemoteSshPort);
   config.SetValue('/RemoteServer/User',RemoteUser);
   config.SetValue('/RemoteServer/LocalPort',LocalPort);
   config.SetValue('/RemoteServer/RemotePort',RemotePort);
@@ -454,6 +457,7 @@ begin
   f_setup.stayontop.Checked:=stayontop;
   f_setup.remote.Checked:=remote;
   f_setup.remotehost.Text:=RemoteHost;
+  f_setup.sshport.Text:=RemoteSshPort;
   f_setup.remoteuser.Text:=RemoteUser;
   f_setup.localport.Text:=LocalPort;
   f_setup.remoteport.Text:=RemotePort;
@@ -471,6 +475,7 @@ begin
     GSCdir     := f_setup.gscpath.Directory;
     remote     := f_setup.remote.Checked;
     RemoteHost := f_setup.remotehost.Text;
+    RemoteSshPort := f_setup.sshport.Text;
     RemoteUser := f_setup.remoteuser.Text;
     LocalPort  := f_setup.localport.Text;
     RemotePort := f_setup.remoteport.Text;
@@ -497,6 +502,7 @@ begin
  f_setup.stayontop.Checked:=stayontop;
  f_setup.remote.Checked:=remote;
  f_setup.remotehost.Text:=RemoteHost;
+ f_setup.sshport.Text:=RemoteSshPort;
  f_setup.remoteuser.Text:=RemoteUser;
  f_setup.localport.Text:=LocalPort;
  f_setup.remoteport.Text:=RemotePort;
@@ -816,7 +822,7 @@ begin
  if ServerPid<>'' then begin
   if remote then begin
     str:=TStringList.Create;
-    ExecProcess('ssh '+sshopt+RemoteUser+'@'+RemoteHost+' echo '+cmd+'>'+ServerFifo,str);
+    ExecProcess('ssh '+sshopt+' -p '+RemoteSshPort+' '+RemoteUser+'@'+RemoteHost+' echo '+cmd+'>'+ServerFifo,str);
     result:=true;
     str.Free;
   end
@@ -846,9 +852,9 @@ StatusTimer.Enabled:=false;
   if ServerPid='' then begin
      str:=TStringList.Create;
      if remote then begin
-        ExecProcess('ssh '+sshopt+RemoteUser+'@'+RemoteHost+' rm '+ServerFifo,str);
-        if ExecProcess('ssh '+sshopt+RemoteUser+'@'+RemoteHost+' mkfifo '+ServerFifo,str)<>0 then begin ShowErr(RemoteUser+'@'+RemoteHost+' mkfifo '+ServerFifo,str);exit;end;
-        if ExecProcess('ssh '+sshopt+RemoteUser+'@'+RemoteHost+' "sh -c ''nohup indiserver '+serveroptions+' -f '+ServerFifo+' >/dev/null 2>&1 &''"',str)<>0 then begin ShowErr(RemoteUser+'@'+RemoteHost+' indiserver',str);exit;end;
+        ExecProcess('ssh '+sshopt+' -p '+RemoteSshPort+' '+RemoteUser+'@'+RemoteHost+' rm '+ServerFifo,str);
+        if ExecProcess('ssh '+sshopt+' -p '+RemoteSshPort+' '+RemoteUser+'@'+RemoteHost+' mkfifo '+ServerFifo,str)<>0 then begin ShowErr(RemoteUser+'@'+RemoteHost+' mkfifo '+ServerFifo,str);exit;end;
+        if ExecProcess('ssh '+sshopt+' -p '+RemoteSshPort+' '+RemoteUser+'@'+RemoteHost+' "sh -c ''nohup indiserver '+serveroptions+' -f '+ServerFifo+' >/dev/null 2>&1 &''"',str)<>0 then begin ShowErr(RemoteUser+'@'+RemoteHost+' indiserver',str);exit;end;
         Wait(5);
         ServerStarted:=true;
         if StringGrid1.RowCount>1 then begin
@@ -912,8 +918,8 @@ begin
      str:=TStringList.Create;
      if remote then begin
         StopTunnel;
-        ExecProcess('ssh '+sshopt+RemoteUser+'@'+RemoteHost+' killall indiserver ',str);
-        ExecProcess('ssh '+sshopt+RemoteUser+'@'+RemoteHost+' rm '+ServerFifo,str);
+        ExecProcess('ssh '+sshopt+' -p '+RemoteSshPort+' '+RemoteUser+'@'+RemoteHost+' killall indiserver ',str);
+        ExecProcess('ssh '+sshopt+' -p '+RemoteSshPort+' '+RemoteUser+'@'+RemoteHost+' rm '+ServerFifo,str);
      end
      else begin
         ExecProcess('killall indiserver',str);
@@ -941,7 +947,7 @@ end;
 procedure Tf_main.StartTunnel;
 begin
   if remote then begin
-     TunnelProcess:=ExecProcessNoWait('ssh '+sshopt+' -N -L'+LocalPort+':'+RemoteHost+':'+RemotePort+' '+RemoteUser+'@'+RemoteHost);
+     TunnelProcess:=ExecProcessNoWait('ssh '+sshopt+' -p '+RemoteSshPort+' '+' -N -L'+LocalPort+':'+RemoteHost+':'+RemotePort+' '+RemoteUser+'@'+RemoteHost);
      Wait(5);
   end;
 end;
@@ -968,7 +974,7 @@ begin
     repeat
       try
       if remote then begin
-        i:=ExecProcess('ssh '+sshopt+RemoteUser+'@'+RemoteHost+' pgrep indiserver',str);
+        i:=ExecProcess('ssh '+sshopt+' -p '+RemoteSshPort+' '+RemoteUser+'@'+RemoteHost+' pgrep indiserver',str);
       end
       else begin
          i:=ExecProcess('pgrep indiserver',str);

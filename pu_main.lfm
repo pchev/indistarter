@@ -5,7 +5,7 @@ object f_main: Tf_main
   Width = 390
   ActiveControl = StringGrid1
   Caption = 'INDI server'
-  ClientHeight = 369
+  ClientHeight = 339
   ClientWidth = 390
   Menu = MainMenu1
   OnClose = FormClose
@@ -13,7 +13,7 @@ object f_main: Tf_main
   OnDestroy = FormDestroy
   object StringGrid1: TStringGrid
     Left = 0
-    Height = 252
+    Height = 222
     Top = 0
     Width = 390
     Align = alClient
@@ -45,7 +45,7 @@ object f_main: Tf_main
   object Panel1: TPanel
     Left = 0
     Height = 117
-    Top = 252
+    Top = 222
     Width = 390
     Align = alBottom
     ClientHeight = 117
@@ -101,7 +101,7 @@ object f_main: Tf_main
     end
     object ConfigLabel: TLabel
       Left = 99
-      Height = 19
+      Height = 18
       Top = 7
       Width = 73
       Caption = 'ConfigLabel'
