@@ -70,6 +70,7 @@ type
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure MenuAboutClick(Sender: TObject);
     procedure MenuDeleteDeviceClick(Sender: TObject);
     procedure MenuEditNameClick(Sender: TObject);
@@ -157,7 +158,7 @@ procedure Tf_main.FormCreate(Sender: TObject);
 begin
   DefaultFormatSettings.DecimalSeparator:='.';
   DefaultFormatSettings.TimeSeparator:=':';
-  ServerStarted:=true; // to check if the server is already started
+  ServerStarted:=false;
   lclver:=lcl_version;
   compile_time:={$I %DATE%}+' '+{$I %TIME%};
   compile_version:='Lazarus '+lcl_version+' Free Pascal '+{$I %FPCVERSION%}+' '+{$I %FPCTARGETOS%}+'-'+{$I %FPCTARGETCPU%}+'-'+LCLPlatformDirNames[WidgetSet.LCLPlatform];
@@ -192,14 +193,28 @@ begin
   if Application.HasOption('c', 'config') then begin
     configfile:=Application.GetOptionValue('c', 'config')+'.conf';
   end;
-  LoadConfig(configfile);
   UScaleDPI.UseScaling:=true;
   UScaleDPI.SetScale(Canvas);
   ScaleDPI(Self);
   {$ifdef lclcocoa}
   StringGrid1.FixedColor:=clBackground;
   {$endif}
-  if autostart then StartServer;
+end;
+
+procedure Tf_main.FormShow(Sender: TObject);
+begin
+  LoadConfig(configfile);
+  if autostart then begin
+    StartServer;
+  end
+  else begin
+    try
+    ServerStarted:=true;
+    Status;
+    finally
+    ServerStarted:=false;
+    end;
+  end;
 end;
 
 Procedure Tf_main.GetAppDir;
@@ -385,7 +400,6 @@ begin
  else
   writeln('Exiting because other instance of indistarter is running.');
 end;
-
 
 procedure Tf_main.MenuAboutClick(Sender: TObject);
 var aboutmsg,cdate: string;
@@ -912,7 +926,7 @@ procedure Tf_main.StopServer;
 var i:integer;
     str:TStringList;
 begin
-     if indiclient<>nil then indiclient.DisconnectServer;
+     if (indiclient<>nil)and(not indiclient.Terminated) then indiclient.DisconnectServer;
      for i:=1 to StringGrid1.RowCount-1 do begin
        StopDevice(i);
      end;
@@ -984,8 +998,8 @@ begin
       finally
         inc(c);
       end;
-      if i<>0 then sleep(100);
-    until (i=0)or(c>3);
+      if (i<>0)and(not remote) then sleep(100);
+    until (i=0)or(c>3)or remote;
     if (i=0)and(str.Count>0) then
        result:=str[0]
     else
