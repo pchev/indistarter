@@ -253,12 +253,11 @@ begin
 end;
 
 Function ExecProcess(cmd: string; output: TStringList; ShowConsole:boolean=false): integer;
-const READ_BYTES = 2048;
 var
   M: TMemoryStream;
   P: TProcess;
   param: TStringList;
-  n: LongInt;
+  n,s: LongInt;
   BytesRead: LongInt;
 begin
 M := TMemoryStream.Create;
@@ -283,20 +282,23 @@ try
   while P.Running do begin
     Application.ProcessMessages;
     if P.Output<>nil then begin
-      M.SetSize(BytesRead + READ_BYTES);
-      n := P.Output.Read((M.Memory + BytesRead)^, READ_BYTES);
-      if n > 0 then inc(BytesRead, n);
+      s:=P.Output.NumBytesAvailable;
+      if s>0 then begin
+        M.SetSize(BytesRead + s);
+        n := P.Output.Read((M.Memory + BytesRead)^, s);
+        if n > 0 then inc(BytesRead, n);
+      end;
     end;
   end;
   result:=P.ExitStatus;
   if (result<>127)and(P.Output<>nil) then repeat
-    M.SetSize(BytesRead + READ_BYTES);
-    n := P.Output.Read((M.Memory + BytesRead)^, READ_BYTES);
-    if n > 0
-    then begin
-      Inc(BytesRead, n);
+    s:=P.Output.NumBytesAvailable;
+    if s>0 then begin
+      M.SetSize(BytesRead + s);
+      n := P.Output.Read((M.Memory + BytesRead)^, s);
+      if n > 0 then Inc(BytesRead, n);
     end;
-  until (n<=0)or(P.Output=nil);
+  until (n<=0)or(s<=0)or(P.Output=nil);
   M.SetSize(BytesRead);
   output.LoadFromStream(M);
   P.Free;
