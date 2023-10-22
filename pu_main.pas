@@ -360,7 +360,7 @@ begin
      StringGrid1.Cells[colactive,i]:='';
   end;
   if stayontop then FormStyle:=fsStayOnTop else FormStyle:=fsNormal;
-  if remote then StatusTimer.Interval:=15000 else StatusTimer.Interval:=5000;
+  StatusTimer.Interval:=5000;
 end;
 
 procedure Tf_main.SaveConfig;
@@ -918,6 +918,7 @@ StatusTimer.Enabled:=false;
   end;
   Status;
 finally
+  StatusTimer.Interval:=5000;
   StatusTimer.Enabled:=true;
 end;
 end;
