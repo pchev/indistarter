@@ -12,6 +12,7 @@ object f_main: Tf_main
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
+  Position = poDefault
   object StringGrid1: TStringGrid
     Left = 0
     Height = 222

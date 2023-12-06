@@ -342,6 +342,12 @@ begin
   LocalPort:=config.GetValue('/RemoteServer/LocalPort',LocalPort);
   RemotePort:=config.GetValue('/RemoteServer/RemotePort',RemotePort);
   stayontop:=config.GetValue('/Window/StayOnTop',stayontop);
+  Width:=config.GetValue('/Window/Width',Width);
+  Height:=config.GetValue('/Window/Height',Height);
+  FormPos(self,Left,Top);
+  for i:=0 to StringGrid1.Columns.Count-1 do begin
+    StringGrid1.Columns[i].Width:=config.GetValue('/Grid/Column'+inttostr(i)+'/Width',StringGrid1.Columns[i].Width);
+  end;
   if FileExistsUTF8(devlist) then begin
     if CheckDevList(devlist) then begin
       StringGrid1.LoadFromCSVFile(devlist);
@@ -364,6 +370,7 @@ begin
 end;
 
 procedure Tf_main.SaveConfig;
+var i: integer;
 begin
   devlist:=ChangeFileExt(config.Filename,'.devices');
   StringGrid1.SaveToCSVFile(devlist);
@@ -380,6 +387,11 @@ begin
   config.SetValue('/RemoteServer/LocalPort',LocalPort);
   config.SetValue('/RemoteServer/RemotePort',RemotePort);
   config.SetValue('/Window/StayOnTop',stayontop);
+  config.SetValue('/Window/Width',Width);
+  config.SetValue('/Window/Height',Height);
+  for i:=0 to StringGrid1.Columns.Count-1 do begin
+    config.SetValue('/Grid/Column'+inttostr(i)+'/Width',StringGrid1.Columns[i].Width);
+  end;
   config.Flush;
   rc.SetValue('/Current/Config',configfile);
   rc.Flush;
