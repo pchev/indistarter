@@ -69,6 +69,9 @@ function GetAttrib(node:TDOMNode; attr:string):TDOMNode;
 function GetNodeName(node:TDOMNode): string;
 function GetNodeValue(node:TDOMNode): string;
 function GetChildValue(node:TDOMNode): string;
+{$ifdef unix}
+function CdcSigAction(const action: pointer): boolean;
+{$endif}
 
 implementation
 
@@ -411,6 +414,33 @@ begin
     else result:=trim(string(cnode.NodeValue));
   end
 end;
+
+{$ifdef unix}
+function CdcSigAction(const action: pointer): boolean;
+var
+  oa, na: psigactionrec;
+begin
+  Result := False;
+  new(oa);
+  new(na);
+  na^.sa_Handler := SigActionHandler(action);
+  fillchar(na^.Sa_Mask, sizeof(na^.sa_mask), #0);
+  na^.Sa_Flags := 0;
+
+  {$ifdef Linux}
+  na^.Sa_Restorer := nil;
+  {$endif}
+
+  fpSigAction(SIGHUP, na, oa);
+
+  if fpSigAction(SIGTerm, na, oa) <> 0 then
+    Result := True;
+
+  Dispose(oa);
+  Dispose(na);
+end;
+
+{$endif}
 
 end.
 

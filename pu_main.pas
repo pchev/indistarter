@@ -152,6 +152,21 @@ implementation
 
 {$R *.lfm}
 
+{$ifdef unix}
+procedure RecvSignal(sig: longint); cdecl;
+begin
+  case sig of
+    1: begin
+        f_main.WindowState:=wsNormal;
+       end;
+   15: begin
+         f_main.StopServer;
+         f_main.Close;
+       end;
+  end;
+end;
+{$endif}
+
 { Tf_main }
 
 procedure Tf_main.FormCreate(Sender: TObject);
@@ -198,6 +213,9 @@ begin
   ScaleDPI(Self);
   {$ifdef lclcocoa}
   StringGrid1.FixedColor:=clBackground;
+  {$endif}
+  {$ifdef unix}
+  CdcSigAction(@RecvSignal);
   {$endif}
 end;
 
