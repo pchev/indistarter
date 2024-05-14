@@ -220,8 +220,13 @@ begin
 end;
 
 procedure Tf_main.FormShow(Sender: TObject);
+var configautostart: boolean;
 begin
   LoadConfig(configfile);
+  configautostart:=autostart;
+  if Application.HasOption('s', 'start') then begin
+     autostart:=true;
+  end;
   if autostart then begin
     StartServer;
   end
@@ -233,6 +238,7 @@ begin
     ServerStarted:=false;
     end;
   end;
+  autostart:=configautostart;
 end;
 
 Procedure Tf_main.GetAppDir;
