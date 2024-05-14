@@ -101,7 +101,7 @@ type
     rc,config: TXMLConfig;
     ConfigDir,configfile,devlist,serveroptions,serverlog: string;
     RemoteHost,RemoteSshPort,RemoteUser,LocalPort,RemotePort,sshopt: string;
-    autostart,stayontop,remote,ServerStarted: boolean;
+    Initialized,autostart,stayontop,remote,ServerStarted: boolean;
     GUIready: boolean;
     ServerFifo: string;
     CurrentCol, CurrentRow: integer;
@@ -173,6 +173,7 @@ procedure Tf_main.FormCreate(Sender: TObject);
 begin
   DefaultFormatSettings.DecimalSeparator:='.';
   DefaultFormatSettings.TimeSeparator:=':';
+  Initialized:=false;
   ServerStarted:=false;
   lclver:=lcl_version;
   compile_time:={$I %DATE%}+' '+{$I %TIME%};
@@ -222,6 +223,8 @@ end;
 procedure Tf_main.FormShow(Sender: TObject);
 var configautostart: boolean;
 begin
+if not Initialized then begin
+  Initialized:=true;
   LoadConfig(configfile);
   configautostart:=autostart;
   if Application.HasOption('s', 'start') then begin
@@ -239,6 +242,7 @@ begin
     end;
   end;
   autostart:=configautostart;
+end;
 end;
 
 Procedure Tf_main.GetAppDir;
@@ -422,8 +426,34 @@ begin
 end;
 
 procedure Tf_main.UniqueInstance1OtherInstance(Sender: TObject; ParamCount: Integer; const Parameters: array of String);
+var i: integer;
+    buf: string;
+    astart: boolean;
 begin
-  BringToFront;
+  Hide;
+  Show;
+  if (not ServerStarted) and (ParamCount>0) then begin
+    astart:=false;
+    i:=0;
+    while i<ParamCount do begin
+      if Parameters[i]='-c' then begin
+        inc(i);
+        configfile:=Parameters[i]+'.conf';
+        LoadConfig(configfile);
+      end;
+      if copy(Parameters[i],1,9)='--config=' then begin
+        buf:=Parameters[i];
+        delete(buf,1,9);
+        configfile:=buf+'.conf';
+        LoadConfig(configfile);
+      end;
+      if (Parameters[i]='-s')or(Parameters[i]='--start') then begin
+         astart:=true;
+      end;
+      inc(i);
+    end;
+    if astart then StartServer;
+  end;
 end;
 
 procedure Tf_main.FormDestroy(Sender: TObject);
