@@ -993,6 +993,10 @@ procedure Tf_main.StopServer;
 var i:integer;
     str:TStringList;
 begin
+     try
+     if GUIready then f_indigui.Close;
+     except
+     end;
      if (indiclient<>nil)and(not indiclient.Terminated) then indiclient.DisconnectServer;
      for i:=1 to StringGrid1.RowCount-1 do begin
        StopDevice(i);
