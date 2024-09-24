@@ -1016,11 +1016,18 @@ begin
      if GUIready then f_indigui.Close;
      except
      end;
+     try
      if (indiclient<>nil)and(not indiclient.Terminated) then indiclient.DisconnectServer;
+     except
+     end;
+     try
      for i:=1 to StringGrid1.RowCount-1 do begin
        StopDevice(i);
      end;
+     except
+     end;
      Wait(2);
+     try
      str:=TStringList.Create;
      if remote then begin
         StopTunnel;
@@ -1035,6 +1042,8 @@ begin
         end;
      end;
      str.free;
+     except
+     end;
      ServerStarted:=false;
      ClientBtn.Enabled:=false;
      ImageList1.GetBitmap(0,led.Picture.Bitmap);
