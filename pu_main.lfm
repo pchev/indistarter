@@ -1,21 +1,20 @@
 object f_main: Tf_main
   Left = 389
-  Height = 369
+  Height = 371
   Top = 145
   Width = 390
   ActiveControl = StringGrid1
   Caption = 'INDI server'
-  ClientHeight = 339
+  ClientHeight = 341
   ClientWidth = 390
   Menu = MainMenu1
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  Position = poDefault
   object StringGrid1: TStringGrid
     Left = 0
-    Height = 222
+    Height = 224
     Top = 0
     Width = 390
     Align = alClient
@@ -47,7 +46,7 @@ object f_main: Tf_main
   object Panel1: TPanel
     Left = 0
     Height = 117
-    Top = 222
+    Top = 224
     Width = 390
     Align = alBottom
     ClientHeight = 117
@@ -55,9 +54,9 @@ object f_main: Tf_main
     ParentFont = False
     TabOrder = 1
     object BtnAdd: TButton
-      Left = 6
+      Left = 8
       Height = 25
-      Top = 32
+      Top = 52
       Width = 86
       Caption = 'Add driver'
       OnClick = BtnAddClick
@@ -65,15 +64,15 @@ object f_main: Tf_main
       TabOrder = 0
     end
     object led: TImage
-      Left = 168
+      Left = 170
       Height = 16
-      Top = 34
+      Top = 54
       Width = 16
     end
     object LabelStatus: TLabel
-      Left = 200
+      Left = 202
       Height = 34
-      Top = 34
+      Top = 54
       Width = 152
       AutoSize = False
       Caption = '                        '
@@ -82,9 +81,9 @@ object f_main: Tf_main
       WordWrap = True
     end
     object BtnStartStop: TButton
-      Left = 99
+      Left = 101
       Height = 25
-      Top = 32
+      Top = 52
       Width = 61
       Caption = 'Start'
       OnClick = BtnStartStopClick
@@ -92,9 +91,9 @@ object f_main: Tf_main
       TabOrder = 1
     end
     object ClientBtn: TButton
-      Left = 6
+      Left = 8
       Height = 25
-      Top = 61
+      Top = 81
       Width = 154
       Caption = 'INDI Client'
       OnClick = ClientBtnClick
@@ -102,23 +101,32 @@ object f_main: Tf_main
       TabOrder = 2
     end
     object ConfigLabel: TLabel
-      Left = 99
+      Left = 12
       Height = 18
-      Top = 7
+      Top = 4
       Width = 73
       Caption = 'ConfigLabel'
       ParentColor = False
       ParentFont = False
     end
     object BtnSetup: TButton
-      Left = 6
+      Left = 8
       Height = 25
-      Top = 4
+      Top = 24
       Width = 86
       Caption = 'Setup'
       OnClick = MenuSetupClick
       ParentFont = False
       TabOrder = 3
+    end
+    object cbAdvanced: TCheckBox
+      Left = 168
+      Height = 22
+      Top = 24
+      Width = 110
+      Caption = 'More options'
+      OnClick = cbAdvancedClick
+      TabOrder = 4
     end
   end
   object MainMenu1: TMainMenu

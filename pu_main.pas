@@ -38,6 +38,7 @@ type
     BtnAdd: TButton;
     BtnSetup: TButton;
     BtnStartStop: TButton;
+    cbAdvanced: TCheckBox;
     ClientBtn: TButton;
     ConfigLabel: TLabel;
     led: TImage;
@@ -66,6 +67,7 @@ type
     UniqueInstance1: TUniqueInstance;
     procedure BtnAddClick(Sender: TObject);
     procedure BtnStartStopClick(Sender: TObject);
+    procedure cbAdvancedClick(Sender: TObject);
     procedure ClientBtnClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -101,7 +103,7 @@ type
     rc,config: TXMLConfig;
     ConfigDir,configfile,devlist,serveroptions,serverlog: string;
     RemoteHost,RemoteSshPort,RemoteUser,LocalPort,RemotePort,sshopt: string;
-    Initialized,autostart,stayontop,remote,ServerStarted: boolean;
+    Initialized,autostart,moreoptions,stayontop,remote,ServerStarted: boolean;
     GUIready: boolean;
     ServerFifo: string;
     CurrentCol, CurrentRow: integer;
@@ -185,6 +187,7 @@ begin
   ServerFifo:=slash(GetTempDir(true))+'IndiStarter.fifo';
   ClientBtn.Enabled:=false;
   autostart:=false;
+  moreoptions:=false;
   serveroptions:='';
   serverlog:='';
   remote:=false;
@@ -195,7 +198,6 @@ begin
   RemotePort:='7624';
   stayontop:=false;
   ClearGrid;
-  Width:=StringGrid1.Left+StringGrid1.ColWidths[colactive]+StringGrid1.ColWidths[colgroup]+StringGrid1.ColWidths[colname]+StringGrid1.ColWidths[colconnect]+2;
   GSCdir:='';
   Getappdir;
   ConfigExtension:= '.conf';
@@ -212,6 +214,7 @@ begin
   UScaleDPI.UseScaling:=true;
   UScaleDPI.SetScale(Canvas);
   ScaleDPI(Self);
+  Width:=DoScaleX(380);
   {$ifdef lclcocoa}
   StringGrid1.FixedColor:=clBackground;
   {$endif}
@@ -314,6 +317,10 @@ begin
       AutoConnectList:=AutoConnectList+'|'+StringGrid1.Cells[colname,i]+'|';
    end;
  end;
+ if AutoConnectList<>'' then moreoptions:=true;
+ cbAdvanced.Checked:=moreoptions;
+ StringGrid1.Columns[colconnect-1].Visible:=moreoptions;
+ StringGrid1.Columns[coldriver-1].Visible:=moreoptions;
 end;
 
 function Tf_main.CheckDevList(fn:string): boolean;
@@ -353,6 +360,7 @@ end;
 procedure Tf_main.LoadConfig(cname:string);
 var i: integer;
 begin
+  ClearGrid;
   ConfigLabel.Caption:=ExtractFileNameOnly(cname);
   configfile:=cname;
   config.Filename:=slash(ConfigDir)+configfile;
@@ -364,6 +372,8 @@ begin
   serveroptions:=config.GetValue('/Server/Options',serveroptions);
   serverlog:=config.GetValue('/Server/Log','');
   remote:=config.GetValue('/Server/Remote',remote);
+  moreoptions:=config.GetValue('/Server/MoreOptions',false);
+  cbAdvanced.Checked:=moreoptions;
   RemoteHost:=config.GetValue('/RemoteServer/Host',RemoteHost);
   RemoteSshPort:=config.GetValue('/RemoteServer/SshPort','22');
   RemoteUser:=config.GetValue('/RemoteServer/User',RemoteUser);
@@ -409,6 +419,7 @@ begin
   config.SetValue('/Server/Options',serveroptions);
   config.SetValue('/Server/Log',serverlog);
   config.SetValue('/Server/Remote',remote);
+  config.SetValue('/Server/MoreOptions',moreoptions);
   config.SetValue('/RemoteServer/Host',RemoteHost);
   config.SetValue('/RemoteServer/SshPort',RemoteSshPort);
   config.SetValue('/RemoteServer/User',RemoteUser);
@@ -505,6 +516,8 @@ begin
   StringGrid1.Columns[colname-1].Width:=156;
   StringGrid1.Columns[colconnect-1].Width:=100;
   StringGrid1.Columns[coldriver-1].Width:=250;
+  StringGrid1.Columns[colconnect-1].Visible:=moreoptions;
+  StringGrid1.Columns[coldriver-1].Visible:=moreoptions;
   AutoConnectList:='';
   SetTitle;
 end;
@@ -603,6 +616,12 @@ begin
        StopServer;
  end;
 
+end;
+
+procedure Tf_main.cbAdvancedClick(Sender: TObject);
+begin
+  moreoptions:=cbAdvanced.Checked;
+  SetAutoConnect;
 end;
 
 procedure Tf_main.MenuRestartServerClick(Sender: TObject);
