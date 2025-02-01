@@ -54,7 +54,7 @@ Used RFC: RFC-959, RFC-2228, RFC-2428
   {$MODE DELPHI}
 {$ENDIF}
 {$H+}
-{$TYPEINFO ON}// Borland changed default Visibility from Public to Published
+{$TYPEINFO ON}// Borland changed defualt Visibility from Public to Published
                 // and it requires RTTI to be generated $M+
 {$M+}
 
@@ -91,7 +91,7 @@ type
   TLogonActions = array [0..17] of byte;
 
   {:Procedural type for OnStatus event. Sender is calling @link(TFTPSend) object.
-   Value is FTP command or reply to this command. (if it is reply, Response
+   Value is FTP command or reply to this comand. (if it is reply, Response
    is @True).}
   TFTPStatus = procedure(Sender: TObject; Response: Boolean;
     const Value: string) of object;
@@ -206,7 +206,7 @@ type
     definition mask.) Mask is same as mask used in TotalCommander.}
     property Masks: TStringList read FMasks;
 
-    {:After @link(ParseLines) it holding lines what was not successfully parsed.}
+    {:After @link(ParseLines) it holding lines what was not sucessfully parsed.}
     property UnparsedLines: TStringList read FUnparsedLines;
   end;
 
@@ -305,7 +305,7 @@ type
     function List(Directory: string; NameList: Boolean): Boolean; virtual;
 
     {:Read data from FileName on FTP server. If Restore is @true and server
-     supports resume downloads, download is resumed. (received is only rest
+     supports resume dowloads, download is resumed. (received is only rest
      of file)}
     function RetrieveFile(const FileName: string; Restore: Boolean): Boolean; virtual;
 
@@ -313,10 +313,10 @@ type
      supports resume upload, upload is resumed. (send only rest of file)
      In this case if remote file is same length as local file, nothing will be
      done. If remote file is larger then local, resume is disabled and file is
-     transferred from begin!}
+     transfered from begin!}
     function StoreFile(const FileName: string; Restore: Boolean): Boolean; virtual;
 
-    {:Send data to FTP server and assign unique name for this file.}
+    {:Send data to FTP server and assing unique name for this file.}
     function StoreUniqueFile: Boolean; virtual;
 
     {:Append data to FileName on FTP server.}
@@ -336,7 +336,7 @@ type
      timeout.}
     function NoOp: Boolean; virtual;
 
-    {:Change current working directory to Directory on FTP server.}
+    {:Change currect working directory to Directory on FTP server.}
     function ChangeWorkingDir(const Directory: string): Boolean; virtual;
 
     {:walk to upper directory on FTP server.}
@@ -390,14 +390,14 @@ type
 
     {:Type of Firewall. Used only if you set some firewall address. Supported
      predefined firewall login sequences are described by comments in source
-     file where you can see pseudocode describing each sequence.}
+     file where you can see pseudocode decribing each sequence.}
     property FWMode: integer read FFWMode Write FFWMode;
 
     {:Socket object used for TCP/IP operation on control channel. Good for
-     setting OnStatus hook, etc.}
+     seting OnStatus hook, etc.}
     property Sock: TTCPBlockSocket read FSock;
 
-    {:Socket object used for TCP/IP operation on data channel. Good for setting
+    {:Socket object used for TCP/IP operation on data channel. Good for seting
      OnStatus hook, etc.}
     property DSock: TTCPBlockSocket read FDSock;
 
@@ -416,7 +416,7 @@ type
     {:Mode of data handling by data connection. If @False, all data operations
      are made to or from @link(DataStream) TMemoryStream.
      If @true, data operations is made directly to file in your disk. (filename
-     is specified by @link(DirectFileName) property.) Default is @False!}
+     is specified by @link(DirectFileName) property.) Dafault is @False!}
     property DirectFile: Boolean read FDirectFile Write FDirectFile;
 
     {:Filename for direct disk data operations.}
@@ -471,7 +471,7 @@ type
   end;
 
 {:A very useful function, and example of use can be found in the TFtpSend object.
- Download specified file from FTP server to LocalFile.}
+ Dowload specified file from FTP server to LocalFile.}
 function FtpGetFile(const IP, Port, FileName, LocalFile,
   User, Pass: string): Boolean;
 
@@ -905,7 +905,7 @@ begin
       s := cFtpDataProtocol
     else
       s := '0';
-    //data connection from same interface as command connection
+    //data conection from same interface as command connection
     FDSock.Bind(FSock.GetLocalSinIP, s);
     if FDSock.LastError <> 0 then
       Exit;
@@ -1335,7 +1335,7 @@ begin
   FMasks.add('       dxx                                              n*');     //Fiala
   //VMS - new untouched files (name only)
   //          ADR10AI2
-  FMasks.Add('n*ï¿½');                                                            //Fiala
+  FMasks.Add('n*§');                                                            //Fiala
   //IBM VM
   //          MQ_REPTS TESTVIEW V         72        139          1 2009-01-28 11:58:07 -
   //          NEW               DIR        -          -          - 2009-11-04 18:31:50 -
@@ -1438,7 +1438,7 @@ begin
   Value := TrimRight(Value);                                                    //Fiala
   while Imask <= Length(mask) do
   begin
-    if not (Mask[Imask] in ['*', '\', 'ï¿½']) and (Ivalue > Length(Value)) then   //Fiala
+    if not (Mask[Imask] in ['*', '\', '§']) and (Ivalue > Length(Value)) then   //Fiala
     begin
       Result := 0;
       Exit;
@@ -1546,7 +1546,7 @@ begin
           end;
           Dec(IValue);
         end;
-      'ï¿½':                                                                      //Fiala
+      '§':                                                                      //Fiala
         if IValue < Length(Value) then
         begin
           Result := 0;
