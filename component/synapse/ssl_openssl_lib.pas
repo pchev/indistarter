@@ -74,7 +74,7 @@ Special thanks to Gregor Ibic <gregor.ibic@intelicom.si>
 {:@abstract(OpenSSL support)
 
 This unit is Pascal interface to OpenSSL library (used by @link(ssl_openssl) unit).
-OpenSSL is loaded dynamicly on-demand. If this library is not found in system,
+OpenSSL is loaded dynamically on-demand. If this library is not found in system,
 requested OpenSSL function just return errorcode.
 }
 unit ssl_openssl_lib;

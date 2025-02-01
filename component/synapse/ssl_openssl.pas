@@ -53,7 +53,7 @@ Compatibility with OpenSSL versions:
 0.9.7 - 1.0.0 working fine.
 1.1.0 should work, under testing.
 
-OpenSSL libraries are loaded dynamicly - you not need OpenSSL librares even you
+OpenSSL libraries are loaded dynamically - you not need OpenSSL librares even you
 compile your application with this unit. SSL just not working when you not have
 OpenSSL libraries.
 
@@ -73,7 +73,7 @@ For handling keys and certificates you can use this properties:
 
 This plugin is capable to create Ad-Hoc certificates. When you start SSL/TLS
 server without explicitly assigned key and certificate, then this plugin create
-Ad-Hoc key and certificate for each incomming connection by self. It slowdown
+Ad-Hoc key and certificate for each incoming connection by self. It slowdown
 accepting of new connections!
 }
 

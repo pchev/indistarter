@@ -67,7 +67,7 @@ you can install update.
 
 //{$DEFINE FORCEOLDAPI}
 {Note about define FORCEOLDAPI:
-If you activate this compiler directive, then is allways used old socket API
+If you activate this compiler directive, then is always used old socket API
 for name resolution. If you leave this directive inactive, then the new API
 is used, when running system allows it.
 

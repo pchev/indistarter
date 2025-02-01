@@ -88,7 +88,7 @@ const
   TLNT_IAC                = #255;
 
 type
-  {:@abstract(State of telnet protocol). Used internaly by TTelnetSend.}
+  {:@abstract(State of telnet protocol). Used internally by TTelnetSend.}
   TTelnetState =(tsDATA, tsIAC, tsIAC_SB, tsIAC_WILL, tsIAC_DO, tsIAC_WONT,
      tsIAC_DONT, tsIAC_SBIAC, tsIAC_SBDATA, tsSBDATA_IAC);
 
@@ -126,7 +126,7 @@ type
     {:Send this data to telnet server.}
     procedure Send(const Value: string);
 
-    {:Reading data from telnet server until Value is readed. If it is not readed
+    {:Reading data from telnet server until Value is read. If it is not read
      until timeout, result is @false. Otherwise result is @true.}
     function WaitFor(const Value: string): Boolean;
 
@@ -136,14 +136,14 @@ type
     {:Read string from telnet server.}
     function RecvString: string;
   published
-    {:Socket object used for TCP/IP operation. Good for seting OnStatus hook, etc.}
+    {:Socket object used for TCP/IP operation. Good for setting OnStatus hook, etc.}
     property Sock: TTCPBlockSocket read FSock;
 
-    {:all readed datas in this session (from connect) is stored in this large
+    {:all read data in this session (from connect) is stored in this large
      string.}
     property SessionLog: Ansistring read FSessionLog write FSessionLog;
 
-    {:Terminal type indentification. By default is 'SYNAPSE'.}
+    {:Terminal type identification. By default is 'SYNAPSE'.}
     property TermType: Ansistring read FTermType write FTermType;
   end;
 

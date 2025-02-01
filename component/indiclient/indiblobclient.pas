@@ -203,7 +203,7 @@ begin
   FreeOnTerminate := True;
   FlockBlobEvent := False;
   FMissedFrameCount := 0;
-  Ftrace := False;  // for debuging only
+  Ftrace := False;  // for debugging only
   Fdevices := TObjectList.Create;
   FwatchDevices := TStringList.Create;
 end;

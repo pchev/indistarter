@@ -241,16 +241,16 @@ type
     function Login: Boolean;
 
     {:Try to bind to LDAP server with @link(TSynaClient.Username) and
-     @link(TSynaClient.Password). If this is empty strings, then it do annonymous
-     Bind. When you not call Bind on LDAPv3, then is automaticly used anonymous
+     @link(TSynaClient.Password). If this is empty strings, then it do anonymous
+     Bind. When you not call Bind on LDAPv3, then is automatically used anonymous
      mode.
 
      This method using plaintext transport of password! It is not secure!}
     function Bind: Boolean;
 
     {:Try to bind to LDAP server with @link(TSynaClient.Username) and
-     @link(TSynaClient.Password). If this is empty strings, then it do annonymous
-     Bind. When you not call Bind on LDAPv3, then is automaticly used anonymous
+     @link(TSynaClient.Password). If this is empty strings, then it do anonymous
+     Bind. When you not call Bind on LDAPv3, then is automatically used anonymous
      mode.
 
      This method using SASL with DIGEST-MD5 method for secure transfer of your
@@ -331,9 +331,9 @@ type
     {:Here is result of search command.}
     property SearchResult: TLDAPResultList read FSearchResult;
 
-    {:On each LDAP operation can LDAP server return some referals URLs. Here is
+    {:On each LDAP operation can LDAP server return some referrals URLs. Here is
      their list.}
-    property Referals: TStringList read FReferals;
+    property Referrals: TStringList read FReferals;
 
     {:When you call @link(Extended) operation, then here is result Name returned
      by server.}
@@ -696,7 +696,7 @@ begin
   //get length of LDAP packet
   j := 2;
   i := ASNDecLen(j, Result);
-  //retreive rest of LDAP packet
+  //retrieve rest of LDAP packet
   if i > 0 then
     Result := Result + FSock.RecvBufferStr(i, Ftimeout);
   if FSock.LastError <> 0 then

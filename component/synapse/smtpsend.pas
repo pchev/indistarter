@@ -70,7 +70,7 @@ const
   cSmtpProtocol = '25';
 
 type
-  {:@abstract(Implementation of SMTP and ESMTP procotol),
+  {:@abstract(Implementation of SMTP and ESMTP protocol),
    include some ESMTP extensions, include SSL/TLS too.
 
    Note: Are you missing properties for setting Username and Password for ESMTP?
@@ -109,8 +109,8 @@ type
 
     {:Connects to SMTP server (defined in @link(TSynaClient.TargetHost)) and
      begin SMTP session. (First try ESMTP EHLO, next old HELO handshake). Parses
-     ESMTP capabilites and if you specified Username and password and remote
-     server can handle AUTH command, try login by AUTH command. Preffered login
+     ESMTP capabilities and if you specified Username and password and remote
+     server can handle AUTH command, try login by AUTH command. Preferred login
      method is CRAM-MD5 (if safer!). If all OK, result is @true, else result is
      @false.}
     function Login: Boolean;
@@ -127,7 +127,7 @@ type
     function NoOp: Boolean;
 
     {:Send MAIL FROM SMTP command for set sender e-mail address. If sender's
-     e-mail address is empty string, transmited message is error message.
+     e-mail address is empty string, transmitted message is error message.
 
      If size not 0 and remote server can handle SIZE parameter, append SIZE
      parameter to request. If all OK, result is @true, else result is @false.}
@@ -169,14 +169,14 @@ type
     {:All result strings of last SMTP command (result is maybe multiline!).}
     property FullResult: TStringList read FFullResult;
 
-    {:List of ESMTP capabilites of remote ESMTP server. (If you connect to ESMTP
+    {:List of ESMTP capabilities of remote ESMTP server. (If you connect to ESMTP
      server only!).}
     property ESMTPcap: TStringList read FESMTPcap;
 
-    {:@TRUE if you successfuly logged to ESMTP server.}
+    {:@TRUE if you successfully logged to ESMTP server.}
     property ESMTP: Boolean read FESMTP;
 
-    {:@TRUE if you successfuly pass authorisation to remote server.}
+    {:@TRUE if you successfully pass authorisation to remote server.}
     property AuthDone: Boolean read FAuthDone;
 
     {:@TRUE if remote server can handle SIZE parameter.}
@@ -206,10 +206,10 @@ type
     property AutoTLS: Boolean read FAutoTLS Write FAutoTLS;
 
     {:SSL/TLS mode is used from first contact to server. Servers with full
-     SSL/TLS mode usualy using non-standard TCP port!}
+     SSL/TLS mode usually using non-standard TCP port!}
     property FullSSL: Boolean read FFullSSL Write FFullSSL;
 
-    {:Socket object used for TCP/IP operation. Good for seting OnStatus hook, etc.}
+    {:Socket object used for TCP/IP operation. Good for setting OnStatus hook, etc.}
     property Sock: TTCPBlockSocket read FSock;
   end;
 

@@ -133,7 +133,7 @@ type
     {:Select given group.}
     function SelectGroup(const Value: string): Boolean;
 
-    {:Tell to server 'I have mesage with given message-ID.' If server need this
+    {:Tell to server 'I have message with given message-ID.' If server need this
      message, message is uploaded to server.}
     function IHave(const MessID: string): Boolean;
 
@@ -180,7 +180,7 @@ type
     {:String description of last result code from NNTP server.}
     property ResultString: string read FResultString;
 
-    {:Readed data. (message, etc.)}
+    {:Read data. (message, etc.)}
     property Data: TStringList read FData;
 
     {:If is set to @true, then upgrade to SSL/TLS mode after login if remote
@@ -188,10 +188,10 @@ type
     property AutoTLS: Boolean read FAutoTLS Write FAutoTLS;
 
     {:SSL/TLS mode is used from first contact to server. Servers with full
-     SSL/TLS mode usualy using non-standard TCP port!}
+     SSL/TLS mode usually using non-standard TCP port!}
     property FullSSL: Boolean read FFullSSL Write FFullSSL;
 
-    {:Socket object used for TCP/IP operation. Good for seting OnStatus hook, etc.}
+    {:Socket object used for TCP/IP operation. Good for setting OnStatus hook, etc.}
     property Sock: TTCPBlockSocket read FSock;
   end;
 

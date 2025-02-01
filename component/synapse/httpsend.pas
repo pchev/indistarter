@@ -232,13 +232,13 @@ type
     property Sock: TTCPBlockSocket read FSock;
 
     {:Allows to switch off port number in 'Host:' HTTP header. By default @TRUE.
-     Some buggy servers do not like port informations in this header.}
+     Some buggy servers do not like port information in this header.}
     property AddPortNumberToHost: Boolean read FAddPortNumberToHost write FAddPortNumberToHost;
   public
-    {:for direct sending from any TStream. Defalut nil = use Document property instead.}
+    {:for direct sending from any TStream. Default nil = use Document property instead.}
     property InputStream: TStream read FInputStream write FInputStream;
 
-    {:for direct dovnloading into any TStream. Defalut nil = use Document property instead.}
+    {:for direct dovnloading into any TStream. Default nil = use Document property instead.}
     property OutputStream: TStream read FOutputStream write FOutputStream;
   end;
 
@@ -393,7 +393,7 @@ begin
     if (FSock.SSL.SNIHost='') then
       FSock.SSL.SNIHost:=FTargetHost;
     FSock.SSLDoConnect;
-    FSock.SSL.SNIHost:=''; //don't need it anymore and don't wan't to reuse it in next connection
+    FSock.SSL.SNIHost:=''; //don't need it anymore and don't want to reuse it in next connection
     if FSock.LastError <> 0 then
       Exit;
   end;

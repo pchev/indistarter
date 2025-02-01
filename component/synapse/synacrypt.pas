@@ -69,7 +69,7 @@ uses
   SysUtils, Classes, synautil, synafpc;
 
 type
-  {:@abstract(Implementation of common routines block ciphers (dafault size is 64-bits))
+  {:@abstract(Implementation of common routines block ciphers (default size is 64-bits))
 
    Do not use this class directly, use descendants only!}
   TSynaBlockCipher= class(TObject)

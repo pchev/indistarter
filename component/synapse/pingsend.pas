@@ -49,7 +49,7 @@ This unit using IpHlpApi (on WinXP or higher) if available. Otherwise it trying
  to use RAW sockets.
 
 Warning: For use of RAW sockets you must have some special rights on some
- systems. So, it working allways when you have administator/root rights.
+ systems. So, it working always when you have administrator/root rights.
  Otherwise you can have problems!
 
 Note: This unit is NOT portable to .NET!
@@ -155,8 +155,8 @@ type
     {:Time between request and reply.}
     property PingTime: Integer read FPingTime;
 
-    {:From this address is sended reply for your PING request. It maybe not your
-     requested destination, when some error occured!}
+    {:From this address is sent reply for your PING request. It maybe not your
+     requested destination, when some error occurred!}
     property ReplyFrom: string read FReplyFrom;
 
     {:ICMP type of PING reply. Each protocol using another values! For IPv4 and
@@ -175,7 +175,7 @@ type
     {:Return human readable description of returned packet type.}
     property ReplyErrorDesc: string read FReplyErrorDesc;
 
-    {:Socket object used for TCP/IP operation. Good for seting OnStatus hook, etc.}
+    {:Socket object used for TCP/IP operation. Good for setting OnStatus hook, etc.}
     property Sock: TICMPBlockSocket read FSock;
 
     {:TTL value for ICMP query}
@@ -432,7 +432,7 @@ begin
       t := false;
       Break;
     end;
-  //it discard sometimes possible 'echoes' of previosly sended packet
+  //it discard sometimes possible 'echoes' of previously sent packet
   //or other unwanted ICMP packets...
   until (IcmpEchoHeaderPtr^.i_type <> FIcmpEcho)
     and ((IcmpEchoHeaderPtr^.i_id = FId)

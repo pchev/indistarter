@@ -3,7 +3,7 @@
 //
 // Kylix 3/C++ for some reason evaluates CompilerVersion comparisons to False,
 // if the constant to compare with is a floating point value - weird.
-// The "+" sign prevents Kylix/Delphi from issueing a warning about comparing
+// The "+" sign prevents Kylix/Delphi from issuing a warning about comparing
 // signed and unsigned values.
 //
     {$IF not Declared(CompilerVersion)}

@@ -80,7 +80,7 @@
   CLR                 Defined when target platform is .NET
 
 - Architecture directives. These are auto-defined by FPC
-  CPU32 and CPU64 are mostly for generic pointer size dependant differences rather
+  CPU32 and CPU64 are mostly for generic pointer size dependent differences rather
   than for a specific architecture.
 
   CPU386              Defined when target platform is native x86 (win32)
@@ -405,7 +405,7 @@
 
   The following directives are direct mappings from the VERXXX directives to a
   friendly name of the associated compiler. Unlike the DELPHI_X and BCB_X
-  directives, these directives are indepedent of the development environment.
+  directives, these directives are independent of the development environment.
   That is, they are defined regardless of whether compilation takes place using
   Delphi or C++Builder.
 
@@ -519,11 +519,11 @@
   Directive     Description
   ------------------------------------------------------------------------------
   CLR            Defined when compiling for .NET
-  CLR10          Defined when compiling for .NET 1.0 (may be overriden by FORCE_CLR10)
+  CLR10          Defined when compiling for .NET 1.0 (may be overridden by FORCE_CLR10)
   CLR10_UP       Defined when compiling for .NET 1.0 or higher
-  CLR11          Defined when compiling for .NET 1.1 (may be overriden by FORCE_CLR11)
+  CLR11          Defined when compiling for .NET 1.1 (may be overridden by FORCE_CLR11)
   CLR11_UP       Defined when compiling for .NET 1.1 or higher
-  CLR20          Defined when compiling for .NET 2.0 (may be overriden by FORCE_CLR20)
+  CLR20          Defined when compiling for .NET 2.0 (may be overridden by FORCE_CLR20)
   CLR20_UP       Defined when compiling for .NET 2.0 or higher
 
 
@@ -573,7 +573,7 @@
   SUPPORTS_CLASS_FIELDS          Compiler supports class fields (D9.NET, D10+)
   SUPPORTS_CLASS_HELPERS         Compiler supports class helpers (D9.NET, D10+)
   SUPPORTS_CLASS_OPERATORS       Compiler supports class operators (D9.NET, D10+)
-  SUPPORTS_CLASS_CTORDTORS       Compiler supports class contructors/destructors (D14+)
+  SUPPORTS_CLASS_CTORDTORS       Compiler supports class constructors/destructors (D14+)
   SUPPORTS_STRICT                Compiler supports strict keyword (D9.NET, D10+)
   SUPPORTS_STATIC                Compiler supports static keyword (D9.NET, D10+)
   SUPPORTS_FINAL                 Compiler supports final keyword (D9.NET, D10+)
@@ -625,7 +625,7 @@
   HAS_ENOTIMPLEMENTED            Exception class ENotImplemented is available (D15+)
   HAS_UNIT_VCL_THEMES            Unit Vcl.Themes is available (D16+)
   HAS_UNIT_UXTHEME               Unit (Vcl.)UxTheme is available (D7+)
-  HAS_EXCEPTION_STACKTRACE       Exception class has the StackTrace propery (D12+)
+  HAS_EXCEPTION_STACKTRACE       Exception class has the StackTrace property (D12+)
   SUPPORTS_LEGACYIFEND           Compiler supports the LEGACYIFEND directive (D17+)
   DEPRECATED_TCHARACTER          TCharacter is deprecated and replaced by a record helper on Char (D18+)
   HAS_PROPERTY_OLDCREATEORDER    The OldCreateOrder property is available (D5 - D27)
@@ -635,7 +635,7 @@
 
   The compiler settings directives indicate whether a specific compiler setting
   is in effect. This facilitates changing compiler settings locally in a more
-  compact and readible manner.
+  compact and readable manner.
 
   Directive              Description
   ------------------------------------------------------------------------------
@@ -652,7 +652,7 @@
   TYPEINFO_ON            Compiling in the M+ state (RTTI generation on)
   OPTIMIZATION_ON        Compiling in the O+ state (code optimization on)
   OPENSTRINGS_ON         Compiling in the P+ state (variable string parameters are openstrings)
-  OVERFLOWCHECKS_ON      Compiling in the Q+ state (overflow checing on)
+  OVERFLOWCHECKS_ON      Compiling in the Q+ state (overflow checking on)
   RANGECHECKS_ON         Compiling in the R+ state (range checking on)
   TYPEDADDRESS_ON        Compiling in the T+ state (pointers obtained using the @ operator are typed)
   SAFEDIVIDE_ON          Compiling in the U+ state (save FDIV instruction through RTL emulation)

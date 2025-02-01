@@ -165,10 +165,10 @@ type
       const Reply: TStrings): Boolean;
   published
 
-    {:Socket object used for UDP operation. Good for seting OnStatus hook, etc.}
+    {:Socket object used for UDP operation. Good for setting OnStatus hook, etc.}
     property Sock: TUDPBlockSocket read FSock;
 
-    {:Socket object used for TCP operation. Good for seting OnStatus hook, etc.}
+    {:Socket object used for TCP operation. Good for setting OnStatus hook, etc.}
     property TCPSock: TTCPBlockSocket read FTCPSock;
 
     {:if @true, then is used TCP protocol instead UDP. It is needed for zone
@@ -186,18 +186,18 @@ type
     {:@True, if answer is truncated to 512 bytes.}
     property Truncated: Boolean read FTRuncated;
 
-    {:Detailed informations from name server reply. One record per line. Record
-     have comma delimited entries with type number, TTL and data filelds.
+    {:Detailed information from name server reply. One record per line. Record
+     have comma delimited entries with type number, TTL and data fields.
      This information contains detailed information about query reply.}
     property AnswerInfo: TStringList read FAnswerInfo;
 
-    {:Detailed informations from name server reply. One record per line. Record
-     have comma delimited entries with type number, TTL and data filelds.
+    {:Detailed information from name server reply. One record per line. Record
+     have comma delimited entries with type number, TTL and data fields.
      This information contains detailed information about nameserver.}
     property NameserverInfo: TStringList read FNameserverInfo;
 
-    {:Detailed informations from name server reply. One record per line. Record
-     have comma delimited entries with type number, TTL and data filelds.
+    {:Detailed information from name server reply. One record per line. Record
+     have comma delimited entries with type number, TTL and data fields.
      This information contains detailed additional information.}
     property AdditionalInfo: TStringList read FAdditionalInfo;
   end;

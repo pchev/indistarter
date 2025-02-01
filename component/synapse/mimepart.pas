@@ -193,7 +193,7 @@ type
 
     {:E-mail message in @link(Lines) property is parsed into this object.
      E-mail headers are stored in @link(Headers) property and is parsed into
-     another properties automaticly. Not need call @link(DecodePartHeader)!
+     another properties automatically. Not need call @link(DecodePartHeader)!
      Content of message (part) is stored into @link(PartBody) property. This
      part is in undecoded form! If you need decode it, then you must call
      @link(DecodePart) method by your hands. Lot of another properties is filled
@@ -214,7 +214,7 @@ type
      On the top of it, HTTP connections are always 8-bit, hence data are
      transferred in native format i.e. no transfer encoding is applied.
 
-     This method operates the similiar way and produces the same
+     This method operates the similar way and produces the same
      result as @link(DecomposeParts).
     }
     procedure DecomposePartsBinary(AHeader:TStrings; AStx,AEtx:PANSIChar);
@@ -234,15 +234,15 @@ type
     function CanSubPart: boolean;
   published
     {:Primary Mime type of part. (i.e. 'application') Writing to this property
-     automaticly generate value of @link(PrimaryCode).}
+     automatically generate value of @link(PrimaryCode).}
     property Primary: string read FPrimary write SetPrimary;
 
     {:String representation of used Mime encoding in part. (i.e. 'base64')
-     Writing to this property automaticly generate value of @link(EncodingCode).}
+     Writing to this property automatically generate value of @link(EncodingCode).}
     property Encoding: string read FEncoding write SetEncoding;
 
     {:String representation of used Mime charset in part. (i.e. 'iso-8859-1')
-     Writing to this property automaticly generate value of @link(CharsetCode).
+     Writing to this property automatically generate value of @link(CharsetCode).
      Charset is used only for text parts.}
     property Charset: string read FCharset write SetCharset;
 
@@ -273,7 +273,7 @@ type
      and @link(TargetCharset)}
     property ConvertCharset: Boolean read FConvertCharset Write FConvertCharset;
 
-    {:If @true, then allways do internal charset translation of HTML parts
+    {:If @true, then always do internal charset translation of HTML parts
      by MIME even it have their own charset in META tag. Default is @false.}
     property ForcedHTMLConvert: Boolean read FForcedHTMLConvert Write FForcedHTMLConvert;
 
@@ -331,7 +331,7 @@ type
     property OnWalkPart: THookWalkPart read FOnWalkPart write FOnWalkPart;
 
     {:Here you can specify maximum line length for encoding of MIME part.
-     If line is longer, then is splitted by standard of MIME. Correct MIME
+     If line is longer, then is split by standard of MIME. Correct MIME
      mailers can de-split this line into original length.}
     property MaxLineLength: integer read FMaxLineLength Write FMaxLineLength;
   end;
@@ -823,7 +823,7 @@ begin
   FDecodedLines.Clear;
   {pf}
   // The part decomposer passes data via TStringList which appends trailing line
-  // break inherently. But in a case of native 8-bit data transferred withouth
+  // break inherently. But in a case of native 8-bit data transferred without
   // encoding (default e.g. for HTTP protocol), the redundant line terminators
   // has to be removed
   if FBinaryDecomposer and (FPartBody.Count=1) then
