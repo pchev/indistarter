@@ -107,10 +107,10 @@ type
     {:Scan content of TStream by new 0.95 API.}
     function ScanStream2(const Value: TStream): AnsiString; virtual;
   published
-    {:Socket object used for TCP/IP operation. Good for seting OnStatus hook, etc.}
+    {:Socket object used for TCP/IP operation. Good for setting OnStatus hook, etc.}
     property Sock: TTCPBlockSocket read FSock;
 
-    {:Socket object used for TCP data transfer operation. Good for seting OnStatus hook, etc.}
+    {:Socket object used for TCP data transfer operation. Good for setting OnStatus hook, etc.}
     property DSock: TTCPBlockSocket read FDSock;
 
     {:Can turn-on session mode of communication with ClamD. Default is @false,

@@ -435,10 +435,10 @@ type
     {:Connects to the port indicated by comport. Comport can be used in Windows
      style (COM2), or in Linux style (/dev/ttyS1). When you use windows style
      in Linux, then it will be converted to Linux name. And vice versa! However
-     you can specify any device name! (other device names then standart is not
+     you can specify any device name! (other device names then standard is not
      converted!)
 
-     After successfull connection the DTR signal is set (if you not set hardware
+     After successful connection the DTR signal is set (if you not set hardware
      handshake, then the RTS signal is set, too!)
 
      Connection parameters is predefined by your system configuration. If you
@@ -494,7 +494,7 @@ type
     procedure SendStream(const Stream: TStream); virtual;
 
     {:send content of stream as block, but this is compatioble with Indy library.
-     (it have swapped lenght of block). See @link(SendStream)}
+     (it have swapped length of block). See @link(SendStream)}
     procedure SendStreamIndy(const Stream: TStream); virtual;
 
     {:Waits until the allocated buffer is filled by received data. Returns number
@@ -514,7 +514,7 @@ type
      @link(RecvTerminated) methods.}
     function RecvBufferEx(buffer: pointer; length: integer; timeout: integer): integer; virtual;
 
-    {:It is like recvBufferEx, but data is readed to dynamicly allocated binary
+    {:It is like recvBufferEx, but data is read to dynamically allocated binary
      string.}
     function RecvBufferStr(Length: Integer; Timeout: Integer): AnsiString; virtual;
 
@@ -557,16 +557,16 @@ type
      is set to @link(ErrTimeout).}
     function RecvBlock(Timeout: Integer): AnsiString; virtual;
 
-    {:Receive all data to stream, until some error occured. (for example timeout)}
+    {:Receive all data to stream, until some error occurred. (for example timeout)}
     procedure RecvStreamRaw(const Stream: TStream; Timeout: Integer); virtual;
 
     {:receive requested count of bytes to stream}
     procedure RecvStreamSize(const Stream: TStream; Timeout: Integer; Size: Integer); virtual;
 
-    {:receive block of data to stream. (Data can be sended by @link(sendstream)}
+    {:receive block of data to stream. (Data can be sent by @link(sendstream)}
     procedure RecvStream(const Stream: TStream; Timeout: Integer); virtual;
 
-    {:receive block of data to stream. (Data can be sended by @link(sendstreamIndy)}
+    {:receive block of data to stream. (Data can be sent by @link(sendstreamIndy)}
     procedure RecvStreamIndy(const Stream: TStream; Timeout: Integer); virtual;
 
     {:Returns the number of received bytes waiting for reading. 0 is returned
@@ -590,7 +590,7 @@ type
      - On Windows NT (or higher) ir RTS signal driven by system driver.
 
      - On Win9x family is used special code for waiting until last byte is
-      sended from your UART.
+      sent from your UART.
 
      - On Linux you must have kernel 2.1 or higher!}
     procedure EnableRTSToggle(value: boolean); virtual;
@@ -1385,7 +1385,7 @@ begin
   x := 0;
   repeat
     ti := GetTick;
-    //get rest of FBuffer or incomming new data...
+    //get rest of FBuffer or incoming new data...
     s := s + RecvPacket(Timeout);
     if FLastError <> sOK then
       Break;
@@ -2374,7 +2374,7 @@ begin
   //FPC forgot to add getsid.. :-(
   {$IFNDEF FPC}
   if {$IFNDEF POSIX}Libc.{$ENDIF}getsid(ReadLockfile) = -1 then
-  begin //  Lockfile was left from former desaster
+  begin //  Lockfile was left from former disaster
     DeleteFile(Filename); // error recovery
     CreateLockfile(MyPid);
     result := FileExists(Filename);

@@ -108,10 +108,10 @@ Type
 {:With this function you can turn on a computer on the network, if this computer
  supports Wake-on-LAN feature. You need the MAC address
  (network card identifier) of the computer. You can also assign a target IP
- addres. If you do not specify it, then broadcast is used to deliver magic
+ address. If you do not specify it, then broadcast is used to deliver magic
  wake-on-LAN packet.
  However broadcasts work only on your local network. When you need to wake-up a
- computer on another network, you must specify any existing IP addres on same
+ computer on another network, you must specify any existing IP address on same
  network segment as targeting computer.}
 procedure WakeOnLan(MAC, IP: string);
 
@@ -361,7 +361,7 @@ const
   AUTO_PROXY_FLAG_DETECTION_RUN             =      $00000004;   // detection has been run
   AUTO_PROXY_FLAG_MIGRATED                  =      $00000008;   // migration has just been done
   AUTO_PROXY_FLAG_DONT_CACHE_PROXY_RESULT   =      $00000010;   // don't cache result of host=proxy name
-  AUTO_PROXY_FLAG_CACHE_INIT_RUN            =      $00000020;   // don't initalize and run unless URL expired
+  AUTO_PROXY_FLAG_CACHE_INIT_RUN            =      $00000020;   // don't initialize and run unless URL expired
   AUTO_PROXY_FLAG_DETECTION_SUSPECT         =      $00000040;   // if we're on a LAN & Modem, with only one IP, bad?!?
   INTERNET_OPTION_PER_CONNECTION_OPTION   = 75;
   WininetDLL = 'WININET.DLL';

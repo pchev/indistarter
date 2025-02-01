@@ -106,10 +106,10 @@ type
 
     {:You can call any custom by this method. Call Command without trailing CRLF.
       If MultiLine parameter is @true, multilined response are expected.
-      Result is @true on sucess.}
+      Result is @true on success.}
     function CustomCommand(const Command: string; MultiLine: Boolean): boolean;
 
-    {:Call CAPA command for get POP3 server capabilites.
+    {:Call CAPA command for get POP3 server capabilities.
      note: not all servers support this command!}
     function Capability: Boolean;
 
@@ -133,18 +133,18 @@ type
      successful operation is listing in FullResult. If all OK, result is @True.}
     function List(Value: Integer): Boolean;
 
-    {:Send RETR command. After successful operation dowloaded message in
+    {:Send RETR command. After successful operation downloaded message in
      @link(FullResult). If all OK, result is @true.}
     function Retr(Value: Integer): Boolean;
 
-    {:Send RETR command. After successful operation dowloaded message in
+    {:Send RETR command. After successful operation downloaded message in
      @link(Stream). If all OK, result is @true.}
     function RetrStream(Value: Integer; Stream: TStream): Boolean;
 
     {:Send DELE command for delete specified message. If all OK, result is @true.}
     function Dele(Value: Integer): Boolean;
 
-    {:Send TOP command. After successful operation dowloaded headers of message
+    {:Send TOP command. After successful operation downloaded headers of message
      and maxlines count of message in @link(FullResult). If all OK, result is
      @true.}
     function Top(Value, Maxlines: Integer): Boolean;
@@ -156,7 +156,7 @@ type
     {:Call STLS command for upgrade connection to SSL/TLS mode.}
     function StartTLS: Boolean;
 
-    {:Try to find given capabily in capabilty string returned from POP3 server
+    {:Try to find given capabily in capability string returned from POP3 server
      by CAPA command.}
     function FindCap(const Value: string): string;
   published
@@ -184,7 +184,7 @@ type
      remote server.}
     property TimeStamp: string read FTimeStamp;
 
-    {:Type of authorisation for login to POP3 server. Dafault is autodetect one
+    {:Type of authorisation for login to POP3 server. Default is autodetect one
      of possible authorisation. Autodetect do this:
 
      If remote POP3 server support APOP, try login by APOP method. If APOP is
@@ -195,9 +195,9 @@ type
     property AutoTLS: Boolean read FAutoTLS Write FAutoTLS;
 
     {:SSL/TLS mode is used from first contact to server. Servers with full
-     SSL/TLS mode usualy using non-standard TCP port!}
+     SSL/TLS mode usually using non-standard TCP port!}
     property FullSSL: Boolean read FFullSSL Write FFullSSL;
-    {:Socket object used for TCP/IP operation. Good for seting OnStatus hook, etc.}
+    {:Socket object used for TCP/IP operation. Good for setting OnStatus hook, etc.}
     property Sock: TTCPBlockSocket read FSock;
   end;
 

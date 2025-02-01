@@ -57,7 +57,7 @@
 {:@abstract(LibIconv support)
 
 This unit is Pascal interface to LibIconv library for charset translations.
-LibIconv is loaded dynamicly on-demand. If this library is not found in system,
+LibIconv is loaded dynamically on-demand. If this library is not found in system,
 requested LibIconv function just return errorcode.
 }
 unit synaicnv;

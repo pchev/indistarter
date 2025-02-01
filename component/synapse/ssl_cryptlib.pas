@@ -45,7 +45,7 @@
 {:@abstract(SSL/SSH plugin for CryptLib)
 
 This plugin requires cl32.dll at least version 3.2.0! It can be used on Win32
-and Linux. This library is staticly linked - when you compile your application
+and Linux. This library is statically linked - when you compile your application
 with this plugin, you MUST distribute it with Cryptib library, otherwise you
 cannot run your application!
 
@@ -65,7 +65,7 @@ with non-matching certificates will be rejected by cryptLib.
 
 This plugin is capable to create Ad-Hoc certificates. When you start SSL/TLS
 server without explicitly assigned key and certificate, then this plugin create
-Ad-Hoc key and certificate for each incomming connection by self. It slowdown
+Ad-Hoc key and certificate for each incoming connection by self. It slowdown
 accepting of new connections!
 
 You can use this plugin for SSHv2 connections too! You must explicitly set

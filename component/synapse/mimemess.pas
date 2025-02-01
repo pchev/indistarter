@@ -104,7 +104,7 @@ type
      This is good for reading any non-parsed header.}
     function FindHeader(Value: string): string;
 
-    {:Try find specific headers in CustomHeader. This metod is for repeatly used
+    {:Try find specific headers in CustomHeader. This method is for repeatedly used
      headers like 'received' header, etc. Search is case insensitive.
      This is good for reading ano non-parsed header.}
     procedure FindHeaderList(Value: string; const HeaderList: TStrings);
@@ -125,7 +125,7 @@ type
     property Organization: string read FOrganization Write FOrganization;
 
     {:After decoding contains all headers lines witch not have parsed to any
-     other structures in this object. It mean: this conatins all other headers
+     other structures in this object. It mean: this contains all other headers
      except:
 
      X-MAILER, FROM, SUBJECT, ORGANIZATION, TO, CC, DATE, MIME-VERSION,
@@ -133,7 +133,7 @@ type
      CONTENT-TRANSFER-ENCODING, REPLY-TO, MESSAGE-ID, X-MSMAIL-PRIORITY,
      X-PRIORITY, PRIORITY
 
-     When you encode headers, all this lines is added as headers. Be carefull
+     When you encode headers, all this lines is added as headers. Be careful
      for duplicites!}
     property CustomHeaders: TStringList read FCustomHeaders;
 
@@ -196,7 +196,7 @@ type
      must have PartParent of multipart type!
 
      After creation of part set type to text part and set all necessary
-     properties. Content of part is readed from value stringlist.}
+     properties. Content of part is read from value stringlist.}
     function AddPartText(const Value: TStrings; const PartParent: TMimePart): TMimepart;
 
     {:Add MIME part as subpart of PartParent. If you need set root MIME part,
@@ -204,7 +204,7 @@ type
      must have PartParent of multipart type!
 
      After creation of part set type to text part and set all necessary
-     properties. Content of part is readed from value stringlist. You can select
+     properties. Content of part is read from value stringlist. You can select
      your charset and your encoding type. If Raw is @true, then it not doing
      charset conversion!}
     function AddPartTextEx(const Value: TStrings; const PartParent: TMimePart;
@@ -215,13 +215,13 @@ type
      must have PartParent of multipart type!
 
      After creation of part set type to text part to HTML type and set all
-     necessary properties. Content of HTML part is readed from Value stringlist.}
+     necessary properties. Content of HTML part is read from Value stringlist.}
     function AddPartHTML(const Value: TStrings; const PartParent: TMimePart): TMimepart;
 
-    {:Same as @link(AddPartText), but content is readed from file}
+    {:Same as @link(AddPartText), but content is read from file}
     function AddPartTextFromFile(const FileName: String; const PartParent: TMimePart): TMimepart;
 
-    {:Same as @link(AddPartHTML), but content is readed from file}
+    {:Same as @link(AddPartHTML), but content is read from file}
     function AddPartHTMLFromFile(const FileName: String; const PartParent: TMimePart): TMimepart;
 
     {:Add MIME part as subpart of PartParent. If you need set root MIME part,
@@ -229,12 +229,12 @@ type
      you must have PartParent of multipart type!
 
      After creation of part set type to binary and set all necessary properties.
-     MIME primary and secondary types defined automaticly by filename extension.
-     Content of binary part is readed from Stream. This binary part is encoded
+     MIME primary and secondary types defined automatically by filename extension.
+     Content of binary part is read from Stream. This binary part is encoded
      as file attachment.}
     function AddPartBinary(const Stream: TStream; const FileName: string; const PartParent: TMimePart): TMimepart;
 
-    {:Same as @link(AddPartBinary), but content is readed from file}
+    {:Same as @link(AddPartBinary), but content is read from file}
     function AddPartBinaryFromFile(const FileName: string; const PartParent: TMimePart): TMimepart;
 
     {:Add MIME part as subpart of PartParent. If you need set root MIME part,
@@ -242,14 +242,14 @@ type
      must have PartParent of multipart type!
 
      After creation of part set type to binary and set all necessary properties.
-     MIME primary and secondary types defined automaticly by filename extension.
-     Content of binary part is readed from Stream.
+     MIME primary and secondary types defined automatically by filename extension.
+     Content of binary part is read from Stream.
 
-     This binary part is encoded as inline data with given Conten ID (cid).
+     This binary part is encoded as inline data with given Contain ID (cid).
      Content ID can be used as reference ID in HTML source in HTML part.}
     function AddPartHTMLBinary(const Stream: TStream; const FileName, Cid: string; const PartParent: TMimePart): TMimepart;
 
-    {:Same as @link(AddPartHTMLBinary), but content is readed from file}
+    {:Same as @link(AddPartHTMLBinary), but content is read from file}
     function AddPartHTMLBinaryFromFile(const FileName, Cid: string; const PartParent: TMimePart): TMimepart;
 
     {:Add MIME part as subpart of PartParent. If you need set root MIME part,
@@ -257,11 +257,11 @@ type
      must have PartParent of multipart type!
 
      After creation of part set type to message and set all necessary properties.
-     MIME primary and secondary types are setted to 'message/rfc822'.
-     Content of raw RFC-822 message is readed from Stream.}
+     MIME primary and secondary types are set to 'message/rfc822'.
+     Content of raw RFC-822 message is read from Stream.}
     function AddPartMess(const Value: TStrings; const PartParent: TMimePart): TMimepart;
 
-    {:Same as @link(AddPartMess), but content is readed from file}
+    {:Same as @link(AddPartMess), but content is read from file}
     function AddPartMessFromFile(const FileName: string; const PartParent: TMimePart): TMimepart;
 
     {:Compose message from @link(MessagePart) to @link(Lines). Headers from
@@ -280,7 +280,7 @@ type
      On the top of it, HTTP connections are always 8-bit, hence data are
      transferred in native format i.e. no transfer encoding is applied.
 
-     This method operates the similiar way and produces the same
+     This method operates the similar way and produces the same
      result as @link(DecodeMessage).
     }
     procedure DecodeMessageBinary(AHeader:TStrings; AData:TMemoryStream);
@@ -294,7 +294,7 @@ type
     {:Raw MIME encoded message.}
     property Lines: TStringList read FLines;
 
-    {:Object for e-mail header fields. This object is created automaticly.
+    {:Object for e-mail header fields. This object is created automatically.
      Do not free this object!}
     property Header: TMessHeader read FHeader;
   end;

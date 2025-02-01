@@ -183,7 +183,7 @@ type
     function AppendMess(ToFolder: string; const Mess: TStrings): Boolean;
 
     {:'Delete' message from current selected folder. It mark message as Deleted.
-     Real deleting will be done after sucessfull @link(CloseFolder) or
+     Real deleting will be done after successful @link(CloseFolder) or
      @link(ExpungeFolder)}
     function DeleteMess(MessID: integer): boolean;
 
@@ -222,7 +222,7 @@ type
     {:return UID of requested message ID.}
     function GetUID(MessID: integer; var UID : Integer): Boolean;
 
-    {:Try to find given capabily in capabilty string returned from IMAP server.}
+    {:Try to find given capabily in capability string returned from IMAP server.}
     function FindCap(const Value: string): string;
   published
     {:Status line with result of last operation.}
@@ -231,7 +231,7 @@ type
     {:Full result of last IMAP operation.}
     property FullResult: TStringList read FFullResult;
 
-    {:List of server capabilites.}
+    {:List of server capabilities.}
     property IMAPcap: TStringList read FIMAPcap;
 
     {:Authorization is successful done.}
@@ -259,10 +259,10 @@ type
     property AutoTLS: Boolean read FAutoTLS Write FAutoTLS;
 
     {:SSL/TLS mode is used from first contact to server. Servers with full
-     SSL/TLS mode usualy using non-standard TCP port!}
+     SSL/TLS mode usually using non-standard TCP port!}
     property FullSSL: Boolean read FFullSSL Write FFullSSL;
 
-    {:Socket object used for TCP/IP operation. Good for seting OnStatus hook, etc.}
+    {:Socket object used for TCP/IP operation. Good for setting OnStatus hook, etc.}
     property Sock: TTCPBlockSocket read FSock;
   end;
 

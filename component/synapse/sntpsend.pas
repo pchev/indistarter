@@ -154,12 +154,12 @@ type
      changed!}
     property MaxSyncDiff: double read FMaxSyncDiff write FMaxSyncDiff;
 
-    {:If @true, after successfull getting time is local computer clock
+    {:If @true, after successful getting time is local computer clock
      synchronised to given time.
      For synchronising time you must have proper rights! (Usually Administrator)}
     property SyncTime: Boolean read FSyncTime write FSyncTime;
 
-    {:Socket object used for TCP/IP operation. Good for seting OnStatus hook, etc.}
+    {:Socket object used for TCP/IP operation. Good for setting OnStatus hook, etc.}
     property Sock: TUDPBlockSocket read FSock;
   end;
 

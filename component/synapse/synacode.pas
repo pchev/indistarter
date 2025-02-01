@@ -190,7 +190,7 @@ function EncodeBase64mod(const Value: AnsiString): AnsiString;
 {:Decodes a string from UUcode format.}
 function DecodeUU(const Value: AnsiString): AnsiString;
 
-{:encode UUcode. it encode only datas, you must also add header and footer for
+{:encode UUcode. it encodes only data, you must also add header and footer for
  proper encode.}
 function EncodeUU(const Value: AnsiString): AnsiString;
 
@@ -754,7 +754,7 @@ begin
     1: x :=((x div 3) * 4) + 2;
     2: x :=((x  div 3) * 4) + 3;
   end;
-  //x - lenght UU line
+  //x - length UU line
   s := Copy(Value, 2, x);
   if s = '' then
     Exit;
@@ -793,7 +793,7 @@ begin
     1: x :=((x div 3) * 4) + 2;
     2: x :=((x  div 3) * 4) + 3;
   end;
-  //x - lenght XX line
+  //x - length XX line
   s := Copy(Value, 2, x);
   if s = '' then
     Exit;

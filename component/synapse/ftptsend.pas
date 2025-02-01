@@ -100,7 +100,7 @@ type
     function RecvFile(const Filename: string): Boolean;
 
     {:Acts as TFTP server and wait for client request. When some request
-     incoming within Timeout, result is @true and parametres is filled with
+     incoming within Timeout, result is @true and parameters is filled with
      information from request. You must handle this request, validate it, and
      call @link(ReplyError), @link(ReplyRecv) or @link(ReplySend) for send reply
      to TFTP Client.}
@@ -120,10 +120,10 @@ type
     {:Code of TFTP error.}
     property ErrorCode: integer read FErrorCode;
 
-    {:Human readable decription of TFTP error. (if is sended by remote side)}
+    {:Human readable description of TFTP error. (if it is sent by remote side)}
     property ErrorString: string read FErrorString;
 
-    {:MemoryStream with datas for sending or receiving}
+    {:MemoryStream with data for sending or receiving}
     property Data: TMemoryStream read FData;
 
     {:Address of TFTP remote side.}

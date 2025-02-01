@@ -155,7 +155,7 @@ type
     property Value: AnsiString read FValue write FValue;
 
     {:Define type of Value. Supported values are defined in @link(asn1util).
-     For queries use ASN1_NULL, becouse you don't know type in response!}
+     For queries use ASN1_NULL, because you don't know type in response!}
     property ValueType: Integer read FValueType write FValueType;
   end;
 
@@ -217,7 +217,7 @@ type
     {:Decode SNMP packet in buffer to object properties.}
     function DecodeBuf(Buffer: AnsiString): Boolean;
 
-    {:Encode obeject properties to SNMP packet.}
+    {:Encode object properties to SNMP packet.}
     function EncodeBuf: AnsiString;
 
     {:Clears all object properties to default values.}
@@ -246,7 +246,7 @@ type
      value 1 for SNMPv2c or value 3 for SNMPv3.}
     property Version: Integer read FVersion write FVersion;
 
-    {:Community string for autorize access to SNMP server. (Case sensitive!)
+    {:Community string for authorize access to SNMP server. (Case sensitive!)
      Community string is not used in SNMPv3! Use @link(Username) and
      @link(password) instead!}
     property Community: AnsiString read FCommunity write FCommunity;
@@ -261,7 +261,7 @@ type
      E* constants.}
     property ErrorStatus: Integer read FErrorStatus write FErrorStatus;
 
-    {:Point to error position in reply packet. Not usefull for users. It only
+    {:Point to error position in reply packet. Not useful for users. It only
      good for debugging!}
     property ErrorIndex: Integer read FErrorIndex write FErrorIndex;
 
@@ -384,7 +384,7 @@ type
     {:Data object contains SNMP reply.}
     property Reply: TSNMPRec read FReply;
 
-    {:Socket object used for TCP/IP operation. Good for seting OnStatus hook, etc.}
+    {:Socket object used for TCP/IP operation. Good for setting OnStatus hook, etc.}
     property Sock: TUDPBlockSocket read FSock;
   end;
 
@@ -414,10 +414,10 @@ function SNMPGetNext(var OID: AnsiString; const Community, SNMPHost: AnsiString;
  object. It implements basic read of SNMP MIB tables. As BaseOID you must
  specify basic MIB OID of requested table (base IOD is OID without row and
  column specificator!)
- Table is readed into stringlist, where each string is comma delimited string.
+ Table is read into stringlist, where each string is comma delimited string.
 
  Warning: this function is not have best performance. For better performance
- you must write your own function. best performace you can get by knowledge
+ you must write your own function. best performance you can get by knowledge
  of structuture of table and by more then one MIB on one query. }
 function SNMPGetTable(const BaseOID, Community, SNMPHost: AnsiString; const Value: TStrings): Boolean;
 

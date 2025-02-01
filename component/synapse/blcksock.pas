@@ -55,7 +55,7 @@ initialized on constructor of TBlockSocket class for each socket separately.
 Socket interface is used only if your need it.
 
 If you leave this directive here, then socket interface is loaded and
-initialized only once at start of your program! It boost performace on high
+initialized only once at start of your program! It boost performance on high
 count of created and destroyed sockets. It eliminate possible small resource
 leak on Windows systems too.
 }
@@ -152,18 +152,18 @@ type
 
   {:Types of OnStatus events}
   THookSocketReason = (
-    {:Resolving is begin. Resolved IP and port is in parameter in format like:
+    {:Resolving has begun. Resolved IP and port is in parameter in format like:
      'localhost.somewhere.com:25'.}
     HR_ResolvingBegin,
-    {:Resolving is done. Resolved IP and port is in parameter in format like:
+    {:Resolving is completed. Resolved IP and port is in parameter in format like:
      'localhost.somewhere.com:25'. It is always same as in HR_ResolvingBegin!}
     HR_ResolvingEnd,
-    {:Socket created by CreateSocket method. It reporting Family of created
+    {:Socket created by CreateSocket method. It reports Family of created
      socket too!}
     HR_SocketCreate,
     {:Socket closed by CloseSocket method.}
     HR_SocketClose,
-    {:Socket binded to IP and Port. Binded IP and Port is in parameter in format
+    {:Socket binded to IP and Port. Bound IP and Port is in parameter in format
      like: 'localhost.somewhere.com:25'.}
     HR_Bind,
     {:Socket connected to IP and Port. Connected IP and Port is in parameter in
@@ -173,21 +173,21 @@ type
     HR_CanRead,
     {:Called when CanWrite method is used with @True result.}
     HR_CanWrite,
-    {:Socket is swithed to Listen mode. (TCP socket only)}
+    {:Socket is switched to Listen mode. (TCP socket only)}
     HR_Listen,
     {:Socket Accepting client connection. (TCP socket only)}
     HR_Accept,
-    {:report count of bytes readed from socket. Number is in parameter string.
+    {:report count of bytes read from socket. Number is in parameter string.
      If you need is in integer, you must use StrToInt function!}
     HR_ReadCount,
-    {:report count of bytes writed to socket. Number is in parameter string. If
-     you need is in integer, you must use StrToInt function!}
+    {:report count of bytes written to socket. Number is in parameter string. If
+     you need an integer, you must use StrToInt function!}
     HR_WriteCount,
-    {:If is limiting of bandwidth on, then this reason is called when sending or
-     receiving is stopped for satisfy bandwidth limit. Parameter is count of
+    {:If limiting of bandwidth is enabled, then this reason is called when sending or
+     receiving is stopped to satisfy bandwidth limit. Parameter is count of
      waiting milliseconds.}
     HR_Wait,
-    {:report situation where communication error occured. When raiseexcept is
+    {:report situation where communication error occurred. When raiseexcept is
      @true, then exception is called after this Hook reason.}
     HR_Error
     );
@@ -210,11 +210,11 @@ type
     const Buffer: TMemory; Len: Integer) of object;
 
   {:This procedural type is used for hook OnAfterConnect. By this hook you can
-   insert your code after TCP socket has been sucessfully connected.}
+   insert your code after TCP socket has been successfully connected.}
   THookAfterConnect = procedure(Sender: TObject) of object;
 
   {:This procedural type is used for hook OnVerifyCert. By this hook you can
-   insert your additional certificate verification code. Usefull to verify server
+   insert your additional certificate verification code. Useful to verify server
    CN against URL. }
 
   THookVerifyCert = function(Sender: TObject):boolean of object;
@@ -228,7 +228,7 @@ type
   TSocketFamily = (
     {:Default mode. Socket family is defined by target address for connection.
      It allows instant access to IPv4 and IPv6 nodes. When you need IPv6 address
-     as destination, then is used IPv6 mode. othervise is used IPv4 mode.
+     as destination, then is used IPv6 mode. otherwise is used IPv4 mode.
      However this mode not working properly with preliminary IPv6 supports!}
     SF_Any,
     {:Turn this class to pure IPv4 mode. This mode is totally compatible with
@@ -382,9 +382,9 @@ type
 
     {:If @link(family) is not SF_Any, then create socket with type defined in
      @link(Family) property. If family is SF_Any, then do nothing! (socket is
-     created automaticly when you know what type of socket you need to create.
+     created automatically when you know what type of socket you need to create.
      (i.e. inside @link(Connect) or @link(Bind) call.) When socket is created,
-     then is aplyed all stored delayed socket options.}
+     then is applied all stored delayed socket options.}
     procedure CreateSocket;
 
     {:It create socket. Address resolving of Value tells what type of socket is
@@ -403,12 +403,12 @@ type
      symbolic ('192.168.74.50', 'cosi.nekde.cz', 'ff08::1'). The same for PORT
      - it may be number or mnemonic port ('23', 'telnet').
 
-     If port value is '0', system chooses itself and conects unused port in the
+     If port value is '0', system chooses itself and connects unused port in the
      range 1024 to 4096 (this depending by operating system!). Structure
      LocalSin is filled after calling this method.
 
      Note: If you call this on non-created socket, then socket is created
-     automaticly.
+     automatically.
 
      Warning: when you call : Bind('0.0.0.0','0'); then is nothing done! In this
      case is used implicit system bind instead.}
@@ -421,7 +421,7 @@ type
      Structures LocalSin and RemoteSin will be filled with valid values.
 
      When you call this on non-created socket, then socket is created
-     automaticly. Type of created socket is by @link(Family) property. If is
+     automatically. Type of created socket is by @link(Family) property. If is
      used SF_IP4, then is created socket for IPv4. If is used SF_IP6, then is
      created socket for IPv6. When you have family on SF_Any (default!), then
      type of created socket is determined by address resolving of destination
@@ -447,7 +447,7 @@ type
 
     {:Send data string via connected socket. Any terminator is not added! If you
      need send true string with CR-LF termination, you must add CR-LF characters
-     to sended string! Because any termination is not added automaticly, you can
+     to sent string! Because any termination is not added automatically, you can
      use this function for sending any binary data in binary string.}
     procedure SendString(Data: AnsiString); virtual;
 
@@ -455,7 +455,7 @@ type
     procedure SendInteger(Data: integer); virtual;
 
     {:Send data as one block to socket. Each block begin with 4 bytes with
-     length of data in block. This 4 bytes is added automaticly by this
+     length of data in block. This 4 bytes is added automatically by this
      function.}
     procedure SendBlock(const Data: AnsiString); virtual;
 
@@ -479,7 +479,7 @@ type
      On stream oriented sockets if is received 0 bytes, it mean 'socket is
      closed!"
 
-     On datagram socket is readed first waiting datagram.}
+     On datagram socket is read first waiting datagram.}
     function RecvBuffer(Buffer: TMemory; Length: Integer): Integer; virtual;
 
     {:Note: This is high-level receive function. It using internal
@@ -489,11 +489,11 @@ type
      Method waits until data is received. If no data is received within TIMEOUT
      (in milliseconds) period, @link(LastError) is set to WSAETIMEDOUT. Methods
      serves for reading any size of data (i.e. one megabyte...). This method is
-     preffered for reading from stream sockets (like TCP).}
+     preferred for reading from stream sockets (like TCP).}
     function RecvBufferEx(Buffer: Tmemory; Len: Integer;
       Timeout: Integer): Integer; virtual;
 
-    {:Similar to @link(RecvBufferEx), but readed data is stored in binary
+    {:Similar to @link(RecvBufferEx), but read data is stored in binary
      string, not in memory buffer.}
     function RecvBufferStr(Len: Integer; Timeout: Integer): AnsiString; virtual;
 
@@ -547,18 +547,18 @@ type
      TIMEOUT (in milliseconds) period, @link(LastError) is set to WSAETIMEDOUT.
      Methods serves for reading unknown size of data. Because before call this
      function you don't know size of received data, returned data is stored in
-     dynamic size binary string. This method is preffered for reading from
+     dynamic size binary string. This method is preferred for reading from
      stream sockets (like TCP). It is very goot for receiving datagrams too!
      (UDP protocol)}
     function RecvPacket(Timeout: Integer): AnsiString; virtual;
 
     {:Read one block of data from socket. Each block begin with 4 bytes with
-     length of data in block. This function read first 4 bytes for get lenght,
+     length of data in block. This function read first 4 bytes for get length,
      then it wait for reported count of bytes.}
     function RecvBlock(Timeout: Integer): AnsiString; virtual;
 
     {:Read all data from socket to stream until socket is closed (or any error
-     occured.)}
+     occurred.)}
     procedure RecvStreamRaw(const Stream: TStream; Timeout: Integer); virtual;
     {:Read requested count of bytes from socket to stream.}
     procedure RecvStreamSize(const Stream: TStream; Timeout: Integer; Size: int64);
@@ -570,12 +570,12 @@ type
     in Indy library. It using @link(RecvBlock) method.}
     procedure RecvStreamIndy(const Stream: TStream; Timeout: Integer); virtual;
 
-    {:Same as @link(RecvBuffer), but readed data stays in system input buffer.
+    {:Same as @link(RecvBuffer), but read data stays in system input buffer.
     Warning: this function not respect data in @link(LineBuffer)! Is not
     recommended to use this function!}
     function PeekBuffer(Buffer: TMemory; Length: Integer): Integer; virtual;
 
-    {:Same as @link(RecvByte), but readed data stays in input system buffer.
+    {:Same as @link(RecvByte), but read data stays in input system buffer.
      Warning: this function not respect data in @link(LineBuffer)! Is not
     recommended to use this function!}
     function PeekByte(Timeout: Integer): Byte; virtual;
@@ -639,7 +639,7 @@ type
     {:Try resolve symbolic port name to port number. (i.e. 'Echo' to 8)}
     function ResolvePort(Port: string): Word;
 
-    {:Set information about remote side socket. It is good for seting remote
+    {:Set information about remote side socket. It is good for setting remote
      side for sending UDP packet, etc.}
     procedure SetRemoteSin(IP, Port: string);
 
@@ -658,7 +658,7 @@ type
     {:Return @TRUE, if you can read any data from socket or is incoming
      connection on TCP based socket. Status is tested for time Timeout (in
      milliseconds). If value in Timeout is 0, status is only tested and
-     continue. If value in Timeout is -1, run is breaked and waiting for read
+     continue. If value in Timeout is -1, run is broken and waiting for read
      data maybe forever.
 
      This function is need only on special cases, when you need use
@@ -673,13 +673,13 @@ type
     {:Return @TRUE, if you can to socket write any data (not full sending
      buffer). Status is tested for time Timeout (in milliseconds). If value in
      Timeout is 0, status is only tested and continue. If value in Timeout is
-     -1, run is breaked and waiting for write data maybe forever.
+     -1, run is broken and waiting for write data maybe forever.
 
      This function is need only on special cases!}
     function CanWrite(Timeout: Integer): Boolean; virtual;
 
     {:Same as @link(SendBuffer), but send datagram to address from
-     @link(RemoteSin). Usefull for sending reply to datagram received by
+     @link(RemoteSin). Useful for sending reply to datagram received by
      function @link(RecvBufferFrom).}
     function SendBufferTo(const Buffer: TMemory; Length: Integer): Integer; virtual;
 
@@ -692,13 +692,13 @@ type
      @link(RemoteSin) structure contains information about sender of UDP packet.}
     function RecvBufferFrom(Buffer: TMemory; Length: Integer): Integer; virtual;
 {$IFNDEF CIL}
-    {:This function is for check for incoming data on set of sockets. Whitch
-    sockets is checked is decribed by SocketList Tlist with TBlockSocket
+    {:This function is for check for incoming data on set of sockets. Which
+    sockets is checked is described by SocketList Tlist with TBlockSocket
     objects. TList may have maximal number of objects defined by FD_SETSIZE
     constant. Return @TRUE, if you can from some socket read any data or is
     incoming connection on TCP based socket. Status is tested for time Timeout
     (in milliseconds). If value in Timeout is 0, status is only tested and
-    continue. If value in Timeout is -1, run is breaked and waiting for read
+    continue. If value in Timeout is -1, run is broken and waiting for read
     data maybe forever. If is returned @TRUE, CanReadList TList is filled by all
     TBlockSocket objects what waiting for read.}
     function GroupCanRead(const SocketList: TSocketList; Timeout: Integer;
@@ -782,7 +782,7 @@ type
      connection.}
     property RecvCounter: int64 read FRecvCounter;
 
-    {:Return count of sended bytes on this socket from begin of current
+    {:Return count of sent bytes on this socket from begin of current
      connection.}
     property SendCounter: int64 read FSendCounter;
   published
@@ -796,7 +796,7 @@ type
     {:this value is for free use.}
     property Tag: Integer read FTag write FTag;
 
-    {:If @true, winsock errors raises exception. Otherwise is setted
+    {:If @true, winsock errors raises exception. Otherwise is set
     @link(LastError) value only and you must check it from your program! Default
     value is @false.}
     property RaiseExcept: Boolean read FRaiseExcept write FRaiseExcept;
@@ -825,7 +825,7 @@ type
     property MaxBandwidth: Integer Write SetBandwidth;
 
     {:Do a conversion of non-standard line terminators to CRLF. (Off by default)
-     If @True, then terminators like sigle CR, single LF or LFCR are converted
+     If @True, then terminators like single CR, single LF or LFCR are converted
      to CRLF internally. This have effect only in @link(RecvString) method!}
     property ConvertLineEnd: Boolean read FConvertLineEnd Write FConvertLineEnd;
 
@@ -834,7 +834,7 @@ type
     property Family: TSocketFamily read FFamily Write SetFamily;
 
     {:When resolving of domain name return both IPv4 and IPv6 addresses, then
-     specify if is used IPv4 (dafault - @true) or IPv6.}
+     specify if is used IPv4 (default - @true) or IPv6.}
     property PreferIP4: Boolean read FPreferIP4 Write FPreferIP4;
 
     {:By default (@true) is all timeouts used as timeout between two packets in
@@ -842,7 +842,7 @@ type
      reading operation!}
     property InterPacketTimeout: Boolean read FInterPacketTimeout Write FInterPacketTimeout;
 
-    {:All sended datas was splitted by this value.}
+    {:All sent data was split by this value.}
     property SendMaxChunk: Integer read FSendMaxChunk Write FSendMaxChunk;
 
     {:By setting this property to @true you can stop any communication. You can
@@ -860,7 +860,7 @@ type
      create gauges for data transfers, etc.}
     property OnStatus: THookSocketStatus read FOnStatus write FOnStatus;
 
-    {:this event is good for some internal thinks about filtering readed datas.
+    {:this event is good for some internal thinks about filtering read data.
      It is used by telnet client by example.}
     property OnReadFilter: THookDataFilter read FOnReadFilter write FOnReadFilter;
 
@@ -869,7 +869,7 @@ type
      Ipv4, IPv6 or automatic mode)}
     property OnCreateSocket: THookCreateSocket read FOnCreateSocket write FOnCreateSocket;
 
-    {:This event is good for monitoring content of readed or writed datas.}
+    {:This event is good for monitoring content of read or written data.}
     property OnMonitor: THookMonitor read FOnMonitor write FOnMonitor;
 
     {:This event is good for calling your code during long socket operations.
@@ -922,7 +922,7 @@ type
      cases! (it is called internally!)}
     function SocksRequest(Cmd: Byte; const IP, Port: string): Boolean;
 
-    {:Receive response to previosly sended request. This is needed only in
+    {:Receive response to previously sent request. This is needed only in
      special cases! (it is called internally!)}
     function SocksResponse: Boolean;
 
@@ -933,7 +933,7 @@ type
     property SocksLastError: integer read FSocksLastError;
   published
     {:Address of SOCKS server. If value is empty string, SOCKS support is
-     disabled. Assingning any value to this property enable SOCKS mode.
+     disabled. Assigning any value to this property enable SOCKS mode.
      Warning: You cannot combine this mode with HTTP-tunneling mode!}
     property SocksIP: string read FSocksIP write FSocksIP;
 
@@ -946,7 +946,7 @@ type
     {:If you need authorisation on SOCKS server, set password here.}
     property SocksPassword: string read FSocksPassword write FSocksPassword;
 
-    {:Specify timeout for communicatin with SOCKS server. Default is one minute.}
+    {:Specify timeout for communicating with SOCKS server. Default is one minute.}
     property SocksTimeout: integer read FSocksTimeout write FSocksTimeout;
 
     {:If @True, all symbolic names of target hosts is not translated to IP's
@@ -955,14 +955,14 @@ type
 
     {:Specify SOCKS type. By default is used SOCKS5, but you can use SOCKS4 too.
      When you select SOCKS4, then if @link(SOCKSResolver) is enabled, then is
-     used SOCKS4a. Othervise is used pure SOCKS4.}
+     used SOCKS4a. Otherwise is used pure SOCKS4.}
     property SocksType: TSocksType read FSocksType write FSocksType;
   end;
 
   {:@abstract(Implementation of TCP socket.)
    Supported features: IPv4, IPv6, SSL/TLS or SSH (depending on used plugin),
-   SOCKS5 proxy (outgoing connections and limited incomming), SOCKS4/4a proxy
-   (outgoing connections and limited incomming), TCP through HTTP proxy tunnel.}
+   SOCKS5 proxy (outgoing connections and limited incoming), SOCKS4/4a proxy
+   (outgoing connections and limited incoming), TCP through HTTP proxy tunnel.}
   TTCPBlockSocket = class(TSocksBlockSocket)
   protected
     FOnAfterConnect: THookAfterConnect;
@@ -1026,7 +1026,7 @@ type
      protocol.)
 
      Note: If you call this on non-created socket, then socket is created
-     automaticly.}
+     automatically.}
     procedure Connect(IP, Port: string); override;
 
     {:If you need upgrade existing TCP connection to SSL/TLS (or SSH2, if plugin
@@ -1040,7 +1040,7 @@ type
 
     {:If you need use this component as SSL/TLS TCP server, then after accepting
      of inbound connection you need start SSL/TLS session by this method. Before
-     call this function, you must have assigned all neeeded certificates and
+     call this function, you must have assigned all needed certificates and
      keys!}
     function SSLAcceptConnection: Boolean;
 
@@ -1069,7 +1069,7 @@ type
      IPPROTO_TCP.}
     function GetSocketProtocol: integer; override;
 
-    {:Class implementing SSL/TLS support. It is allways some descendant
+    {:Class implementing SSL/TLS support. It is always some descendant
      of @link(TCustomSSL) class. When programmer not select some SSL plugin
      class, then is used @link(TSSLNone)}
     property SSL: TCustomSSL read FSSL;
@@ -1081,7 +1081,7 @@ type
      in SSL/TLS subsystem, it returns right error description.}
     function GetErrorDescEx: string; override;
 
-    {:Specify IP address of HTTP proxy. Assingning non-empty value to this
+    {:Specify IP address of HTTP proxy. Assigning non-empty value to this
      property enable HTTP-tunnel mode. This mode is for tunnelling any outgoing
      TCP connection through HTTP proxy server. (If policy on HTTP proxy server
      allow this!) Warning: You cannot combine this mode with SOCK5 mode!}
@@ -1101,7 +1101,7 @@ type
     {:Specify timeout for communication with HTTP proxy in HTTPtunnel mode.}
     property HTTPTunnelTimeout: integer read FHTTPTunnelTimeout Write FHTTPTunnelTimeout;
 
-    {:This event is called after sucessful TCP socket connection.}
+    {:This event is called after successful TCP socket connection.}
     property OnAfterConnect: THookAfterConnect read FOnAfterConnect write FOnAfterConnect;
   end;
 
@@ -1123,12 +1123,12 @@ type
 
   {:@abstract(Implementation of UDP socket.)
    NOTE: in this class is all receiving redirected to RecvBufferFrom. You can
-   use for reading any receive function. Preffered is RecvPacket! Similary all
+   use for reading any receive function. Preferred is RecvPacket! Similarly all
    sending is redirected to SendbufferTo. You can use for sending UDP packet any
    sending function, like SendString.
 
    Supported features: IPv4, IPv6, unicasts, broadcasts, multicasts, SOCKS5
-   proxy (only unicasts! Outgoing and incomming.)}
+   proxy (only unicasts! Outgoing and incoming.)}
   TUDPBlockSocket = class(TDgramBlockSocket)
   protected
     FSocksControlSock: TTCPBlockSocket;
@@ -1138,7 +1138,7 @@ type
   public
     destructor Destroy; override;
 
-    {:Enable or disable sending of broadcasts. If seting OK, result is @true.
+    {:Enable or disable sending of broadcasts. If setting OK, result is @true.
      This method is not supported in SOCKS5 mode! IPv6 does not support
      broadcasts! In this case you must use Multicasts instead.}
     procedure EnableBroadcast(Value: Boolean);
@@ -1156,8 +1156,8 @@ type
     {:Remove this socket from given multicast group.}
     procedure DropMulticast(MCastIP:string);
 {$ENDIF}
-    {:All sended multicast datagrams is loopbacked to your interface too. (you
-     can read your sended datas.) You can disable this feature by this function.
+    {:All sent multicast datagrams is loopbacked to your interface too. (you
+     can read your sent data.) You can disable this feature by this function.
      This function not working on some Windows systems!}
     procedure EnableMulticastLoop(Value: Boolean);
 
@@ -1169,9 +1169,9 @@ type
     function GetSocketProtocol: integer; override;
 
     {:Set Time-to-live value for multicasts packets. It define number of routers
-     for transfer of datas. If you set this to 1 (dafault system value), then
+     for transfer of data. If you set this to 1 (default system value), then
      multicasts packet goes only to you local network. If you need transport
-     multicast packet to worldwide, then increase this value, but be carefull,
+     multicast packet to worldwide, then increase this value, but be careful,
      lot of routers on internet does not transport multicasts packets!}
     property MulticastTTL: Integer read GetMulticastTTL Write SetMulticastTTL;
   end;
@@ -1286,7 +1286,7 @@ type
 
     {: Do not call this directly. It is used internally by @link(TTCPBlockSocket)!
 
-     Here is needed code for acept new SSL connection.}
+     Here is needed code for accept new SSL connection.}
     function Accept: boolean; virtual;
 
     {: Do not call this directly. It is used internally by @link(TTCPBlockSocket)!
@@ -1303,17 +1303,17 @@ type
 
     {: Do not call this directly. It is used internally by @link(TTCPBlockSocket)!
 
-     Here is needed code for sending some datas by SSL connection.}
+     Here is needed code for sending some data by SSL connection.}
     function SendBuffer(Buffer: TMemory; Len: Integer): Integer; virtual;
 
     {: Do not call this directly. It is used internally by @link(TTCPBlockSocket)!
 
-     Here is needed code for receiving some datas by SSL connection.}
+     Here is needed code for receiving some data by SSL connection.}
     function RecvBuffer(Buffer: TMemory; Len: Integer): Integer; virtual;
 
     {: Do not call this directly. It is used internally by @link(TTCPBlockSocket)!
 
-     Here is needed code for getting count of datas what waiting for read.
+     Here is needed code for getting count of data what waiting for read.
      If SSL plugin not allows this, then it should return 0.}
     function WaitingData: Integer; virtual;
 
@@ -1343,20 +1343,20 @@ type
 
     {:Return all detailed information about certificate from remote side of
      SSL/TLS connection. Result string can be multilined! Each plugin can return
-     this informations in different format!}
+     this information in different format!}
     function GetCertInfo: string; virtual;
 
     {:Return currently used Cipher.}
     function GetCipherName: string; virtual;
 
-    {:Return currently used number of bits in current Cipher algorythm.}
+    {:Return currently used number of bits in current Cipher algorithm.}
     function GetCipherBits: integer; virtual;
 
-    {:Return number of bits in current Cipher algorythm.}
+    {:Return number of bits in current Cipher algorithm.}
     function GetCipherAlgBits: integer; virtual;
 
     {:Return result value of verify remote side certificate. Look to OpenSSL
-     documentation for possible values. For example 0 is successfuly verified
+     documentation for possible values. For example 0 is successfully verified
      certificate, or 18 is self-signed certificate.}
     function GetVerifyCert: integer; virtual;
 
@@ -1445,7 +1445,7 @@ type
     property CertComplianceLevel:integer read FCertComplianceLevel write FCertComplianceLevel;
 
     {:This event is called when verifying the server certificate immediatally after
-     a successfull verification in the ssl library.}
+     a successful verification in the ssl library.}
     property OnVerifyCert: THookVerifyCert read FOnVerifyCert write FOnVerifyCert;
 
     {: Server Name Identification. Host name to send to server. If empty the host name
@@ -1471,7 +1471,7 @@ type
     VerLen: Byte;
     TOS: Byte;
     TotalLen: Word;
-    Identifer: Word;
+    Identifier: Word;
     FragOffsets: Word;
     TTL: Byte;
     Protocol: Byte;
@@ -2444,7 +2444,7 @@ begin
   s := '';
   x := 0;
   repeat
-    //get rest of FBuffer or incomming new data...
+    //get rest of FBuffer or incoming new data...
     ti := GetTick;
     s := s + RecvPacket(Timeout);
     if FLastError <> 0 then

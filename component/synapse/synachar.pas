@@ -133,7 +133,7 @@ const
   {:Set of charsets supported by internal routines only.}
   NoIconvChars: set of TMimeChar = [CP895, UTF_7mod];
 
-  {:null character replace table. (Usable for disable charater replacing.)}
+  {:null character replace table. (Usable for disable character replacing.)}
   Replace_None: array[0..0] of Word =
     (0);
 
@@ -197,7 +197,7 @@ function CharsetConversionEx(const Value: AnsiString; CharFrom: TMimeChar;
   CharTo: TMimeChar; const TransformTable: array of Word): AnsiString;
 
 {:Convert Value from one charset to another with additional character conversion.
- This funtion is similar to @link(CharsetConversionEx), but you can disable
+ This function is similar to @link(CharsetConversionEx), but you can disable
  transliteration of unconvertible characters.}
 function CharsetConversionTrans(Value: AnsiString; CharFrom: TMimeChar;
   CharTo: TMimeChar; const TransformTable: array of Word; Translit: Boolean): AnsiString;
@@ -1408,7 +1408,7 @@ begin
   finally
     SynaIconvClose(cd);
   end;
-  //here we allways have ucstring with UCS-2 encoding
+  //here we always have ucstring with UCS-2 encoding
   //second pass... from UCS-2 to target encoding.
     if not DisableIconv then
       if translit then
