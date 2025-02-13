@@ -39,7 +39,7 @@ endif
 ifndef LCL_PLATFORM
 ifeq ($(OS_TARGET),darwin)
 LCL_PLATFORM=cocoa
-opt_target= -k-macosx_version_min -k10.10
+opt_target= -k-macosx_version_min -k10.14 -k-framework -kCocoa -k-weak_framework -kUserNotifications
 else
 LCL_PLATFORM=qt5
 opt_target=

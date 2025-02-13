@@ -10,6 +10,7 @@ component/lib/
 component/indiclient/lib/
 component/synapse/source/lib/lib/
 component/uniqueinstance/lib/
+component/synapse/lib/
 /indistarter.app
 indistarter.lps
 indigui.app/
