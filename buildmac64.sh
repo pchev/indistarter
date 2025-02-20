@@ -48,7 +48,7 @@ echo $version - $currentrev - $indiversion
   cp readme.txt build/
   sz=$(du -sk build| cut -f1)
   (( sz=50+(sz/1024) ))
-  hdiutil create -size ${sz}M -anyowners -volname indistarter-$version-$currentrev-indi-$indiversion-x86_64-macosx -imagekey zlib-level=9 -format UDZO -srcfolder ./build indistarter-$version-$currentrev-indi-$indiversion-x86_64-macosx.dmg
+  hdiutil create -size ${sz}M -anyowners -volname indistarter-$version-$currentrev-indi-$indiversion-macos-x86_64 -imagekey zlib-level=9 -format UDZO -srcfolder ./build indistarter-$version-$currentrev-indi-$indiversion-macos-x86_64.dmg
   if [[ $? -ne 0 ]]; then exit 1;fi
   mv indistarter*.dmg $wd
   if [[ $? -ne 0 ]]; then exit 1;fi
