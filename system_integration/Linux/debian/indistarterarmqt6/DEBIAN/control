@@ -1,0 +1,16 @@
+Package: indistarter-qt6
+Version: 3
+Section: education
+Priority: optional
+Maintainer: Patrick Chevalley <pch@ap-i.net>
+Architecture: arm64
+Installed-Size: %size%
+Provides: indistarter
+Conflicts: indistarter
+Replaces: indistarter
+Depends: libc6, libqt6pas6, libglib2.0-0
+Recommends: indi-bin
+Description: A simple program to run a INDI server.
+ Indistarter is a user interface to run a INDI server.
+ You can configure different profile for your astronomical equipment.
+ .
