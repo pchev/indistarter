@@ -38,7 +38,7 @@ echo $version - $currentrev
   # tar
   cd $builddir
   cd ..
-  tar cvJf indistarteri-qt6-$version-$currentrev-linux_x86_64.tar.xz indistarter
+  tar cvJf indistarter-qt6-$version-$currentrev-linux_x86_64.tar.xz indistarter
   if [[ $? -ne 0 ]]; then exit 1;fi
   mv indistarter*.tar.xz $wd
   if [[ $? -ne 0 ]]; then exit 1;fi
