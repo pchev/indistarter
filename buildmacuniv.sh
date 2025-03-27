@@ -35,7 +35,6 @@ echo $version - $currentrev - $indiversion
   make install CPU_TARGET=x86_64
   if [[ $? -ne 0 ]]; then exit 1;fi
   mv $builddir/IndiStarter.app/Contents/MacOS/indistarter $builddir/IndiStarter.app/Contents/MacOS/indistarterx86_64
-  read
   # arm64
   ./configure $configopt prefix=$builddir target=aarch64-darwin
   if [[ $? -ne 0 ]]; then exit 1;fi
@@ -45,7 +44,6 @@ echo $version - $currentrev - $indiversion
   make install CPU_TARGET=aarch64
   if [[ $? -ne 0 ]]; then exit 1;fi
   mv $builddir/IndiStarter.app/Contents/MacOS/indistarter $builddir/IndiStarter.app/Contents/MacOS/indistarterarm64
-  read
   # create universal binary
   cd $builddir/IndiStarter.app/Contents/MacOS/
   lipo -create -output indistarter indistarterarm64 indistarterx86_64
