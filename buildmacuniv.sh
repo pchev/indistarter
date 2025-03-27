@@ -73,6 +73,6 @@ echo $version - $currentrev - $indiversion
   if [[ $? -ne 0 ]]; then exit 1;fi
 
   cd $wd
-  #rm -rf $basedir
+  rm -rf $basedir
 
 
