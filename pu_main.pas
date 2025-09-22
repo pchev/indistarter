@@ -1128,6 +1128,9 @@ begin
     MenuQuit.Caption:='&Minimize';
     if StringGrid1.RowCount>1 then begin
       GetIndiDevices;
+      if (indiclient<>nil)and(indiclient.Connected) then begin
+        indiclient.RefreshProps;  // refresh properties for next timer
+      end;
     end;
   end
   else begin
