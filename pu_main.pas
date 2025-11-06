@@ -69,7 +69,7 @@ type
     procedure BtnStartStopClick(Sender: TObject);
     procedure cbAdvancedClick(Sender: TObject);
     procedure ClientBtnClick(Sender: TObject);
-    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -498,13 +498,13 @@ aboutmsg:=aboutmsg+'of the License, or (at your option) any later version.'+crlf
 ShowMessage(aboutmsg);
 end;
 
-procedure Tf_main.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+procedure Tf_main.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
   if ServerPid='' then begin
      SaveConfig;
-     CloseAction:=caFree;
+     CanClose:=true;
   end else begin
-     CloseAction:=caMinimize;
+     CanClose:=false;
   end;
 end;
 
@@ -1116,6 +1116,7 @@ end;
 procedure Tf_main.Status;
 var i: integer;
 begin
+try
   if ServerPid<>'' then begin
     ImageList1.GetBitmap(1,led.Picture.Bitmap);
     BtnStartStop.Caption:='Stop';
@@ -1145,6 +1146,8 @@ begin
        StringGrid1.Cells[colactive,i]:='';
     end;
   end;
+except
+end;
 end;
 
 function Tf_main.GetServerPort: string;

@@ -8,7 +8,7 @@ object f_main: Tf_main
   ClientHeight = 341
   ClientWidth = 390
   Menu = MainMenu1
-  OnClose = FormClose
+  OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -123,7 +123,7 @@ object f_main: Tf_main
       Left = 168
       Height = 22
       Top = 84
-      Width = 110
+      Width = 106
       Caption = 'More options'
       OnClick = cbAdvancedClick
       TabOrder = 4
