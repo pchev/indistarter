@@ -53,7 +53,7 @@ object f_devlist: Tf_devlist
     TabOrder = 2
     object CustomCheckBox: TCheckBox
       Left = 8
-      Height = 21
+      Height = 22
       Top = 2
       Width = 112
       Caption = 'Custom driver'
@@ -75,7 +75,7 @@ object f_devlist: Tf_devlist
     Visible = False
     object CustomDriver: TEdit
       Left = 8
-      Height = 30
+      Height = 32
       Top = 40
       Width = 232
       ParentFont = False
@@ -83,23 +83,25 @@ object f_devlist: Tf_devlist
     end
     object Label1: TLabel
       Left = 8
-      Height = 19
+      Height = 18
       Top = 16
-      Width = 161
+      Width = 158
       Caption = 'Custom or remote driver :'
+      ParentColor = False
       ParentFont = False
     end
     object Label2: TLabel
       Left = 8
-      Height = 19
+      Height = 18
       Top = 80
-      Width = 86
+      Width = 85
       Caption = 'Remote host :'
+      ParentColor = False
       ParentFont = False
     end
     object CustomHost: TEdit
       Left = 8
-      Height = 30
+      Height = 32
       Top = 104
       Width = 232
       ParentFont = False

@@ -74,6 +74,7 @@ implementation
 procedure Tf_devlist.FormCreate(Sender: TObject);
 begin
   ScaleDPI(Self);
+  ProcessDevices;
 end;
 
 procedure Tf_devlist.CustomCheckBoxChange(Sender: TObject);
@@ -94,7 +95,6 @@ procedure Tf_devlist.FormShow(Sender: TObject);
 begin
   CustomPanel.Visible:=CustomCheckBox.Checked;
   TreeView1.Visible:= not CustomPanel.Visible;
-  ProcessDevices;
 end;
 
 procedure Tf_devlist.ProcessDevices;
