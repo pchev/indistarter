@@ -36,7 +36,7 @@ uses
      SysUtils, Forms, Controls, StdCtrls, Graphics;
 
 const
-  starterver = '2.5.0';
+  starterver = '2.5.1';
   starter_version='Version '+starterver;
   blank=' ';
   TAB = #$09;

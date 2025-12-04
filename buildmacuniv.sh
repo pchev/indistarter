@@ -1,6 +1,6 @@
 #!/bin/bash 
 
-version=2.5.0
+version=2.5.1
 
 basedir=/tmp/indistarter  # Be sure this is set to a non existent directory, it is removed after the run!
 
