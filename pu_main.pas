@@ -734,6 +734,9 @@ begin
   StatusTimer.Enabled:=false;
   Screen.Cursor:=crHourGlass;
   StopDevice(CurrentRow);
+  wait(2);
+  if (indiclient<>nil)and(indiclient.Connected) then
+    indiclient.RefreshProps;
   finally
     Screen.Cursor:=crDefault;
     StatusTimer.Enabled:=true;
@@ -905,7 +908,7 @@ begin
     devname:=StringGrid1.Cells[colname,r];
     if (indiclient<>nil) and indiclient.DeviceConnected(devname) then begin
       indiclient.disconnectDevice(devname);
-      Wait(2);
+      Wait(1);
     end;
     if group='Custom' then begin
        if remote then
@@ -919,6 +922,8 @@ begin
          buf:='stop '+drv+' -n "'+devname+'"';
     end;
     WriteCmd(buf);
+    StringGrid1.Cells[colactive,r]:='';
+    Application.ProcessMessages;
   end;
 end;
 
