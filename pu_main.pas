@@ -714,6 +714,7 @@ end;
 procedure Tf_main.MenuRestartDeviceClick(Sender: TObject);
 begin
   try
+  StatusTimer.Enabled:=false;
   Screen.Cursor:=crHourGlass;
   if ServerPid='' then
      StartServer
@@ -723,16 +724,19 @@ begin
   StartDevice(CurrentRow);
   finally
     Screen.Cursor:=crDefault;
+    StatusTimer.Enabled:=true;
   end;
 end;
 
 procedure Tf_main.MenuStopDeviceClick(Sender: TObject);
 begin
   try
+  StatusTimer.Enabled:=false;
   Screen.Cursor:=crHourGlass;
   StopDevice(CurrentRow);
   finally
     Screen.Cursor:=crDefault;
+    StatusTimer.Enabled:=true;
   end;
 end;
 
@@ -896,9 +900,13 @@ procedure Tf_main.StopDevice(r:integer);
 var group,drv,devname,buf: string;
 begin
   if (r>0)and(r<StringGrid1.RowCount) then begin
-     group:=StringGrid1.Cells[colgroup,r];
-     drv:=StringGrid1.Cells[coldriver,r];
-     devname:=StringGrid1.Cells[colname,r];
+    group:=StringGrid1.Cells[colgroup,r];
+    drv:=StringGrid1.Cells[coldriver,r];
+    devname:=StringGrid1.Cells[colname,r];
+    if (indiclient<>nil) and indiclient.DeviceConnected(devname) then begin
+      indiclient.disconnectDevice(devname);
+      Wait(2);
+    end;
     if group='Custom' then begin
        if remote then
          buf:='stop '+drv
@@ -909,8 +917,8 @@ begin
          buf:='stop '+drv+' -n \"'+devname+'\"'
        else
          buf:='stop '+drv+' -n "'+devname+'"';
-     end;
-     WriteCmd(buf);
+    end;
+    WriteCmd(buf);
   end;
 end;
 
@@ -1012,18 +1020,19 @@ procedure Tf_main.StopServer;
 var i:integer;
     str:TStringList;
 begin
+     StatusTimer.Enabled:=false;
      try
      if GUIready then f_indigui.Close;
-     except
-     end;
-     try
-     if (indiclient<>nil)and(not indiclient.Terminated) then indiclient.DisconnectServer;
      except
      end;
      try
      for i:=1 to StringGrid1.RowCount-1 do begin
        StopDevice(i);
      end;
+     except
+     end;
+     try
+     if (indiclient<>nil)and(not indiclient.Terminated) then indiclient.DisconnectServer;
      except
      end;
      Wait(2);
@@ -1057,6 +1066,7 @@ begin
         StringGrid1.Cells[colactive,i]:='';
      end;
      indiclient:=nil;
+     StatusTimer.Enabled:=true;
 end;
 
 procedure Tf_main.StartTunnel;
