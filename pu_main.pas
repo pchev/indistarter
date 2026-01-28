@@ -103,7 +103,7 @@ type
     rc,config: TXMLConfig;
     ConfigDir,configfile,devlist,serveroptions,serverlog: string;
     RemoteHost,RemoteSshPort,RemoteUser,LocalPort,RemotePort,sshopt: string;
-    Initialized,autostart,moreoptions,stayontop,remote,ServerStarted: boolean;
+    Initialized,autostart,moreoptions,stayontop,remote,ServerStarted,DeviceChange: boolean;
     GUIready: boolean;
     ServerFifo: string;
     CurrentCol, CurrentRow: integer;
@@ -188,6 +188,7 @@ begin
   ClientBtn.Enabled:=false;
   autostart:=false;
   moreoptions:=false;
+  DeviceChange:=false;
   serveroptions:='';
   serverlog:='';
   remote:=false;
@@ -723,8 +724,10 @@ begin
   wait(2);
   StartDevice(CurrentRow);
   finally
-    Screen.Cursor:=crDefault;
+    StatusTimer.Enabled:=false;
     StatusTimer.Enabled:=true;
+    DeviceChange:=true;
+    Screen.Cursor:=crDefault;
   end;
 end;
 
@@ -738,8 +741,10 @@ begin
   if (indiclient<>nil)and(indiclient.Connected) then
     indiclient.RefreshProps;
   finally
-    Screen.Cursor:=crDefault;
+    StatusTimer.Enabled:=false;
     StatusTimer.Enabled:=true;
+    DeviceChange:=true;
+    Screen.Cursor:=crDefault;
   end;
 end;
 
@@ -808,6 +813,9 @@ begin
      StringGrid1.RowCount:=StringGrid1.RowCount-1;
      StringGrid1.SaveToCSVFile(devlist);
      finally
+       StatusTimer.Enabled:=false;
+       StatusTimer.Enabled:=true;
+       DeviceChange:=true;
        Screen.Cursor:=crDefault;
      end;
   end;
@@ -1144,7 +1152,8 @@ try
     MenuQuit.Caption:='&Minimize';
     if StringGrid1.RowCount>1 then begin
       GetIndiDevices;
-      if (indiclient<>nil)and(indiclient.Connected) then begin
+      if (DeviceChange)and(indiclient<>nil)and(indiclient.Connected) then begin
+        DeviceChange:=false;
         indiclient.RefreshProps;  // refresh properties for next timer
       end;
     end;
