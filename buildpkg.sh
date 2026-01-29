@@ -1,6 +1,6 @@
 #!/bin/bash 
 
-version=2.5.1
+version=$(grep 'starterver =' u_utils.pas |head -1| cut -d\' -f2)
 
 builddir=/tmp/indistarter  # Be sure this is set to a non existent directory, it is removed after the run!
 
