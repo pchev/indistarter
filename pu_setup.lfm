@@ -8,6 +8,7 @@ object f_setup: Tf_setup
   Caption = 'Setup'
   ClientHeight = 515
   ClientWidth = 315
+  LCLVersion = '4.8.0.0'
   OnCreate = FormCreate
   OnShow = FormShow
   object PanelBot: TPanel
@@ -163,11 +164,11 @@ object f_setup: Tf_setup
       Left = 8
       Height = 22
       Top = 299
-      Width = 264
+      Width = 260
       Caption = 'Start indiserver on a remote computer'
-      OnClick = remoteClick
       ParentFont = False
       TabOrder = 0
+      OnClick = remoteClick
     end
     object Label2: TLabel
       Left = 13
@@ -194,7 +195,7 @@ object f_setup: Tf_setup
       Left = 8
       Height = 22
       Top = 265
-      Width = 261
+      Width = 257
       Caption = 'Keep the server window always visible'
       ParentFont = False
       TabOrder = 2
@@ -203,7 +204,7 @@ object f_setup: Tf_setup
       Left = 8
       Height = 22
       Top = 234
-      Width = 281
+      Width = 277
       Caption = 'Autostart the server with last used profile'
       ParentFont = False
       TabOrder = 3
@@ -222,12 +223,12 @@ object f_setup: Tf_setup
       Height = 32
       Top = 24
       Width = 169
-      ItemHeight = 18
-      OnChange = ConfigListChange
+      ItemHeight = 24
       ParentFont = False
       Sorted = True
       Style = csDropDownList
       TabOrder = 4
+      OnChange = ConfigListChange
     end
     object BtnNewConfig: TButton
       Left = 210
@@ -235,9 +236,9 @@ object f_setup: Tf_setup
       Top = 24
       Width = 75
       Caption = 'New'
-      OnClick = BtnNewConfigClick
       ParentFont = False
       TabOrder = 5
+      OnClick = BtnNewConfigClick
     end
     object Label9: TLabel
       Left = 13
@@ -252,6 +253,7 @@ object f_setup: Tf_setup
       Height = 32
       Top = 198
       Width = 297
+      DialogKind = dkSave
       FilterIndex = 0
       HideDirectories = False
       ButtonWidth = 23
