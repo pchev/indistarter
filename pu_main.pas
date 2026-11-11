@@ -1202,7 +1202,7 @@ begin
  if not GUIready then begin
     f_indigui:=Tf_indigui.Create(self);
     ScaleDPI(f_indigui);
-    f_indigui.onDestroy:=@GUIdestroy;
+    f_indigui.onGuiDestroy:=@GUIdestroy;
     f_indigui.IndiServer:='localhost';
     f_indigui.IndiPort:=GetServerPort;
     f_indigui.IndiDevice:='';
