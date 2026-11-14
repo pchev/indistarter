@@ -90,7 +90,8 @@ type
     indiclient: TIndiBaseClient;
     devlist: TStringList;
     FIndiServer, FIndiPort, FIndiDevice: string;
-    FonDestroy: TNotifyEvent;
+    FReadTimeout: integer;
+    FonGuiDestroy: TNotifyEvent;
     FButtonGroup: integer;
     indiclosing,FDisconnectedServer,FConnectedServer: boolean;
     LblWidth,BtnWidth: integer;
@@ -123,14 +124,17 @@ type
     procedure SetSwitchCheckClick(Sender: TObject; Index: integer);
     procedure SetSwitchComboChange(Sender: TObject);
     procedure DelayedUpdate;
+    procedure SetIndiServer(value: string);
+    procedure SetIndiPort(value: string);
   public
     { public declarations }
-    property IndiServer: string read FIndiServer write FIndiServer;
-    property IndiPort: string read FIndiPort write FIndiPort;
+    property IndiServer: string read FIndiServer write SetIndiServer;
+    property IndiPort: string read FIndiPort write SetIndiPort;
     property IndiDevice: string read FIndiDevice write FIndiDevice;
+    property ReadTimeout: Integer read FReadTimeout write FReadTimeout;
     property DisconnectedServer: Boolean read FDisconnectedServer;
     property ConnectedServer: Boolean read FConnectedServer;
-    property onDestroy: TNotifyEvent read FonDestroy write FonDestroy;
+    property onGuiDestroy: TNotifyEvent read FonGuiDestroy write FonGuiDestroy;
   end;
 
 var
@@ -234,6 +238,7 @@ end;
 procedure Tf_indigui.FormShow(Sender: TObject);
 begin
   indiclient.SetServer(FIndiServer, FIndiPort);
+  indiclient.ReadTimeout:=FReadTimeout;
   if FIndiDevice <> '' then
     indiclient.watchDevice(FIndiDevice);
   indiclient.ConnectServer;
@@ -264,7 +269,9 @@ begin
   FButtonGroup := 1;
   FIndiServer := 'localhost';
   FIndiPort := '7624';
+  Caption := 'INDI '+FIndiServer+':'+FIndiPort;
   FIndiDevice := '';
+  FReadTimeout:=20;
   indiclient := TIndiBaseClient.Create;
   devlist := TStringList.Create;
   indiclient.onNewDevice := @NewDevice;
@@ -287,8 +294,8 @@ var
   i: integer;
 begin
  try
-  if assigned(FonDestroy) then
-    FonDestroy(self);
+  if assigned(FonGuiDestroy) then
+    FonGuiDestroy(self);
   try
   indiclient.Terminate;
   except
@@ -315,6 +322,18 @@ end;
 procedure Tf_indigui.FormResize(Sender: TObject);
 begin
   DelayedUpdate;
+end;
+
+procedure Tf_indigui.SetIndiServer(value: string);
+begin
+  FIndiServer:=value;
+  Caption := 'INDI '+FIndiServer+':'+FIndiPort;
+end;
+
+procedure Tf_indigui.SetIndiPort(value: string);
+begin
+  FIndiPort:=value;
+  Caption := 'INDI '+FIndiServer+':'+FIndiPort;
 end;
 
 procedure Tf_indigui.ServerConnected(Sender: TObject);
