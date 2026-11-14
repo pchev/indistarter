@@ -26,7 +26,21 @@ Indistarter is a user interface to run a INDI server.
 /usr/share/applications/indigui.desktop
 /usr/share/pixmaps/indistarter.png
 /usr/share/pixmaps/indigui.png
-/usr/share/icons/hicolor/48x48/apps/indistarter.png
-/usr/share/icons/hicolor/48x48/apps/indigui.png
+/usr/share/icons/hicolor/16x16/apps/net.ap_i.indistarter.png
+/usr/share/icons/hicolor/16x16/apps/net.ap_i.indigui.png
+/usr/share/icons/hicolor/24x24/apps/net.ap_i.indistarter.png
+/usr/share/icons/hicolor/24x24/apps/net.ap_i.indigui.png
+/usr/share/icons/hicolor/32x32/apps/net.ap_i.indistarter.png
+/usr/share/icons/hicolor/32x32/apps/net.ap_i.indigui.png
+/usr/share/icons/hicolor/48x48/apps/net.ap_i.indistarter.png
+/usr/share/icons/hicolor/48x48/apps/net.ap_i.indigui.png
+/usr/share/icons/hicolor/64x64/apps/net.ap_i.indistarter.png
+/usr/share/icons/hicolor/64x64/apps/net.ap_i.indigui.png
+/usr/share/icons/hicolor/96x96/apps/net.ap_i.indistarter.png
+/usr/share/icons/hicolor/96x96/apps/net.ap_i.indigui.png
+/usr/share/icons/hicolor/128x128/apps/net.ap_i.indistarter.png
+/usr/share/icons/hicolor/128x128/apps/net.ap_i.indigui.png
+/usr/share/icons/hicolor/256x256/apps/net.ap_i.indistarter.png
+/usr/share/icons/hicolor/256x256/apps/net.ap_i.indigui.png
 /usr/share/doc/indistarter
 
